@@ -75,9 +75,6 @@ final class UserController extends AbstractController
     #[Route('/admin/auth/logout', name: 'app_auth_logout')]
     public function logout(Security $security): Response
     {
-        $response = $security->logout();
-        dd($response);
-
         return $this->render('user/login.html.twig', []);
     }
 }
