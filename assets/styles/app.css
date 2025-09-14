@@ -19,7 +19,7 @@
     }
 
     form {
-        @apply flex flex-col gap-6 max-w-lg mx-auto w-full;
+        @apply flex flex-col gap-6 mx-auto w-full;
     }
 
     h1 {
