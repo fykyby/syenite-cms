@@ -13,13 +13,13 @@ final class AdminController extends AbstractController
     #[Route('/admin', name: 'app_admin')]
     public function index(EntityManagerInterface $entityManager): Response
     {
-        $user = $this->getUser();
-        $userCount = $entityManager->getRepository(User::class)->count();
-        if (! $user && $userCount === 0) {
-            return $this->render('user/signup.html.twig', []);
-        } else if (! $user && $userCount > 0) {
-            return $this->render('user/login.html.twig', []);
-        }
+        // $user = $this->getUser();
+        // $userCount = $entityManager->getRepository(User::class)->count();
+        // if (! $user && $userCount === 0) {
+        //     return $this->render('user/signup.html.twig', []);
+        // } else if (! $user && $userCount > 0) {
+        //     return $this->render('user/login.html.twig', []);
+        // }
 
         return $this->render('admin/index.html.twig', [
             'controller_name' => 'AdminController',
