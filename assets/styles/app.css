@@ -9,6 +9,10 @@
 }
 
 @layer base {
+    * {
+        @apply border-border;
+    }
+
     html {
         zoom: 120%;
         @apply bg-background text-foreground;

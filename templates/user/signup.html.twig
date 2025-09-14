@@ -1,37 +1,68 @@
 {% extends 'auth_base.html.twig' %}
 
 {% block title %}
-  Sign Up
+    Sign Up
 {% endblock %}
 
 {% block body %}
-  <h1>Sign Up</h1>
+    <h1>Sign Up</h1>
 
-  <form novalidate class="uk-form-stacked" hx-post="{{ path('app_auth_signup') }}">
-    <div class="{{ errors.email ?? '' ? 'form-destructive' : '' }}">
-      <label class="uk-form-label" for="email">Email</label>
-      <div class="uk-form-controls">
-        <input class="uk-input" type="email" id="email" name="email" value="{{ values.email ?? '' }}" />
-      </div>
-      <div class="uk-form-help">{{ errors.email ?? '' }}</div>
-    </div>
+    <form
+        novalidate
+        class="uk-form-stacked"
+        hx-post="{{ path('app_auth_signup') }}"
+    >
+        <div class="{{ errors.email ?? '' ? 'form-destructive' : '' }}">
+            <label class="uk-form-label" for="email">Email</label>
+            <div class="uk-form-controls">
+                <input
+                    class="uk-input"
+                    type="email"
+                    id="email"
+                    name="email"
+                    value="{{ values.email ?? '' }}"
+                />
+            </div>
+            <div class="uk-form-help">
+                {{ errors.email ?? '' }}
+            </div>
+        </div>
 
-    <div class="{{ errors.password ?? '' ? 'form-destructive' : '' }}">
-      <label class="uk-form-label" for="password">Password</label>
-      <div class="uk-form-controls">
-        <input class="uk-input" type="password" id="password" name="password" value="{{ values.password ?? '' }}" />
-      </div>
-      <div class="uk-form-help">{{ errors.password ?? '' }}</div>
-    </div>
+        <div class="{{ errors.password ?? '' ? 'form-destructive' : '' }}">
+            <label class="uk-form-label" for="password">Password</label>
+            <div class="uk-form-controls">
+                <input
+                    class="uk-input"
+                    type="password"
+                    id="password"
+                    name="password"
+                    value="{{ values.password ?? '' }}"
+                />
+            </div>
+            <div class="uk-form-help">
+                {{ errors.password ?? '' }}
+            </div>
+        </div>
 
-    <div class="{{ errors.passwordconfirm ?? '' ? 'form-destructive' : '' }}">
-      <label class="uk-form-label" for="passwordconfirm">Password Confirm</label>
-      <div class="uk-form-controls">
-        <input class="uk-input" type="password" id="passwordconfirm" name="passwordconfirm" />
-      </div>
-      <div class="uk-form-help">{{ errors.passwordconfirm ?? '' }}</div>
-    </div>
+        <div
+            class="{{ errors.passwordconfirm ?? '' ? 'form-destructive' : '' }}"
+        >
+            <label class="uk-form-label" for="passwordconfirm">
+                Password Confirm
+            </label>
+            <div class="uk-form-controls">
+                <input
+                    class="uk-input"
+                    type="password"
+                    id="passwordconfirm"
+                    name="passwordconfirm"
+                />
+            </div>
+            <div class="uk-form-help">
+                {{ errors.passwordconfirm ?? '' }}
+            </div>
+        </div>
 
-    <button type="submit" class="uk-btn uk-btn-primary">Submit</button>
-  </form>
+        <button type="submit" class="uk-btn uk-btn-primary">Submit</button>
+    </form>
 {% endblock %}
