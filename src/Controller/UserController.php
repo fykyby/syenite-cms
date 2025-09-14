@@ -3,8 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Form\LogInType;
-use App\Form\SignUpType;
+use App\Request\UserSignUpRequest;
+use App\Utils\ValidationUtils;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -12,57 +12,61 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class UserController extends AbstractController
 {
     #[Route('/admin/auth/signup', name: 'app_auth_signup')]
-    public function signup(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager): Response
+    public function signup(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager, ValidatorInterface $validator): Response
     {
         $userCount = $entityManager->getRepository(User::class)->count();
         if ($userCount > 0) {
             return $this->redirectToRoute('app_auth_login');
         }
 
-        $user = new User();
-        $form = $this->createForm(SignUpType::class, $user);
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $hashedPassword = $passwordHasher->hashPassword($user, $form->get('password')->getData());
-            $user->setPassword($hashedPassword);
+        $errors = null;
+        if ($request->isMethod('POST')) {
+            $user = new User();
+            $user->setEmail($request->get('email'));
+            $user->setPassword($request->get('password'));
             $user->setRoles(['ROLE_SUPER_ADMIN']);
-            $entityManager->persist($user);
-            $entityManager->flush();
 
-            return $this->redirectToRoute('app_auth_login');
+            $errors = ValidationUtils::formatErrors($validator->validate($user));
+            if ($request->get('password') !== $request->get('passwordconfirm')) {
+                $errors['passwordconfirm'] = 'Passwords do not match';
+            }
+
+            if ($errors === null) {
+                $user->setPassword($passwordHasher->hashPassword($user, $request->get('password')));
+                $entityManager->persist($user);
+                $entityManager->flush();
+
+                return $this->redirectToRoute('app_auth_login');
+            }
+
         }
 
-
         return $this->render('user/signup.html.twig', [
-            'form' => $form,
+            'errors' => $errors,
+            'values' => $request->request->all(),
         ]);
     }
 
     #[Route('/admin/auth/login', name: 'app_auth_login')]
-    public function login(Security $security, EntityManagerInterface $entityManager, Request $request, AuthenticationUtils $authenticationUtils): Response
+    public function login(Security $security, EntityManagerInterface $entityManager, Request $request, AuthenticationUtils $authUtils): Response
     {
         $userCount = $entityManager->getRepository(User::class)->count();
         if ($userCount === 0) {
             return $this->redirectToRoute('app_auth_signup');
         }
 
-        $error = $authenticationUtils->getLastAuthenticationError();
-        $lastUsername = $authenticationUtils->getLastUsername();
-
-        // $user = new User();
-        // $form->handleRequest($request);
-        // if ($form->isSubmitted() && $form->isValid()) {
-        //     dd($user);
-        //     $security->login($user, 'form_login');
-        // }
+        $error = $authUtils->getLastAuthenticationError();
+        $lastEmail = $authUtils->getLastUsername();
 
         return $this->render('user/login.html.twig', [
-            'last_username' => $lastUsername,
+            'last_email' => $lastEmail,
             'error' => $error,
         ]);
     }
@@ -72,6 +76,7 @@ final class UserController extends AbstractController
     public function logout(Security $security): Response
     {
         $response = $security->logout();
+        dd($response);
 
         return $this->render('user/login.html.twig', []);
     }

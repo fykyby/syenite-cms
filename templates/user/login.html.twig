@@ -1,22 +1,31 @@
-{% extends 'auth-base.html.twig' %}
+{% extends 'auth_base.html.twig' %}
 
 {% block title %}
-	Log In
+  Log In
 {% endblock %}
 
 {% block body %}
+  <h1 class="text-center">Log In</h1>
 
-	<form action="{{ path('app_auth_login') }}" method="post">
-		<label for="username">Email:</label>
-		<input type="text" id="username" name="_username" value="{{ last_username }}" required>
+  <form class="uk-form-stacked" hx-post="{{ path('app_auth_login') }}">
+    <div>
+      <label class="uk-form-label" for="email">Email</label>
+      <div class="uk-form-controls">
+        <input required class="uk-input" type="email" id="email" name="email" value="{{ last_email ?? '' }}" />
+      </div>
+    </div>
 
-		<label for="password">Password:</label>
-		<input type="password" id="password" name="_password" required>
+    <div>
+      <label class="uk-form-label" for="password">Password</label>
+      <div class="uk-form-controls">
+        <input required minlength="6" class="uk-input" type="password" id="password" name="password" />
+      </div>
+    </div>
 
+    {% if error and error.message %}
+      <div class="uk-alert uk-alert-destructive" data-uk-alert>{{ error.message }}</div>
+    {% endif %}
 
-		{% if error %}
-			<div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-		{% endif %}
-		<button type="submit">Submit</button>
-	</form>
+    <button type="submit" class="uk-btn uk-btn-primary">Submit</button>
+  </form>
 {% endblock %}

@@ -1,0 +1,40 @@
+@import "tailwindcss";
+@import "./frankenui-core.min.css";
+@import "./theme.css";
+
+@theme inline {
+    --spacing-smallest: 0.2rem;
+    --spacing-small: 0.9rem;
+    --spacing-medium: 1.5rem;
+}
+
+@layer base {
+    html {
+        zoom: 120%;
+        @apply bg-background text-foreground;
+    }
+
+    button {
+        @apply cursor-pointer;
+    }
+
+    form {
+        @apply flex flex-col gap-6 max-w-lg mx-auto w-full;
+    }
+
+    h1 {
+        @apply text-3xl font-semibold;
+    }
+
+    form > div.form-destructive {
+        & > .uk-form-controls > input {
+            @apply border-destructive!;
+        }
+        & > .uk-form-label {
+            @apply text-destructive!;
+        }
+        & > .uk-form-help {
+            @apply text-destructive;
+        }
+    }
+}

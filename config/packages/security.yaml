@@ -21,6 +21,8 @@ security:
             form_login:
                 login_path: app_auth_login
                 check_path: app_auth_login
+                username_parameter: email
+                password_parameter: password
                 default_target_path: /admin
                 always_use_default_target_path: false
             logout:

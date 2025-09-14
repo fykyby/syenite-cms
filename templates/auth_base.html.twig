@@ -19,9 +19,6 @@
   </head>
   <body hx-target="body" hx-swap="outerHTML" hx-boost="true" hx-push-url="true">
     <div>
-      <aside>
-        <button class="uk-btn uk-btn-default" hx-post="{{ path('app_auth_logout') }}">Log Out</button>
-      </aside>
       <main class="uk-container p-medium gap-medium flex flex-col">
         {% block body %}
 
