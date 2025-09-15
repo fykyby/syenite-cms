@@ -23,11 +23,11 @@
     }
 
     form {
-        @apply flex flex-col gap-6 mx-auto w-full;
+        @apply mx-auto flex w-full flex-col gap-6;
     }
 
     h1 {
-        @apply text-3xl font-semibold;
+        @apply text-2xl font-semibold;
     }
 
     form > div.form-destructive {
