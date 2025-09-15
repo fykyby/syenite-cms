@@ -1,0 +1,100 @@
+{% extends 'base.twig' %}
+
+{% block title %}
+    Pages
+{% endblock %}
+
+{% block actions %}
+    <a class="uk-btn uk-btn-primary" href="{{ path('app_pages_new') }}">
+        New Page
+    </a>
+{% endblock %}
+
+{% block body %}
+    <table class="uk-table uk-table-divider uk-table-middle">
+        <thead>
+            <tr>
+                <th class="uk-table-shrink">ID</th>
+                <th>Path</th>
+                <th class="uk-table-shrink">Type</th>
+                <th class="uk-table-shrink">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for page in pages %}
+                <tr>
+                    <td>{{ page.id }}</td>
+                    <td class="uk-table-link">
+                        <a
+                            href="{{
+                            path(
+                                'app_page',
+                                {
+                                    id: page.id
+                                }
+                            )
+                            }}"
+                        >
+                            {{ page.path }}
+                        </a>
+                    </td>
+                    <td>{{ page.type }}</td>
+                    <td>
+                        <button
+                            class="uk-btn uk-btn-ghost uk-btn-icon uk-btn-sm"
+                            data-uk-toggle="target: #page-delete-modal-{{
+                            page.id
+                            }}"
+                        >
+                            <uk-icon icon="trash"></uk-icon>
+                        </button>
+                    </td>
+                </tr>
+
+                <div id="page-delete-modal-{{ page.id }}" data-uk-modal>
+                    <div class="uk-modal-dialog uk-margin-auto-vertical">
+                        <button
+                            class="uk-modal-close absolute right-4 top-4"
+                            type="button"
+                            data-uk-close
+                        >
+
+                        </button>
+                        <div class="uk-modal-header">
+                            <h2 class="uk-modal-title">Are you sure?</h2>
+                        </div>
+                        <div class="uk-modal-body">
+                            <p>
+                                This action will delete page '{{ page.path }}'.
+                            </p>
+                        </div>
+                        <div class="uk-modal-footer uk-text-right">
+                            <button
+                                class="uk-modal-close uk-btn uk-btn-default mr-2"
+                                type="button"
+                            >
+                                Cancel
+                            </button>
+                            <form
+                                class="inline"
+                                method="post"
+                                action="{{
+                                path(
+                                    'app_page_delete',
+                                    {
+                                        id: page.id
+                                    }
+                                )
+                                }}"
+                            >
+                                <button class="uk-btn uk-btn-destructive">
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

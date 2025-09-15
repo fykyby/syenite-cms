@@ -1,0 +1,53 @@
+{% extends 'base.twig' %}
+
+{% block title %}
+    New Page
+{% endblock %}
+
+{% block actions %}
+    <button class="uk-btn uk-btn-primary" form="new-page-form">Submit</button>
+{% endblock %}
+
+{% block body %}
+    <form
+        id="new-page-form"
+        class="uk-form-stacked"
+        method="post"
+    >
+        <div class="{{ errors.path ?? '' ? 'form-destructive' : '' }}">
+            <label class="uk-form-label" for="path">Path</label>
+            <div class="uk-form-controls">
+                <input
+                    class="uk-input"
+                    type="text"
+                    id="path"
+                    name="path"
+                    value="{{ values.path ?? '/' }}"
+                />
+            </div>
+            <div class="uk-form-help">
+                {{ errors.path ?? '' }}
+            </div>
+        </div>
+
+        <div class="{{ errors.type ?? '' ? 'form-destructive' : '' }}">
+            <label class="uk-form-label" for="type">Type</label>
+            <div class="uk-form-controls">
+                <uk-select
+                    id="type"
+                    name="type"
+                    cls-custom="button: uk-input-fake w-full; dropdown: w-full"
+                >
+                    <select hidden>
+                        <option value="default" {% if (values.type ?? 'default') == 'default' %}selected{% endif %}>
+                            Default
+                        </option>
+                    </select>
+                </uk-select>
+            </div>
+            <div class="uk-form-help">
+                {{ errors.type ?? '' }}
+            </div>
+        </div>
+    </form>
+{% endblock %}

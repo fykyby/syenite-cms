@@ -47,7 +47,7 @@ final class UserController extends AbstractController
 
         }
 
-        return $this->render('user/signup.html.twig', [
+        return $this->render('user/signup.twig', [
             'errors' => $errors,
             'values' => $request->request->all(),
         ]);
@@ -64,7 +64,7 @@ final class UserController extends AbstractController
         $error = $authUtils->getLastAuthenticationError();
         $lastEmail = $authUtils->getLastUsername();
 
-        return $this->render('user/login.html.twig', [
+        return $this->render('user/login.twig', [
             'last_email' => $lastEmail,
             'error' => $error,
         ]);
@@ -74,6 +74,6 @@ final class UserController extends AbstractController
     #[Route('/admin/auth/logout', name: 'app_auth_logout')]
     public function logout(): Response
     {
-        return $this->render('user/login.html.twig', []);
+        return $this->render('user/login.twig', []);
     }
 }

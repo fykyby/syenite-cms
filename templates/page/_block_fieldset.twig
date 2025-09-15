@@ -1,0 +1,16 @@
+<fieldset class="gap-medium uk-rounded p-medium flex flex-col border">
+    <input
+        type="hidden"
+        name="{{ 'blocks[' ~ index ~ ']type' }}"
+        value="{{ block.type }}"
+    />
+    <legend>
+        {{ block.type|capitalize }}
+    </legend>
+    {% for field in block.fields %}
+        {% include 'page/_fields/' ~ field.type ~ '.twig' with {
+            field: field,
+            key: 'blocks[' ~ index ~ ']' ~ field.key
+        } %}
+    {% endfor %}
+</fieldset>

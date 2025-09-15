@@ -6,6 +6,7 @@
     --spacing-smallest: 0.2rem;
     --spacing-small: 0.9rem;
     --spacing-medium: 1.5rem;
+    --spacing-large: 2.5rem;
 }
 
 @layer base {
@@ -28,6 +29,10 @@
 
     h1 {
         @apply text-2xl font-semibold;
+    }
+
+    textarea {
+        @apply h-[6lh] resize-none;
     }
 
     form > div.form-destructive {

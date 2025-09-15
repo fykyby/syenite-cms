@@ -1,0 +1,17 @@
+<div class="{{ errors.key ?? '' ? 'form-destructive' : '' }}">
+    <label class="uk-form-label" for="{{ key }}">
+        {{ field.key|capitalize }}
+    </label>
+    <div class="uk-form-controls">
+        <input
+            class="uk-input"
+            required
+            type="text"
+            id="{{ key }}"
+            name="{{ key }}"
+        />
+    </div>
+    <div class="uk-form-help">
+        {{ errors.key ?? '' }}
+    </div>
+</div>

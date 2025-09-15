@@ -15,37 +15,35 @@
             {{ importmap('app') }}
         {% endblock %}
     </head>
-    <body
-        class="flex grow flex-col"
-        hx-target="body"
-        hx-swap="outerHTML"
-        hx-boost="true"
-    >
+    <body class="flex grow flex-col">
         <div class="flex grow">
             <aside
-                class="p-small gap-small flex h-full min-w-48 flex-col items-center border-r"
+                class="p-small gap-small flex min-w-48 flex-col items-center border-r"
             >
                 <nav class="gap-smallest flex w-full grow flex-col">
                     <a
-                        class="uk-btn uk-btn-ghost w-full justify-start"
-                        href="/admin"
+                        class="uk-btn uk-btn-ghost w-full justify-start font-normal"
+                        href="{{ path('app_dashboard') }}"
                     >
                         Dashboard
                     </a>
                     <a
-                        class="uk-btn uk-btn-ghost w-full justify-start"
-                        href="/admin/pages"
+                        class="uk-btn uk-btn-ghost w-full justify-start font-normal"
+                        href="{{ path('app_pages') }}"
                     >
                         Pages
                     </a>
                 </nav>
 
-                <button
-                    class="uk-btn uk-btn-default w-full"
-                    hx-post="{{ path('app_auth_logout') }}"
+                <form
+                    class="inline"
+                    method="post"
+                    action="{{ path('app_auth_logout') }}"
                 >
-                    Log Out
-                </button>
+                    <button class="uk-btn uk-btn-default w-full">
+                        Log Out
+                    </button>
+                </form>
             </aside>
             <div class="w-full">
                 <header
@@ -57,7 +55,7 @@
                     </div>
                 </header>
 
-                <main class="p-medium gap-medium flex flex-col">
+                <main class="p-medium gap-medium flex flex-col overflow-y-auto">
                     {{ block('body') ?? '' }}
                 </main>
             </div>

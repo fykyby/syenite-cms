@@ -1,0 +1,37 @@
+{% extends 'base.twig' %}
+
+{% block javascripts %}
+    {# prettier-ignore #}
+    <script defer>
+        async function addBlock(type) { 
+            const form = document.getElementById("page-edit-form");
+            
+            const path = "/admin/pages/blocks/" + type + "?index=" + form.childElementCount;
+            const response = await fetch(path);
+            const html = await response.text();
+            form.insertAdjacentHTML('beforeend', html)
+        }
+    </script>
+{% endblock %}
+
+{% block title %}
+    Page: {{ page.path }}
+{% endblock %}
+
+{% block actions %}
+    <button class="uk-btn uk-btn-default" onclick="addBlock('hero')">
+        Add Block
+    </button>
+    <button class="uk-btn uk-btn-primary" form="page-edit-form">Save</button>
+{% endblock %}
+
+{% block body %}
+    <form class="flex flex-col" id="page-edit-form">
+        {% for i, block in page.data %}
+            {% include 'page/_block_fieldset.twig' with {
+                block: block,
+                index: i
+            } %}
+        {% endfor %}
+    </form>
+{% endblock %}

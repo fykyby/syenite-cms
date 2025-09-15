@@ -1,4 +1,4 @@
-{% extends 'auth_base.html.twig' %}
+{% extends 'auth_base.twig' %}
 
 {% block title %}
     Log In
@@ -7,13 +7,13 @@
 {% block body %}
     <h1>Log In</h1>
 
-    <form class="uk-form-stacked" hx-post="{{ path('app_auth_login') }}">
+    <form class="uk-form-stacked" method="post">
         <div>
             <label class="uk-form-label" for="email">Email</label>
             <div class="uk-form-controls">
                 <input
-                    required
                     class="uk-input"
+                    required
                     type="email"
                     id="email"
                     name="email"
@@ -26,9 +26,10 @@
             <label class="uk-form-label" for="password">Password</label>
             <div class="uk-form-controls">
                 <input
+                    class="uk-input"
                     required
                     minlength="6"
-                    class="uk-input"
+                    maxlength="128"
                     type="password"
                     id="password"
                     name="password"

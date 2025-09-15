@@ -1,4 +1,4 @@
-{% extends 'auth_base.html.twig' %}
+{% extends 'auth_base.twig' %}
 
 {% block title %}
     Sign Up
@@ -7,16 +7,13 @@
 {% block body %}
     <h1>Sign Up</h1>
 
-    <form
-        novalidate
-        class="uk-form-stacked"
-        hx-post="{{ path('app_auth_signup') }}"
-    >
+    <form class="uk-form-stacked" method="post">
         <div class="{{ errors.email ?? '' ? 'form-destructive' : '' }}">
             <label class="uk-form-label" for="email">Email</label>
             <div class="uk-form-controls">
                 <input
                     class="uk-input"
+                    required
                     type="email"
                     id="email"
                     name="email"
@@ -33,6 +30,9 @@
             <div class="uk-form-controls">
                 <input
                     class="uk-input"
+                    required
+                    minlength="6"
+                    maxlength="128"
                     type="password"
                     id="password"
                     name="password"
@@ -53,6 +53,9 @@
             <div class="uk-form-controls">
                 <input
                     class="uk-input"
+                    required
+                    minlength="6"
+                    maxlength="128"
                     type="password"
                     id="passwordconfirm"
                     name="passwordconfirm"
