@@ -20,13 +20,26 @@
         hx-target="body"
         hx-swap="outerHTML"
         hx-boost="true"
-        hx-push-url="true"
     >
         <div class="flex grow">
             <aside
                 class="p-small gap-small flex h-full min-w-48 flex-col items-center border-r"
             >
-                <nav class="grow"></nav>
+                <nav class="gap-smallest flex w-full grow flex-col">
+                    <a
+                        class="uk-btn uk-btn-ghost w-full justify-start"
+                        href="/admin"
+                    >
+                        Dashboard
+                    </a>
+                    <a
+                        class="uk-btn uk-btn-ghost w-full justify-start"
+                        href="/admin/pages"
+                    >
+                        Pages
+                    </a>
+                </nav>
+
                 <button
                     class="uk-btn uk-btn-default w-full"
                     hx-post="{{ path('app_auth_logout') }}"
@@ -34,7 +47,7 @@
                     Log Out
                 </button>
             </aside>
-            <div>
+            <div class="w-full">
                 <header
                     class="p-small gap-small box-content flex h-10 items-center border-b"
                 >
@@ -43,6 +56,7 @@
                         {{ block('actions') ?? '' }}
                     </div>
                 </header>
+
                 <main class="p-medium gap-medium flex flex-col">
                     {{ block('body') ?? '' }}
                 </main>
