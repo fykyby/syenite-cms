@@ -53,20 +53,5 @@
                 {{ block('body') ?? '' }}
             </main>
         </div>
-        {#
-        <div class="grow">
-            <header
-                class="p-small gap-small box-content flex h-10 items-center border-b"
-            >
-                <h1 class="grow">{{ block('title') ?? '' }}</h1>
-                <div class="gap-small flex">
-                    {{ block('actions') ?? '' }}
-                </div>
-            </header>
-
-            <main class="p-medium gap-medium flex flex-col overflow-y-auto">
-                {{ block('body') ?? '' }}
-            </main>
-        </div> #}
     </body>
 </html>
