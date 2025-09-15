@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="uk-theme-neutral dark flex h-full flex-col">
+<html class="uk-theme-neutral dark h-full">
     <head>
         <meta charset="UTF-8" />
         <title>
@@ -15,50 +15,58 @@
             {{ importmap('app') }}
         {% endblock %}
     </head>
-    <body class="flex grow flex-col">
-        <div class="flex grow">
-            <aside
-                class="p-small gap-small flex min-w-48 flex-col items-center border-r"
+    <body class="flex h-full overflow-hidden">
+        <aside
+            class="p-small gap-small sticky top-0 flex h-full min-w-48 flex-col border-r"
+        >
+            <nav class="space-y-smallest grow">
+                <a
+                    class="uk-btn uk-btn-ghost w-full justify-start font-normal"
+                    href="{{ path('app_dashboard') }}"
+                >
+                    Dashboard
+                </a>
+                <a
+                    class="uk-btn uk-btn-ghost w-full justify-start font-normal"
+                    href="{{ path('app_pages') }}"
+                >
+                    Pages
+                </a>
+            </nav>
+
+            <form method="post" action="{{ path('app_auth_logout') }}">
+                <button class="uk-btn uk-btn-default w-full">Log Out</button>
+            </form>
+        </aside>
+
+        <div class="grow overflow-auto">
+            <header
+                class="p-small gap-small bg-background sticky top-0 box-content flex h-10 items-center border-b"
             >
-                <nav class="gap-smallest flex w-full grow flex-col">
-                    <a
-                        class="uk-btn uk-btn-ghost w-full justify-start font-normal"
-                        href="{{ path('app_dashboard') }}"
-                    >
-                        Dashboard
-                    </a>
-                    <a
-                        class="uk-btn uk-btn-ghost w-full justify-start font-normal"
-                        href="{{ path('app_pages') }}"
-                    >
-                        Pages
-                    </a>
-                </nav>
+                <h1 class="grow">{{ block('title') ?? '' }}</h1>
+                <div class="gap-small flex">
+                    {{ block('actions') ?? '' }}
+                </div>
+            </header>
 
-                <form
-                    class="inline"
-                    method="post"
-                    action="{{ path('app_auth_logout') }}"
-                >
-                    <button class="uk-btn uk-btn-default w-full">
-                        Log Out
-                    </button>
-                </form>
-            </aside>
-            <div class="w-full">
-                <header
-                    class="p-small gap-small box-content flex h-10 items-center border-b"
-                >
-                    <h1 class="grow">{{ block('title') ?? '' }}</h1>
-                    <div class="gap-small flex">
-                        {{ block('actions') ?? '' }}
-                    </div>
-                </header>
-
-                <main class="p-medium gap-medium flex flex-col overflow-y-auto">
-                    {{ block('body') ?? '' }}
-                </main>
-            </div>
+            <main class="p-medium gap-medium flex flex-col">
+                {{ block('body') ?? '' }}
+            </main>
         </div>
+        {#
+        <div class="grow">
+            <header
+                class="p-small gap-small box-content flex h-10 items-center border-b"
+            >
+                <h1 class="grow">{{ block('title') ?? '' }}</h1>
+                <div class="gap-small flex">
+                    {{ block('actions') ?? '' }}
+                </div>
+            </header>
+
+            <main class="p-medium gap-medium flex flex-col overflow-y-auto">
+                {{ block('body') ?? '' }}
+            </main>
+        </div> #}
     </body>
 </html>

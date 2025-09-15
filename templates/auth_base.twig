@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="uk-theme-neutral dark flex h-full flex-col">
+<html class="uk-theme-neutral dark">
     <head>
         <meta charset="UTF-8" />
         <title>
@@ -15,14 +15,12 @@
             {{ importmap('app') }}
         {% endblock %}
     </head>
-    <body class="flex grow flex-col">
-        <div class="grow">
-            <div class="p-medium text-center text-3xl">
-                Syenite CMS
-            </div>
-            <main class="p-medium gap-medium mx-auto flex max-w-xl flex-col">
-                {{ block('body') ?? '' }}
-            </main>
+    <body>
+        <div class="p-medium text-center text-3xl">
+            Syenite CMS
         </div>
+        <main class="p-medium gap-medium mx-auto flex max-w-xl flex-col">
+            {{ block('body') ?? '' }}
+        </main>
     </body>
 </html>
