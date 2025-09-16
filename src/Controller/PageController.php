@@ -63,10 +63,6 @@ final class PageController extends AbstractController
 
         $blocks = CmsUtils::listBlocks();
 
-        $block = CmsUtils::getBlockData('hero');
-        $blocksData = [$block, $block, $block];
-        $page->setData($blocksData);
-
         return $this->render('page/edit.twig', [
             'page' => $page,
             'blocks' => $blocks,

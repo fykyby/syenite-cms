@@ -50,51 +50,55 @@
                         </button>
                     </td>
                 </tr>
-
-                <div id="page-delete-modal-{{ page.id }}" data-uk-modal>
-                    <div class="uk-modal-dialog uk-margin-auto-vertical">
-                        <button
-                            class="uk-modal-close absolute right-4 top-4"
-                            type="button"
-                            data-uk-close
-                        >
-
-                        </button>
-                        <div class="uk-modal-header">
-                            <h2 class="uk-modal-title">Are you sure?</h2>
-                        </div>
-                        <div class="uk-modal-body">
-                            <p>
-                                This action will delete page '{{ page.path }}'.
-                            </p>
-                        </div>
-                        <div class="uk-modal-footer uk-text-right">
-                            <button
-                                class="uk-modal-close uk-btn uk-btn-default mr-2"
-                                type="button"
-                            >
-                                Cancel
-                            </button>
-                            <form
-                                class="inline"
-                                method="post"
-                                action="{{
-                                path(
-                                    'app_page_delete',
-                                    {
-                                        id: page.id
-                                    }
-                                )
-                                }}"
-                            >
-                                <button class="uk-btn uk-btn-destructive">
-                                    Delete
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
             {% endfor %}
         </tbody>
     </table>
+{% endblock %}
+
+{% block modals %}
+    {% for page in pages %}
+        <div id="page-delete-modal-{{ page.id }}" data-uk-modal>
+            <div class="uk-modal-dialog uk-margin-auto-vertical">
+                <button
+                    class="uk-modal-close absolute right-4 top-4"
+                    type="button"
+                    data-uk-close
+                >
+
+                </button>
+                <div class="uk-modal-header">
+                    <h2 class="uk-modal-title">Are you sure?</h2>
+                </div>
+                <div class="uk-modal-body">
+                    <p>
+                        This action will delete page '{{ page.path }}'.
+                    </p>
+                </div>
+                <div class="uk-modal-footer uk-text-right">
+                    <button
+                        class="uk-modal-close uk-btn uk-btn-default mr-2"
+                        type="button"
+                    >
+                        Cancel
+                    </button>
+                    <form
+                        class="inline"
+                        method="post"
+                        action="{{
+                        path(
+                            'app_page_delete',
+                            {
+                                id: page.id
+                            }
+                        )
+                        }}"
+                    >
+                        <button class="uk-btn uk-btn-destructive">
+                            Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
 {% endblock %}

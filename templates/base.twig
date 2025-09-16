@@ -41,7 +41,7 @@
 
         <div class="grow overflow-auto">
             <header
-                class="p-small gap-small bg-background sticky top-0 box-content flex h-10 items-center border-b"
+                class="p-small gap-small bg-background sticky top-0 z-40 box-content flex h-10 items-center border-b"
             >
                 <h1 class="grow">{{ block('title') ?? '' }}</h1>
                 <div class="gap-small flex">
@@ -53,5 +53,7 @@
                 {{ block('body') ?? '' }}
             </main>
         </div>
+
+        {{ block('modals') ?? '' }}
     </body>
 </html>
