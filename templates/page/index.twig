@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block body %}
-    <table class="uk-table uk-table-divider uk-table-middle">
+    <table class="uk-table uk-table-divider uk-table-middle uk-table-justify">
         <thead>
             <tr>
                 <th class="uk-table-shrink">ID</th>
@@ -39,7 +39,7 @@
                         </a>
                     </td>
                     <td>{{ page.type }}</td>
-                    <td>
+                    <td class="py-0">
                         <button
                             class="uk-btn uk-btn-ghost uk-btn-icon uk-btn-sm"
                             data-uk-toggle="target: #page-delete-modal-{{
