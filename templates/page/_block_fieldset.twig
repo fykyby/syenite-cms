@@ -7,13 +7,27 @@
         name="{{ 'blocks[' ~ index ~ ']type' }}"
         value="{{ block.type }}"
     />
-    <button
-        class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs -top-medium right-medium block-delete-btn absolute"
-        type="button"
-        onclick="deleteBlock('{{ 'blocks[' ~ index ~ ']' }}')"
-    >
-        <uk-icon icon="trash"></uk-icon>
-    </button>
+    <div class="right-medium absolute -top-[1.75rem] flex">
+        <button
+            class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs mr-smallest"
+            type="button"
+        >
+            <uk-icon icon="arrow-up"></uk-icon>
+        </button>
+        <button
+            class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs mr-medium"
+            type="button"
+        >
+            <uk-icon icon="arrow-down"></uk-icon>
+        </button>
+        <button
+            class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs block-delete-btn"
+            type="button"
+            onclick="deleteBlock('{{ 'blocks[' ~ index ~ ']' }}')"
+        >
+            <uk-icon icon="trash"></uk-icon>
+        </button>
+    </div>
     <legend
         class="uk-btn-default uk-btn-xs uk-btn mr-auto place-self-start hover:bg-transparent"
     >
