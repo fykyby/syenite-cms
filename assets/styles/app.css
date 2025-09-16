@@ -35,7 +35,7 @@
         @apply h-[6lh] resize-none;
     }
 
-    form > div.form-destructive {
+    form div.form-destructive {
         & > .uk-form-controls > input {
             @apply border-destructive!;
         }

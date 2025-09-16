@@ -63,13 +63,28 @@ final class PageController extends AbstractController
 
         $errors = null;
         if ($request->isMethod('POST')) {
-            $blocks = $request->request->all()['blocks'] ?? [];
+            $pageData = $request->request->all()['blocks'] ?? [];
 
-            // TODO: validate
+            foreach ($pageData as $data) {
+                $validationData = [];
+                $validationRules = [];
 
+                $block = CmsUtils::getBlockData($data['_type']);
+                foreach ($block['fields'] as $key => $field) {
+                    $validationData[$field['key']] = $data[$field['key']];
+                    $validationRules[$field['key']] = $field['rules'] ?? '';
+                }
+
+                $error = ValidationUtils::validate($validationData, $validationRules);
+                if ($error !== null) {
+                    $errors[] = $error;
+                }
+            }
+
+            $page->setData($pageData);
             if ($errors === null) {
-                $page->setData($blocks);
                 $entityManager->flush();
+                return $this->redirectToRoute('app_page', ['id' => $id]);
             }
         }
 

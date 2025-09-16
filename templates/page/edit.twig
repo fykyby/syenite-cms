@@ -1,7 +1,7 @@
 {% extends 'base.twig' %}
 
 {% block title %}
-    Page: {{ page.path }}
+    Page {{ page.path }}
 {% endblock %}
 
 {% block actions %}
@@ -16,10 +16,11 @@
 
 {% block body %}
     <form class="flex flex-col" id="page-edit-form" method="post">
-        {% for block in blocks %}
+        {% for index, block in blocks %}
             {% include 'page/_block_fieldset.twig' with {
                 block: block,
-                data: page.getData()[block.index]
+                data: page.getData()[block.index],
+                errors: errors[index] ?? []
             } %}
         {% endfor %}
     </form>

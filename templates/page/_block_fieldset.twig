@@ -43,8 +43,7 @@
             label: field.key|capitalize,
             key: 'blocks[' ~ block.index ~ '][' ~ field.key ~ ']',
             value: data[field.key] ?? '',
-            error: errors['blocks[' ~ block.index ~ '][' ~ field.key ~ ']']
-                ?? ''
+            error: errors[field.key] ?? null
         } %}
     {% endfor %}
 </fieldset>

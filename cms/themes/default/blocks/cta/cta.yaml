@@ -2,15 +2,10 @@ type: cta
 fields:
     - key: title
       type: string
-      rules:
-          - required
-          - min: 3
-          - max: 255
+      rules: required|min:3|max:255
     - key: link
       type: string
-      rules:
-          - required
+      rules: required
     - key: link_label
       type: string
-      rules:
-          - required
+      rules: required

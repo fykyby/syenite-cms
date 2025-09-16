@@ -2,11 +2,7 @@ type: hero
 fields:
     - key: title
       type: string
-      rules:
-          - required
-          - min: 3
-          - max: 255
+      rules: required|min:3|max:255
     - key: subtitle
       type: text
-      rules:
-          - max: 255
+      rules: max:255
