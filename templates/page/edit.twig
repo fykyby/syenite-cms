@@ -15,11 +15,11 @@
 {% endblock %}
 
 {% block body %}
-    <form class="flex flex-col" id="page-edit-form">
-        {% for i, block in page.data %}
+    <form class="flex flex-col" id="page-edit-form" method="post">
+        {% for block in blocks %}
             {% include 'page/_block_fieldset.twig' with {
                 block: block,
-                index: i
+                data: page.getData()[block.index]
             } %}
         {% endfor %}
     </form>
@@ -39,7 +39,7 @@
                 <h2 class="uk-modal-title">Add Block</h2>
             </div>
             <div class="uk-modal-body gap-small grid grid-cols-3">
-                {% for block in blocks %}
+                {% for block in blockList %}
                     <button
                         class="uk-btn uk-btn-default uk-modal-close"
                         onclick="addBlock('{{ block }}')"

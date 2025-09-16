@@ -54,18 +54,38 @@ final class PageController extends AbstractController
     }
 
     #[Route('/admin/pages/{id}', name: 'app_page', requirements: ['id' => '\d+'])]
-    public function edit(int $id, EntityManagerInterface $entityManager): Response
+    public function edit(int $id, EntityManagerInterface $entityManager, Request $request): Response
     {
         $page = $entityManager->getRepository(Page::class)->find($id);
         if ($page === null) {
             throw new NotFoundHttpException();
         }
 
-        $blocks = CmsUtils::listBlocks();
+        $errors = null;
+        if ($request->isMethod('POST')) {
+            $blocks = $request->request->all()['blocks'] ?? [];
 
+            // TODO: validate
+
+            if ($errors === null) {
+                $page->setData($blocks);
+                $entityManager->flush();
+            }
+        }
+
+        $blocks = [];
+        foreach ($page->getData() as $key => $value) {
+            $block = CmsUtils::getBlockData($value['_type']);
+            $block['index'] = $key;
+            $blocks[] = $block;
+        }
+
+        $blockList = CmsUtils::listBlocks();
         return $this->render('page/edit.twig', [
             'page' => $page,
             'blocks' => $blocks,
+            'blockList' => $blockList,
+            'errors' => $errors,
         ]);
     }
 
@@ -77,10 +97,10 @@ final class PageController extends AbstractController
         if ($block === null || $index === null) {
             throw new NotFoundHttpException();
         }
+        $block['index'] = $index;
 
         return $this->render('page/_block_fieldset.twig', [
             'block' => $block,
-            'index' => $index,
         ]);
     }
 

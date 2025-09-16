@@ -1,15 +1,11 @@
-<div class="{{ errors.key ?? '' ? 'form-destructive' : '' }}">
-    <label class="uk-form-label" for="{{ key }}">
-        {{ field.key|capitalize }}
-    </label>
+<div class="{{ error ? 'form-destructive' : '' }}">
+    <label class="uk-form-label" for="{{ key }}">{{ label }}</label>
     <div class="uk-form-controls">
-        <textarea
-            class="uk-textarea"
-            name="{{ key }}"
-            id="{{ key }}"
-        ></textarea>
+        <textarea class="uk-textarea" name="{{ key }}" id="{{ key }}">
+            {{- value -}}
+        </textarea>
     </div>
     <div class="uk-form-help">
-        {{ errors.key ?? '' }}
+        {{ error }}
     </div>
 </div>

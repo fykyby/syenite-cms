@@ -1,44 +1,50 @@
 <fieldset
     class="gap-medium uk-rounded p-medium relative flex flex-col border"
-    id="{{ 'blocks[' ~ index ~ ']' }}"
+    id="{{ 'blocks[' ~ block.index ~ ']' }}"
 >
     <input
         type="hidden"
-        name="{{ 'blocks[' ~ index ~ ']type' }}"
+        name="{{ 'blocks[' ~ block.index ~ '][_type]' }}"
         value="{{ block.type }}"
     />
+
     <div class="right-medium absolute -top-[1.75rem] flex">
         <button
             class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs mr-smallest block-moveup-btn"
             type="button"
-            onclick="moveBlockUp('{{ 'blocks[' ~ index ~ ']' }}')"
+            onclick="moveBlockUp('{{ 'blocks[' ~ block.index ~ ']' }}')"
         >
             <uk-icon icon="arrow-up"></uk-icon>
         </button>
         <button
             class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs mr-medium block-movedown-btn"
             type="button"
-            onclick="moveBlockDown('{{ 'blocks[' ~ index ~ ']' }}')"
+            onclick="moveBlockDown('{{ 'blocks[' ~ block.index ~ ']' }}')"
         >
             <uk-icon icon="arrow-down"></uk-icon>
         </button>
         <button
             class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs block-delete-btn"
             type="button"
-            onclick="deleteBlock('{{ 'blocks[' ~ index ~ ']' }}')"
+            onclick="deleteBlock('{{ 'blocks[' ~ block.index ~ ']' }}')"
         >
             <uk-icon icon="trash"></uk-icon>
         </button>
     </div>
+
     <legend
         class="uk-btn-default uk-btn-xs uk-btn mr-auto place-self-start hover:bg-transparent"
     >
-        {{ index + 1 }}. {{ block.type|capitalize }}
+        {{ block.index + 1 }}. {{ block.type|capitalize }}
     </legend>
+
     {% for field in block.fields %}
         {% include 'page/_fields/' ~ field.type ~ '.twig' with {
-            field: field,
-            key: 'blocks[' ~ index ~ ']' ~ field.key
+            label: field.key|capitalize,
+            key: 'blocks[' ~ block.index ~ '][' ~ field.key ~ ']',
+            value: data[field.key] ?? '',
+            error: errors['blocks[' ~ block.index ~ '][' ~ field.key ~ ']']
+                ?? ''
         } %}
     {% endfor %}
 </fieldset>
