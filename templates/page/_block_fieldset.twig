@@ -9,14 +9,16 @@
     />
     <div class="right-medium absolute -top-[1.75rem] flex">
         <button
-            class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs mr-smallest"
+            class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs mr-smallest block-moveup-btn"
             type="button"
+            onclick="moveBlockUp('{{ 'blocks[' ~ index ~ ']' }}')"
         >
             <uk-icon icon="arrow-up"></uk-icon>
         </button>
         <button
-            class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs mr-medium"
+            class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs mr-medium block-movedown-btn"
             type="button"
+            onclick="moveBlockDown('{{ 'blocks[' ~ index ~ ']' }}')"
         >
             <uk-icon icon="arrow-down"></uk-icon>
         </button>

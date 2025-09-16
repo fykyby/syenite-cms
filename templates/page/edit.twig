@@ -73,6 +73,22 @@
             form.insertAdjacentHTML('beforeend', html)
         }
 
+        function moveBlockUp(id) {
+            const block = document.getElementById(id);
+            if (block && block.previousElementSibling) {
+                block.parentNode.insertBefore(block, block.previousElementSibling);
+                updateIndexes();
+            }
+        }
+
+        function moveBlockDown(id) {
+            const block = document.getElementById(id);
+            if (block && block.nextElementSibling) {
+                block.parentNode.insertBefore(block.nextElementSibling, block);
+                updateIndexes();
+            }
+        }
+
         function deleteBlock(id) {
             const block = document.getElementById(id);
             block.remove();
@@ -87,8 +103,14 @@
             nodes.forEach((node, index) => {
                 node.setAttribute("id", `blocks[${index}]`);
 
-                const button = node.querySelector(".block-delete-btn");
-                button.setAttribute("onclick", `deleteBlock('blocks[${index}]')`);
+                const deleteBtn = node.querySelector(".block-delete-btn");
+                deleteBtn.setAttribute("onclick", `deleteBlock('blocks[${index}]')`);
+
+                const moveupBtn = node.querySelector(".block-moveup-btn");
+                moveupBtn.setAttribute("onclick", `moveBlockUp('blocks[${index}]')`);
+
+                const movedownBtn = node.querySelector(".block-movedown-btn");
+                movedownBtn.setAttribute("onclick", `moveBlockDown('blocks[${index}]')`);
 
                 const inputs = node.querySelectorAll("[name]");
                 inputs.forEach(input => {
