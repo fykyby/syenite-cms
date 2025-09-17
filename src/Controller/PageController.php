@@ -75,14 +75,21 @@ final class PageController extends AbstractController
                     $validationRules[$field['key']] = $field['rules'] ?? '';
                 }
 
+
                 $error = ValidationUtils::validate($validationData, $validationRules);
-                if ($error !== null) {
-                    $errors[] = $error;
-                }
+                $errors[] = $error;
             }
 
             $page->setData($pageData);
-            if ($errors === null) {
+
+            $hasErrors = false;
+            foreach ($errors as $error) {
+                if ($error !== null) {
+                    $hasErrors = true;
+                }
+            }
+
+            if (! $hasErrors) {
                 $entityManager->flush();
                 return $this->redirectToRoute('app_page', ['id' => $id]);
             }
