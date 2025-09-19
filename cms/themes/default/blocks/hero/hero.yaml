@@ -1,8 +1,8 @@
 type: hero
 fields:
     - key: title
-      type: string
+      type: input
       rules: required|min:3|max:255
     - key: subtitle
-      type: text
+      type: textarea
       rules: max:255

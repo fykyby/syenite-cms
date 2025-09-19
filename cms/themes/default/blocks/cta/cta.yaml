@@ -1,11 +1,20 @@
 type: cta
 fields:
     - key: title
-      type: string
+      type: input
       rules: required|min:3|max:255
     - key: link
-      type: string
+      type: input
       rules: required
     - key: link_label
-      type: string
+      type: input
       rules: required
+    - key: items
+      type: array
+      fields:
+          - key: title
+            type: input
+            rules: required|min:3|max:255
+          - key: subtitle
+            type: input
+            rules: required|min:3|max:255

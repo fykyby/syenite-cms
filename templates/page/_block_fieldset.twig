@@ -39,7 +39,8 @@
     </legend>
 
     {% for field in block.fields %}
-        {% include 'page/_fields/' ~ field.type ~ '.twig' with {
+        {% include 'page/_fields/_' ~ field.type ~ '.twig' with {
+            _field: field,
             label: field.key|capitalize,
             key: 'blocks[' ~ block.index ~ '][' ~ field.key ~ ']',
             value: data[field.key] ?? '',

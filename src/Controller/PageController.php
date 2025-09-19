@@ -61,7 +61,7 @@ final class PageController extends AbstractController
             throw new NotFoundHttpException();
         }
 
-        $errors = null;
+        $errors = [];
         if ($request->isMethod('POST')) {
             $pageData = $request->request->all()['blocks'] ?? [];
 
@@ -72,9 +72,15 @@ final class PageController extends AbstractController
                 $block = CmsUtils::getBlockData($data['_type']);
                 foreach ($block['fields'] as $key => $field) {
                     $validationData[$field['key']] = $data[$field['key']];
-                    $validationRules[$field['key']] = $field['rules'] ?? '';
-                }
 
+                    if ($field['type'] === 'array') {
+                        foreach ($field['fields'] as $subField) {
+                            $validationRules[$field['key'].'.*.'.$subField['key']] = $subField['rules'] ?? '';
+                        }
+                    } else {
+                        $validationRules[$field['key']] = $field['rules'] ?? '';
+                    }
+                }
 
                 $error = ValidationUtils::validate($validationData, $validationRules);
                 $errors[] = $error;

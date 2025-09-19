@@ -134,5 +134,46 @@
                 }
             });
         }
+
+        function addArrayItem(id) {
+            const arr = document.getElementById(id);
+            const template = document.getElementById(`${id}-template`);
+            
+            const index = arr.childElementCount - 2;
+            const clone = template.content.cloneNode(true);
+
+            const indexIndex = id.length + 1;
+
+            const inputs = clone.querySelectorAll("[name]");
+            inputs.forEach(input => {
+                const newName = input.name;
+                input.name = newName.slice(0, indexIndex) + index + input.name.slice(indexIndex + 1);
+                input.value = "";
+            });
+
+            const elementsWithId = clone.querySelectorAll("[id]");
+            elementsWithId.forEach(el => {
+                const newId = el.id;
+                el.id = newId.slice(0, indexIndex) + index + el.id.slice(indexIndex + 1);
+            });
+
+            const labels = clone.querySelectorAll("label[for]");
+            labels.forEach(label => {
+                const newFor = label.htmlFor;
+                label.htmlFor = newFor.slice(0, indexIndex) + index + label.htmlFor.slice(indexIndex + 1);
+            });
+
+            const legend = clone.querySelector("legend");
+            if (legend && typeof legend.textContent === "string") {
+                legend.textContent = index;
+            }
+
+            arr.appendChild(clone);
+        }
+
+        function deleteArrayItem(id) {
+            const item = document.getElementById(id);
+            item.remove();
+        }
     </script>
 {% endblock %}
