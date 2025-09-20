@@ -1,11 +1,21 @@
-<div class="{{ error ? 'form-destructive' : '' }}">
-    <label class="uk-form-label" for="{{ key }}">{{ label }}</label>
+<div :class="field.error ? 'form-destructive' : ''">
+    <label
+        class="uk-form-label"
+        :for="`${key}[${field.key}]`"
+        x-text="field.key"
+    >
+
+    </label>
     <div class="uk-form-controls">
-        <textarea class="uk-textarea" name="{{ key }}" id="{{ key }}">
-            {{- value -}}
-        </textarea>
+        <textarea
+            class="uk-textarea"
+            :id="`${key}[${field.key}]`"
+            :name="`${key}[${field.key}]`"
+            x-text="field.value"
+            x-model="field.value"
+        ></textarea>
     </div>
     <div class="uk-form-help">
-        {{ error }}
+        {{ field.error ?? '' }}
     </div>
 </div>

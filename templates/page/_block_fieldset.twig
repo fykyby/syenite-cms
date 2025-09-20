@@ -1,32 +1,28 @@
 <fieldset
     class="gap-medium uk-rounded p-medium relative flex flex-col border"
-    id="{{ 'blocks[' ~ block.index ~ ']' }}"
+    x-data="{ key: `blocks[${i}]` }"
 >
-    <input
-        type="hidden"
-        name="{{ 'blocks[' ~ block.index ~ '][_type]' }}"
-        value="{{ block.type }}"
-    />
+    <input type="hidden" :name="`blocks[${i}][_type]`" :value="block.type" />
 
     <div class="right-medium absolute -top-[1.75rem] flex">
         <button
             class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs mr-smallest block-moveup-btn"
             type="button"
-            onclick="moveBlockUp('{{ 'blocks[' ~ block.index ~ ']' }}')"
+            @click="moveBlockUp(i)"
         >
             <uk-icon icon="arrow-up"></uk-icon>
         </button>
         <button
             class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs mr-medium block-movedown-btn"
             type="button"
-            onclick="moveBlockDown('{{ 'blocks[' ~ block.index ~ ']' }}')"
+            @click="moveBlockDown(i)"
         >
             <uk-icon icon="arrow-down"></uk-icon>
         </button>
         <button
             class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs block-delete-btn"
             type="button"
-            onclick="deleteBlock('{{ 'blocks[' ~ block.index ~ ']' }}')"
+            x-on:click="deleteBlock(i)"
         >
             <uk-icon icon="trash"></uk-icon>
         </button>
@@ -35,16 +31,21 @@
     <legend
         class="uk-btn-default uk-btn-xs uk-btn mr-auto place-self-start hover:bg-transparent"
     >
-        {{ block.index + 1 }}. {{ block.type|capitalize }}
+        <span x-text="i + 1 + '.'"></span>
+        <span x-text="block.type"></span>
     </legend>
 
-    {% for field in block.fields %}
-        {% include 'page/_fields/_' ~ field.type ~ '.twig' with {
-            _field: field,
-            label: field.key|capitalize,
-            key: 'blocks[' ~ block.index ~ '][' ~ field.key ~ ']',
-            value: data[field.key] ?? '',
-            error: errors[field.key] ?? null
-        } %}
-    {% endfor %}
+    <template x-for="(field, j) in block.fields">
+        <div>
+            <template x-if="field.type === 'input'">
+                {% include 'page/_fields/_input.twig' %}
+            </template>
+            <template x-if="field.type === 'textarea'">
+                {% include 'page/_fields/_textarea.twig' %}
+            </template>
+            <template x-if="field.type === 'array'">
+                {% include 'page/_fields/_array.twig' %}
+            </template>
+        </div>
+    </template>
 </fieldset>

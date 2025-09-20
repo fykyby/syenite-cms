@@ -61,75 +61,56 @@ final class PageController extends AbstractController
             throw new NotFoundHttpException();
         }
 
-        $errors = [];
+        $blocks = [];
+        $hasErrors = false;
         if ($request->isMethod('POST')) {
             $pageData = $request->request->all()['blocks'] ?? [];
 
+
             foreach ($pageData as $data) {
-                $validationData = [];
-                $validationRules = [];
-
                 $block = CmsUtils::getBlockData($data['_type']);
-                foreach ($block['fields'] as $key => $field) {
-                    $validationData[$field['key']] = $data[$field['key']];
 
-                    if ($field['type'] === 'array') {
-                        foreach ($field['fields'] as $subField) {
-                            $validationRules[$field['key'].'.*.'.$subField['key']] = $subField['rules'] ?? '';
-                        }
-                    } else {
-                        $validationRules[$field['key']] = $field['rules'] ?? '';
-                    }
-                }
+                $built = self::buildValidationDataAndRules($block['fields'], $data);
+                $validationData = $built['data'];
+                $validationRules = $built['rules'];
 
-                $error = ValidationUtils::validate($validationData, $validationRules);
-                $errors[] = $error;
+                $blockErrors = ValidationUtils::validate($validationData, $validationRules) ?? [];
+                $hasErrors = array_filter($blockErrors);
+                $block['fields'] = self::attachValuesAndErrors($block['fields'], $data, $blockErrors);
+                $blocks[] = $block;
             }
 
             $page->setData($pageData);
-
-            $hasErrors = false;
-            foreach ($errors as $error) {
-                if ($error !== null) {
-                    $hasErrors = true;
-                }
-            }
 
             if (! $hasErrors) {
                 $entityManager->flush();
                 return $this->redirectToRoute('app_page', ['id' => $id]);
             }
-        }
-
-        $blocks = [];
-        foreach ($page->getData() as $key => $value) {
-            $block = CmsUtils::getBlockData($value['_type']);
-            $block['index'] = $key;
-            $blocks[] = $block;
+        } else {
+            foreach ($page->getData() as $data) {
+                $block = CmsUtils::getBlockData($data['_type']);
+                $block['fields'] = self::attachValuesAndErrors($block['fields'], $data, []);
+                $blocks[] = $block;
+            }
         }
 
         $blockList = CmsUtils::listBlocks();
         return $this->render('page/edit.twig', [
-            'page' => $page,
+            "path" => $page->getPath(),
             'blocks' => $blocks,
             'blockList' => $blockList,
-            'errors' => $errors,
         ]);
     }
 
-    #[Route('/admin/pages/blocks/{type}', name: 'app_page_block')]
-    public function block(string $type, Request $request): Response
+    #[Route('/admin/pages/blocks/{type}', name: 'app_pages_block')]
+    public function block(string $type): Response
     {
         $block = CmsUtils::getBlockData($type);
-        $index = $request->query->get('index');
-        if ($block === null || $index === null) {
+        if ($block === null) {
             throw new NotFoundHttpException();
         }
-        $block['index'] = $index;
 
-        return $this->render('page/_block_fieldset.twig', [
-            'block' => $block,
-        ]);
+        return $this->json($block);
     }
 
     #[Route('/admin/pages/{id}/delete', name: 'app_page_delete', requirements: ['id' => '\d+'])]
@@ -145,4 +126,95 @@ final class PageController extends AbstractController
 
         return $this->redirectToRoute('app_pages');
     }
+
+    private static function attachValuesAndErrors(array $fields, array $data, array $errors, string $prefix = ''): array
+    {
+        foreach ($fields as &$field) {
+            $key = $field['key'];
+            $fullKey = $prefix === '' ? $key : $prefix.'.'.$key;
+
+            if ($field['type'] === 'array' && isset($field['fields'])) {
+                // Array field: each item becomes a nested 'fields' group
+                $field['value'] = [];
+
+                if (isset($data[$key]) && is_array($data[$key])) {
+                    foreach ($data[$key] as $index => $item) {
+                        $field['value'][] = [
+                            'fields' => self::attachValuesAndErrors(
+                                $field['fields'],
+                                $item,
+                                $errors,
+                                $fullKey.'.'.$index
+                            )
+                        ];
+                    }
+                }
+
+                // Remove the base 'fields' template since it's now expanded in value
+                unset($field['fields']);
+            } else {
+                // Leaf field: attach value
+                $field['value'] = $data[$key] ?? null;
+
+                // Attach error if present
+                if (isset($errors[$fullKey])) {
+                    $field['error'] = $errors[$fullKey];
+                }
+            }
+        }
+
+        return $fields;
+    }
+
+    private static function buildValidationDataAndRules(array $fields, array $data, string $prefix = ''): array
+    {
+        $validationData = [];
+        $validationRules = [];
+
+        foreach ($fields as $field) {
+            $key = $field['key'];
+            $fullKey = $prefix === '' ? $key : $prefix.'.'.$key;
+
+            if ($field['type'] === 'array' && isset($field['fields'])) {
+                // Add wildcard rules for nested fields
+                foreach ($field['fields'] as $subField) {
+                    $validationRules[$fullKey.'.*.'.$subField['key']] = $subField['rules'] ?? '';
+                }
+
+                // Collect actual values for validation
+                if (isset($data[$key]) && is_array($data[$key])) {
+                    foreach ($data[$key] as $index => $item) {
+                        $child = self::buildValidationDataAndRules($field['fields'], $item, $fullKey.'.'.$index);
+                        $validationData = array_merge($validationData, $child['data']);
+                    }
+                }
+            } else {
+                // Leaf field: add value and rule
+                $validationData[$fullKey] = $data[$key] ?? null;
+                if (! empty($field['rules'])) {
+                    $validationRules[$fullKey] = $field['rules'];
+                }
+            }
+        }
+
+        return ['data' => $validationData, 'rules' => $validationRules];
+    }
+
+    // private static function flattenArray(array $array, string $prefix = ''): array
+    // {
+    //     $result = [];
+
+    //     foreach ($array as $key => $value) {
+    //         $key = (string) $key;
+    //         $newKey = $prefix === '' ? $key : $prefix.'['.$key.']';
+
+    //         if (is_array($value)) {
+    //             $result = array_merge($result, self::flattenArray($value, $newKey));
+    //         } else {
+    //             $result[$newKey] = $value;
+    //         }
+    //     }
+
+    //     return $result;
+    // }
 }
