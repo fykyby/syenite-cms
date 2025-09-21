@@ -162,14 +162,19 @@ final class PageController extends AbstractController
 
                 if (! empty($data[$key]) && is_array($data[$key])) {
                     foreach ($data[$key] as $index => $item) {
-                        // For array fields, errors are nested: $errors[$key][$index]
-                        $arrayItemErrors = $errors[$key][$index] ?? [];
+                        // Handle nested array errors
+                        $arrayItemErrors = [];
+
+                        // Look for errors at this level (items.0, items.1, etc.)
+                        if (isset($errors[$key][$index])) {
+                            $arrayItemErrors = $errors[$key][$index];
+                        }
 
                         $field['value'][] = [
                             'fields' => self::attachValuesAndErrors(
                                 $field['fields'],
                                 $item,
-                                $arrayItemErrors, // Pass the nested errors directly
+                                $arrayItemErrors,
                                 '' // Reset prefix for array items
                             )
                         ];
@@ -177,15 +182,7 @@ final class PageController extends AbstractController
                 }
             } else {
                 $field['value'] = $data[$key] ?? null;
-
-                // For regular fields, look for the error directly by key
-                if ($prefix === '') {
-                    $field['error'] = $errors[$key] ?? null;
-                } else {
-                    // This shouldn't happen with the nested structure, but kept for safety
-                    $fullKey = $prefix.'.'.$key;
-                    $field['error'] = $errors[$fullKey] ?? null;
-                }
+                $field['error'] = $errors[$key] ?? null;
             }
         }
 
@@ -202,16 +199,22 @@ final class PageController extends AbstractController
             $fullKey = $prefix === '' ? $key : $prefix.'.'.$key;
 
             if ($field['type'] === 'array' && isset($field['fields'])) {
-                foreach ($field['fields'] as $subField) {
-                    $validationRules[$fullKey.'.*.'.$subField['key']] = $subField['rules'] ?? '';
-                }
-
                 $validationData[$key] = [];
+
                 if (! empty($data[$key]) && is_array($data[$key])) {
-                    foreach ($data[$key] as $item) {
-                        // Recursive, but pass raw values (no 'fields' wrapper)
-                        $child = self::buildValidationDataAndRules($field['fields'], $item);
-                        $validationData[$key][] = $child['data'];
+                    foreach ($data[$key] as $index => $item) {
+                        // Recursively build validation for nested arrays
+                        $nestedResult = self::buildValidationDataAndRules(
+                            $field['fields'],
+                            $item,
+                            $fullKey.'.'.$index
+                        );
+
+                        // Merge the nested validation data
+                        $validationData[$key][] = $nestedResult['data'];
+
+                        // Merge the nested validation rules
+                        $validationRules = array_merge($validationRules, $nestedResult['rules']);
                     }
                 }
             } else {
