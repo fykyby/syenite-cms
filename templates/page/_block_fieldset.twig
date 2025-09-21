@@ -35,7 +35,10 @@
         <span x-text="block.type"></span>
     </legend>
 
-    <template x-for="(field, j) in block.fields">
+    <template
+        x-for="(field, j) in block.fields"
+        :key="`block-${j}-${block.type}-${field.key}`"
+    >
         {% include 'page/_block_fieldset_field.twig' %}
     </template>
 </fieldset>

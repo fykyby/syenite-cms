@@ -71,7 +71,10 @@
                 <span x-text="k + 1"></span>
             </legend>
 
-            <template x-for="(field, l) in item.fields">
+            <template
+                x-for="(field, l) in item.fields"
+                :key="`block-${j}-array-${l}-${field.key}`"
+            >
                 {% include 'page/_block_fieldset_field.twig' with {
                     depth: depth|default(0)
                 } %}
