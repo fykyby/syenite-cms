@@ -3,6 +3,7 @@ fields:
     - key: title
       type: input
       rules: required|min:3|max:255
+
     - key: subtitle
       type: textarea
       rules: max:255

@@ -2,6 +2,7 @@
     class="gap-medium uk-rounded p-medium relative flex flex-col border"
     x-data="{
         addItem() {
+            if (!field.value) field.value = [];
             field.value.push({ fields: [...field.fields] });
         },
 
