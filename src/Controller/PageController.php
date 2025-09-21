@@ -42,9 +42,20 @@ final class PageController extends AbstractController
                 $entityManager->persist($page);
                 $entityManager->flush();
 
+                $this->addFlash(
+                    'success',
+                    'Page created'
+                );
+
                 return $this->redirectToRoute('app_page', ['id' => $page->getId()]);
+            } else {
+                $this->addFlash(
+                    'error',
+                    'Validation error(s) occurred'
+                );
             }
         }
+
 
         return $this->render('page/new.twig', [
             'errors' => $errors,
@@ -82,7 +93,18 @@ final class PageController extends AbstractController
             $page->setData($pageData);
             if (! $hasErrors) {
                 $entityManager->flush();
+
+                $this->addFlash(
+                    'success',
+                    'Page saved'
+                );
+
                 return $this->redirectToRoute('app_page', ['id' => $id]);
+            } else {
+                $this->addFlash(
+                    'error',
+                    'Validation error(s) occurred'
+                );
             }
         } else {
             foreach ($page->getData() as $data) {
@@ -121,6 +143,11 @@ final class PageController extends AbstractController
 
         $entityManager->remove($page);
         $entityManager->flush();
+
+        $this->addFlash(
+            'success',
+            'Page deleted'
+        );
 
         return $this->redirectToRoute('app_pages');
     }

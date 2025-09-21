@@ -9,7 +9,6 @@
             rel="icon"
             href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>"
         />
-        <script src="//unpkg.com/alpinejs" defer></script>
 
         {{ block('stylesheets') ?? '' }}
         {{ block('javascripts') ?? '' }}
@@ -58,6 +57,49 @@
 
         <div class="fixed">
             {{ block('modals') ?? '' }}
+        </div>
+
+        <div class="bottom-medium right-medium fixed w-96">
+            {% for i, message in app.flashes('error') %}
+                <div
+                    class="uk-alert uk-alert-destructive"
+                    id="flash-error-{{ i }}"
+                    data-uk-alert
+                    x-init="setTimeout(() => UIkit.alert('#flash-error-{{
+                    i
+                    }}').close(), 3000)"
+                >
+                    <a href class="uk-alert-close" data-uk-close></a>
+                    <div class="gap-small flex items-center">
+                        <div class="size-4">
+                            <uk-icon icon="circle-x"></uk-icon>
+                        </div>
+                        <p>
+                            {{ message }}
+                        </p>
+                    </div>
+                </div>
+            {% endfor %}
+            {% for i, message in app.flashes('success') %}
+                <div
+                    class="uk-alert"
+                    id="flash-error-{{ i }}"
+                    data-uk-alert
+                    x-init="setTimeout(() => UIkit.alert('#flash-error-{{
+                    i
+                    }}').close(), 3000)"
+                >
+                    <a href class="uk-alert-close" data-uk-close></a>
+                    <div class="gap-small flex items-center">
+                        <div class="size-4">
+                            <uk-icon icon="check"></uk-icon>
+                        </div>
+                        <p>
+                            {{ message }}
+                        </p>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
     </body>
 </html>
