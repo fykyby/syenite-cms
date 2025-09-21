@@ -1,0 +1,17 @@
+{% set depth = depth|default(0) %}
+
+<div x-data="{ key: `${key}[${field.key}]`}">
+    <template x-if="field.type === 'input'">
+        {% include 'page/_fields/_input.twig' %}
+    </template>
+    <template x-if="field.type === 'textarea'">
+        {% include 'page/_fields/_textarea.twig' %}
+    </template>
+    <template x-if="field.type === 'array'">
+        {% if depth < 4 %}
+            {% include 'page/_fields/_array.twig' with {
+                depth: depth + 1
+            } %}
+        {% endif %}
+    </template>
+</div>

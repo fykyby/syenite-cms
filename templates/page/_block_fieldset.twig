@@ -36,16 +36,6 @@
     </legend>
 
     <template x-for="(field, j) in block.fields">
-        <div>
-            <template x-if="field.type === 'input'">
-                {% include 'page/_fields/_input.twig' %}
-            </template>
-            <template x-if="field.type === 'textarea'">
-                {% include 'page/_fields/_textarea.twig' %}
-            </template>
-            <template x-if="field.type === 'array'">
-                {% include 'page/_fields/_array.twig' %}
-            </template>
-        </div>
+        {% include 'page/_block_fieldset_field.twig' %}
     </template>
 </fieldset>

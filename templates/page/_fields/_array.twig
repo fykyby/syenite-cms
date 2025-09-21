@@ -1,3 +1,81 @@
-<div>
-    array
-</div>
+<fieldset
+    class="gap-medium uk-rounded p-medium relative flex flex-col border"
+    x-data="{
+        addItem() {
+            field.value.push({ fields: [...field.fields] });
+        },
+
+        deleteItem(index) {
+            field.value.splice(index, 1);
+        },
+
+        moveItemUp(index) {
+            if (index === 0) return;
+            this.switchIndexes(field.value, index, index - 1);
+        },
+
+        moveItemDown(index) {
+            if (index === field.value.length - 1) return;
+            this.switchIndexes(field.value, index, index + 1);
+        }
+    }"
+>
+    <div class="right-medium absolute -top-[1.75rem] flex">
+        <button
+            class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs block-movedown-btn"
+            type="button"
+            @click="addItem()"
+        >
+            <uk-icon icon="plus"></uk-icon>
+        </button>
+    </div>
+
+    <legend
+        class="uk-btn-default uk-btn-xs uk-btn mr-auto place-self-start hover:bg-transparent"
+    >
+        <span x-text="field.key"></span>
+    </legend>
+
+    <template x-for="(item, k) in field.value">
+        <fieldset
+            class="gap-medium uk-rounded p-medium relative flex flex-col border"
+            x-data="{ key: `${key}[${k}]` }"
+        >
+            <div class="right-medium absolute -top-[1.75rem] flex">
+                <button
+                    class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs mr-smallest"
+                    type="button"
+                    @click="moveItemUp(k)"
+                >
+                    <uk-icon icon="arrow-up"></uk-icon>
+                </button>
+                <button
+                    class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs mr-medium"
+                    type="button"
+                    @click="moveItemDown(k)"
+                >
+                    <uk-icon icon="arrow-down"></uk-icon>
+                </button>
+                <button
+                    class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs"
+                    type="button"
+                    @click="deleteItem(k)"
+                >
+                    <uk-icon icon="trash"></uk-icon>
+                </button>
+            </div>
+
+            <legend
+                class="uk-btn-default uk-btn-xs uk-btn mr-auto place-self-start hover:bg-transparent"
+            >
+                <span x-text="k + 1"></span>
+            </legend>
+
+            <template x-for="(field, l) in item.fields">
+                {% include 'page/_block_fieldset_field.twig' with {
+                    depth: depth|default(0)
+                } %}
+            </template>
+        </fieldset>
+    </template>
+</fieldset>

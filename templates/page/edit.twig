@@ -40,15 +40,11 @@
 
             moveBlockUp(index) {
                 if (index === 0) return;
-                const block = this.blocks[index];
-                const prevBlock = this.blocks[index - 1];
                 this.switchIndexes(this.blocks, index, index - 1);
             },
 
             moveBlockDown(index) {
                 if (index === this.blocks.length - 1) return;
-                const block = this.blocks[index];
-                const nextBlock = this.blocks[index + 1];
                 this.switchIndexes(this.blocks, index, index + 1);
             }
         }"
