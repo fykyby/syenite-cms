@@ -40,7 +40,9 @@
         "
         x-data="{ 
             blocks: {{ blocks|json_encode }}, 
-            somethingChanged: false,
+            somethingChanged: {{ app.flashes(
+            'error'
+        )|length }} > 0,
 
             switchIndexes(arr, i, j) {
                 const temp = arr[i]
