@@ -59,7 +59,9 @@
             {{ block('modals') ?? '' }}
         </div>
 
-        <div class="bottom-medium right-medium fixed w-96">
+        <div
+            class="bottom-small right-small gap-smallest fixed flex w-full max-w-[24rem] flex-col"
+        >
             {% for i, message in app.flashes('error') %}
                 <div
                     class="uk-alert uk-alert-destructive"

@@ -19,8 +19,22 @@
         class="flex flex-col"
         id="page-edit-form"
         method="post"
+        x-init="
+            $watch('blocks', value => somethingChanged = true);
+            window.addEventListener('beforeunload', (event) => { 
+                if (somethingChanged) {
+                event.preventDefault();
+                event.returnValue = true;
+                }
+            });
+        "
+        @submit="
+            somethingChanged = false;
+            return true;
+        "
         x-data="{ 
             blocks: {{ blocks|json_encode }}, 
+            somethingChanged: false,
 
             switchIndexes(arr, i, j) {
                 const temp = arr[i]
