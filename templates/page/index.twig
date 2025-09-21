@@ -74,15 +74,18 @@
                         This action will delete page '{{ page.path }}'.
                     </p>
                 </div>
-                <div class="uk-modal-footer uk-text-right">
+                <div class="uk-modal-footer gap-small flex justify-end">
+                    <span class="grow"></span>
+
                     <button
-                        class="uk-modal-close uk-btn uk-btn-default mr-2"
+                        class="uk-modal-close uk-btn uk-btn-default"
                         type="button"
                     >
                         Cancel
                     </button>
+
                     <form
-                        class="inline"
+                        class="inline w-fit"
                         method="post"
                         action="{{
                         path(

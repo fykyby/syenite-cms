@@ -30,6 +30,9 @@ class Page
     #[ORM\Column]
     private array $data = [];
 
+    #[ORM\Column]
+    private array $meta = [];
+
     public function getId(): ?int
     {
         return $this->id;
@@ -67,6 +70,54 @@ class Page
     public function setData(array $data): static
     {
         $this->data = $data;
+
+        return $this;
+    }
+
+    public function getMetaTitle(): ?string
+    {
+        return $this->meta_title;
+    }
+
+    public function setMetaTitle(string $meta_title): static
+    {
+        $this->meta_title = $meta_title;
+
+        return $this;
+    }
+
+    public function getMetaDescription(): ?string
+    {
+        return $this->meta_description;
+    }
+
+    public function setMetaDescription(string $meta_description): static
+    {
+        $this->meta_description = $meta_description;
+
+        return $this;
+    }
+
+    public function getMetaRawHtml(): ?string
+    {
+        return $this->meta_raw_html;
+    }
+
+    public function setMetaRawHtml(string $meta_raw_html): static
+    {
+        $this->meta_raw_html = $meta_raw_html;
+
+        return $this;
+    }
+
+    public function getMeta(): array
+    {
+        return $this->meta;
+    }
+
+    public function setMeta(array $meta): static
+    {
+        $this->meta = $meta;
 
         return $this;
     }

@@ -1,10 +1,16 @@
 {% extends 'base.twig' %}
 
 {% block title %}
-    Page {{ path }}
+    Page {{ page.getPath() }}
 {% endblock %}
 
 {% block actions %}
+    <button
+        class="uk-btn uk-btn-default"
+        data-uk-toggle="target: #page-edit-meta-modal"
+    >
+        Edit Meta
+    </button>
     <button
         class="uk-btn uk-btn-default"
         data-uk-toggle="target: #page-add-block-modal"
@@ -92,10 +98,120 @@
 
                 <div class="uk-modal-footer uk-text-right">
                     <button
-                        class="uk-modal-close uk-btn uk-btn-default mr-2"
+                        class="uk-modal-close uk-btn uk-btn-default"
                         type="button"
                     >
                         Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-edit-meta-modal" data-uk-modal>
+            <div
+                class="uk-modal-dialog uk-margin-auto-vertical"
+                x-data="{ 
+                    meta: {
+                        title: '{{
+                page.meta.title
+                    ?? ''
+                }}',
+                        description: '{{
+                page.meta.description
+                    ?? ''
+                }}',
+                        raw_html: '{{
+                page.meta.raw_html
+                    ?? ''
+                }}'
+                    },
+                    
+                    async saveMeta() {
+                        const formData = new FormData();
+                        formData.append('title', this.meta.title);
+                        formData.append('description', this.meta.description);
+                        formData.append('raw_html', this.meta.raw_html);
+                        const response = await fetch('/admin/pages/{{
+                page.getId()
+                }}/meta', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        if (response.ok) {
+                            window.location.reload();
+                        }
+                    }
+                }"
+            >
+                <button
+                    class="uk-modal-close absolute right-4 top-4"
+                    type="button"
+                    data-uk-close
+                >
+
+                </button>
+                <div class="uk-modal-header">
+                    <h2 class="uk-modal-title">Edit Meta</h2>
+                </div>
+                <div class="uk-modal-body">
+                    <div class="uk-form-stacked flex w-full flex-col gap-6">
+                        <div>
+                            <label class="uk-form-label" for="meta.title">
+                                Title
+                            </label>
+                            <div class="uk-form-controls">
+                                <input
+                                    class="uk-input"
+                                    id="meta.title"
+                                    x-model="meta.title"
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="uk-form-label" for="meta.description">
+                                Description
+                            </label>
+                            <div class="uk-form-controls">
+                                <textarea
+                                    class="uk-textarea"
+                                    id="meta.description"
+                                    x-model="meta.description"
+                                ></textarea>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="uk-form-label" for="meta.raw_html">
+                                Raw HTML
+                            </label>
+                            <div class="uk-form-controls">
+                                <textarea
+                                    class="uk-textarea"
+                                    id="meta.raw_html"
+                                    x-model="meta.raw_html"
+                                >
+                                    {{- page.meta.raw_html ?? '' -}}
+                                </textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="uk-modal-footer gap-small flex justify-end">
+                    <button
+                        class="uk-modal-close uk-btn uk-btn-default"
+                        type="button"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        class="uk-btn uk-btn-primary"
+                        type="button"
+                        @click="saveMeta()"
+                    >
+                        Save
                     </button>
                 </div>
             </div>

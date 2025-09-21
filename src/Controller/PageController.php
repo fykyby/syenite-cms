@@ -36,6 +36,7 @@ final class PageController extends AbstractController
             $page->setPath($request->get('path'));
             $page->setType($request->get('type'));
             $page->setData([]);
+            $page->setMeta([]);
 
             $errors = ValidationUtils::formatErrors($validator->validate($page));
             if ($errors === null) {
@@ -76,8 +77,9 @@ final class PageController extends AbstractController
         if ($request->isMethod('POST')) {
             $pageData = $request->request->all()['blocks'] ?? [];
 
-            foreach ($pageData as $data) {
+            foreach ($pageData as $key => $data) {
                 $block = CmsUtils::getBlockData($data['_type']);
+                $pageData[$key]['_path'] = CmsUtils::getBlockTemplatePath($data['_type']);
 
                 $built = self::buildValidationDataAndRules($block['fields'], $data);
                 $validationData = $built['data'];
@@ -116,22 +118,12 @@ final class PageController extends AbstractController
 
         $blockList = CmsUtils::listBlocks();
         return $this->render('page/edit.twig', [
-            "path" => $page->getPath(),
-            'blocks' => $blocks,
             'blockList' => $blockList,
+            "page" => $page,
+            'blocks' => $blocks,
         ]);
     }
 
-    #[Route('/admin/pages/blocks/{type}', name: 'app_pages_block')]
-    public function block(string $type): Response
-    {
-        $block = CmsUtils::getBlockData($type);
-        if ($block === null) {
-            throw new NotFoundHttpException();
-        }
-
-        return $this->json($block);
-    }
 
     #[Route('/admin/pages/{id}/delete', name: 'app_page_delete', requirements: ['id' => '\d+'])]
     public function delete(int $id, EntityManagerInterface $entityManager): Response
@@ -150,6 +142,37 @@ final class PageController extends AbstractController
         );
 
         return $this->redirectToRoute('app_pages');
+    }
+
+    #[Route('/admin/pages/blocks/{type}', name: 'app_page_block')]
+    public function block(string $type): Response
+    {
+        $block = CmsUtils::getBlockData($type);
+        if ($block === null) {
+            throw new NotFoundHttpException();
+        }
+
+        return $this->json($block);
+    }
+
+    #[Route('/admin/pages/{id}/meta', name: 'app_page_meta', requirements: ['id' => '\d+'])]
+    public function meta(int $id, EntityManagerInterface $entityManager, Request $request): Response
+    {
+        $page = $entityManager->getRepository(Page::class)->find($id);
+        if ($page === null) {
+            throw new NotFoundHttpException();
+        }
+
+        $data = $request->request->all();
+        $page->setMeta($data);
+        $entityManager->flush();
+
+        $this->addFlash(
+            'success',
+            'Meta saved'
+        );
+
+        return $this->json($data);
     }
 
     private static function attachValuesAndErrors(array $fields, array $data, array $errors, string $prefix = ''): array

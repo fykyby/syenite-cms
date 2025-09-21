@@ -1,0 +1,22 @@
+{% extends layoutPath %}
+
+{% block meta %}
+    <title>
+        {{- page.getMeta()['title'] ?? '' -}}
+    </title>
+
+    <meta
+        name="description"
+        content="{{- page.getMeta()['description'] ?? '' -}}"
+    />
+
+    {{- page.getMeta()['raw_html'] ?? '' -}}
+{% endblock %}
+
+{% block body %}
+    {% for block in page.getData() %}
+        {% include block._path with {
+            ...block
+        } %}
+    {% endfor %}
+{% endblock %}

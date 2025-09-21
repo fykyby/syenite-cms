@@ -1,13 +1,7 @@
 <div :class="field.error ? 'form-destructive' : ''">
     <label class="uk-form-label" :for="key" x-text="field.key"></label>
     <div class="uk-form-controls">
-        <input
-            class="uk-input"
-            x-model="field.value"
-            :value="field.value"
-            :id="key"
-            :name="key"
-        />
+        <input class="uk-input" x-model="field.value" :id="key" :name="key" />
     </div>
     <div class="uk-form-help" x-text="field.error"></div>
 </div>
