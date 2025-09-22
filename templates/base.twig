@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="uk-theme-neutral dark h-full">
+<html class="dark h-full">
     <head>
         <meta charset="UTF-8" />
         <title>
@@ -18,7 +18,7 @@
     </head>
     <body class="flex h-full overflow-hidden">
         <aside
-            class="p-small gap-small sticky top-0 flex h-full flex-col border-r"
+            class="p-small gap-small bg-sidebar-background sticky top-0 flex h-full w-56 flex-col border-r shadow-lg"
         >
             <nav class="space-y-smallest grow">
                 <a
@@ -40,15 +40,20 @@
                     <span>Pages</span>
                 </a>
             </nav>
-
+            <hr class="uk-hr" />
             <form method="post" action="{{ path('app_auth_logout') }}">
-                <button class="uk-btn uk-btn-default w-full">Log Out</button>
+                <button class="uk-btn uk-btn-ghost w-full">
+                    <div class="size-4">
+                        <uk-icon icon="log-out"></uk-icon>
+                    </div>
+                    <span>Log Out</span>
+                </button>
             </form>
         </aside>
 
         <div class="grow overflow-auto">
             <header
-                class="p-small gap-small bg-background sticky top-0 z-40 box-content flex h-10 items-center border-b"
+                class="p-small gap-small bg-background sticky top-0 z-40 box-content flex h-10 items-center border-b shadow-lg"
             >
                 <h1 class="grow">{{ block('title') ?? '' }}</h1>
                 <div class="gap-small flex">
@@ -68,7 +73,7 @@
         <div
             class="bottom-small right-small gap-smallest fixed flex w-full max-w-[24rem] flex-col"
         >
-            {% for i, message in app.flashes('error') %}
+            {% for i, message in app.flashes('errors') %}
                 <div
                     class="uk-alert uk-alert-destructive"
                     id="flash-error-{{ i }}"

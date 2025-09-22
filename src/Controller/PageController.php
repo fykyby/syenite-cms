@@ -54,7 +54,7 @@ final class PageController extends AbstractController
                     "id" => $page->getId(),
                 ]);
             } else {
-                $this->addFlash("error", "Validation error(s) occurred");
+                $this->addFlash("errors", "Validation error(s) occurred");
             }
         }
 
@@ -66,10 +66,10 @@ final class PageController extends AbstractController
 
     #[
         Route(
-            "/admin/pages/{id}",
-            name: "app_page",
-            requirements: ["id" => "\d+"],
-        ),
+        "/admin/pages/{id}",
+        name: "app_page",
+        requirements: ["id" => "\d+"],
+    ),
     ]
     public function edit(
         int $id,
@@ -104,7 +104,7 @@ final class PageController extends AbstractController
                         $validationData,
                         $validationRules,
                     ) ?? [];
-                $hasErrors = $hasErrors || !empty($blockErrors);
+                $hasErrors = $hasErrors || ! empty($blockErrors);
 
                 $block["fields"] = self::attachValuesAndErrors(
                     $block["fields"],
@@ -115,14 +115,14 @@ final class PageController extends AbstractController
             }
 
             $page->setData($pageData);
-            if (!$hasErrors) {
+            if (! $hasErrors) {
                 $entityManager->flush();
 
                 $this->addFlash("success", "Page saved");
 
                 return $this->redirectToRoute("app_page", ["id" => $id]);
             } else {
-                $this->addFlash("error", "Validation error(s) occurred");
+                $this->addFlash("errors", "Validation error(s) occurred");
             }
         } else {
             foreach ($page->getData() as $data) {
@@ -146,10 +146,10 @@ final class PageController extends AbstractController
 
     #[
         Route(
-            "/admin/pages/{id}/delete",
-            name: "app_page_delete",
-            requirements: ["id" => "\d+"],
-        ),
+        "/admin/pages/{id}/delete",
+        name: "app_page_delete",
+        requirements: ["id" => "\d+"],
+    ),
     ]
     public function delete(
         int $id,
@@ -181,10 +181,10 @@ final class PageController extends AbstractController
 
     #[
         Route(
-            "/admin/pages/{id}/meta",
-            name: "app_page_meta",
-            requirements: ["id" => "\d+"],
-        ),
+        "/admin/pages/{id}/meta",
+        name: "app_page_meta",
+        requirements: ["id" => "\d+"],
+    ),
     ]
     public function meta(
         int $id,
@@ -217,7 +217,7 @@ final class PageController extends AbstractController
             if ($field["type"] === "array" && isset($field["fields"])) {
                 $field["value"] = [];
 
-                if (!empty($data[$key]) && is_array($data[$key])) {
+                if (! empty($data[$key]) && is_array($data[$key])) {
                     foreach ($data[$key] as $index => $item) {
                         // Handle nested array errors
                         $arrayItemErrors = [];
@@ -256,18 +256,18 @@ final class PageController extends AbstractController
 
         foreach ($fields as $field) {
             $key = $field["key"];
-            $fullKey = $prefix === "" ? $key : $prefix . "." . $key;
+            $fullKey = $prefix === "" ? $key : $prefix.".".$key;
 
             if ($field["type"] === "array" && isset($field["fields"])) {
                 $validationData[$key] = [];
 
-                if (!empty($data[$key]) && is_array($data[$key])) {
+                if (! empty($data[$key]) && is_array($data[$key])) {
                     foreach ($data[$key] as $index => $item) {
                         // Recursively build validation for nested arrays
                         $nestedResult = self::buildValidationDataAndRules(
                             $field["fields"],
                             $item,
-                            $fullKey . "." . $index,
+                            $fullKey.".".$index,
                         );
 
                         // Merge the nested validation data
@@ -282,7 +282,7 @@ final class PageController extends AbstractController
                 }
             } else {
                 $validationData[$key] = $data[$key] ?? null;
-                if (!empty($field["rules"])) {
+                if (! empty($field["rules"])) {
                     $validationRules[$fullKey] = $field["rules"];
                 }
             }

@@ -1,9 +1,9 @@
 <fieldset
-    class="gap-medium uk-rounded p-medium relative flex flex-col border"
+    class="gap-medium p-medium uk-rounded relative flex flex-col border shadow-lg"
     x-data="{
         addItem() {
             if (!field.value) field.value = [];
-            field.value.push({ fields: [...field.fields] });
+            field.value.push({ fields: JSON.parse(JSON.stringify(field.fields)) });
         },
 
         deleteItem(index) {
@@ -74,7 +74,7 @@
 
             <template
                 x-for="(field, l) in item.fields"
-                :key="`block-${j}-array-${l}-${field.key}`"
+                :key="`block-${j}-array-${k}-${l}-${field.key}`"
             >
                 {% include 'page/_block_fieldset_field.twig' with {
                     depth: depth|default(0)

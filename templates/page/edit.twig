@@ -41,7 +41,7 @@
         x-data="{
             blocks: {{ blocks|json_encode }},
             somethingChanged: {{ app.flashes(
-            'error'
+            'errors'
         )|length }} > 0,
 
             switchIndexes(arr, i, j) {
