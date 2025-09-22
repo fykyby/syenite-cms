@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "packageManager": "pnpm@10.15.0",
     "devDependencies": {
+        "@prettier/plugin-php": "^0.24.0",
         "@ttskch/prettier-plugin-tailwindcss-anywhere": "^0.1.1",
         "@zackad/prettier-plugin-twig": "^0.16.0",
         "prettier": "^3.6.2",

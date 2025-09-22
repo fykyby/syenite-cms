@@ -17,56 +17,65 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class PageController extends AbstractController
 {
-    #[Route('/admin/pages', name: 'app_pages')]
+    #[Route("/admin/pages", name: "app_pages")]
     public function index(EntityManagerInterface $entityManager): Response
     {
         $pages = $entityManager->getRepository(Page::class)->findAll();
 
-        return $this->render('page/index.twig', [
-            'pages' => $pages,
+        return $this->render("page/index.twig", [
+            "pages" => $pages,
         ]);
     }
 
-    #[Route('/admin/pages/new', name: 'app_pages_new')]
-    public function new(Request $request, ValidatorInterface $validator, EntityManagerInterface $entityManager): Response
-    {
+    #[Route("/admin/pages/new", name: "app_pages_new")]
+    public function new(
+        Request $request,
+        ValidatorInterface $validator,
+        EntityManagerInterface $entityManager,
+    ): Response {
         $errors = null;
-        if ($request->isMethod('POST')) {
+        if ($request->isMethod("POST")) {
             $page = new Page();
-            $page->setPath($request->get('path'));
-            $page->setType($request->get('type'));
+            $page->setPath($request->get("path"));
+            $page->setType($request->get("type"));
             $page->setData([]);
             $page->setMeta([]);
 
-            $errors = ValidationUtils::formatErrors($validator->validate($page));
+            $errors = ValidationUtils::formatErrors(
+                $validator->validate($page),
+            );
             if ($errors === null) {
                 $entityManager->persist($page);
                 $entityManager->flush();
 
-                $this->addFlash(
-                    'success',
-                    'Page created'
-                );
+                $this->addFlash("success", "Page created");
 
-                return $this->redirectToRoute('app_page', ['id' => $page->getId()]);
+                return $this->redirectToRoute("app_page", [
+                    "id" => $page->getId(),
+                ]);
             } else {
-                $this->addFlash(
-                    'error',
-                    'Validation error(s) occurred'
-                );
+                $this->addFlash("error", "Validation error(s) occurred");
             }
         }
 
-
-        return $this->render('page/new.twig', [
-            'errors' => $errors,
-            'values' => $request->request->all(),
+        return $this->render("page/new.twig", [
+            "errors" => $errors,
+            "values" => $request->request->all(),
         ]);
     }
 
-    #[Route('/admin/pages/{id}', name: 'app_page', requirements: ['id' => '\d+'])]
-    public function edit(int $id, EntityManagerInterface $entityManager, Request $request): Response
-    {
+    #[
+        Route(
+            "/admin/pages/{id}",
+            name: "app_page",
+            requirements: ["id" => "\d+"],
+        ),
+    ]
+    public function edit(
+        int $id,
+        EntityManagerInterface $entityManager,
+        Request $request,
+    ): Response {
         $page = $entityManager->getRepository(Page::class)->find($id);
         if ($page === null) {
             throw new NotFoundHttpException();
@@ -74,60 +83,78 @@ final class PageController extends AbstractController
 
         $blocks = [];
         $hasErrors = false;
-        if ($request->isMethod('POST')) {
-            $pageData = $request->request->all()['blocks'] ?? [];
+        if ($request->isMethod("POST")) {
+            $pageData = $request->request->all()["blocks"] ?? [];
 
             foreach ($pageData as $key => $data) {
-                $block = CmsUtils::getBlockData($data['_type']);
-                $pageData[$key]['_path'] = CmsUtils::getBlockTemplatePath($data['_type']);
+                $block = CmsUtils::getBlockData($data["_type"]);
+                $pageData[$key]["_path"] = CmsUtils::getBlockTemplatePath(
+                    $data["_type"],
+                );
 
-                $built = self::buildValidationDataAndRules($block['fields'], $data);
-                $validationData = $built['data'];
-                $validationRules = $built['rules'];
+                $built = self::buildValidationDataAndRules(
+                    $block["fields"],
+                    $data,
+                );
+                $validationData = $built["data"];
+                $validationRules = $built["rules"];
 
-                $blockErrors = ValidationUtils::validate($validationData, $validationRules) ?? [];
-                $hasErrors = $hasErrors || ! empty($blockErrors);
+                $blockErrors =
+                    ValidationUtils::validate(
+                        $validationData,
+                        $validationRules,
+                    ) ?? [];
+                $hasErrors = $hasErrors || !empty($blockErrors);
 
-                $block['fields'] = self::attachValuesAndErrors($block['fields'], $data, $blockErrors);
+                $block["fields"] = self::attachValuesAndErrors(
+                    $block["fields"],
+                    $data,
+                    $blockErrors,
+                );
                 $blocks[] = $block;
             }
 
             $page->setData($pageData);
-            if (! $hasErrors) {
+            if (!$hasErrors) {
                 $entityManager->flush();
 
-                $this->addFlash(
-                    'success',
-                    'Page saved'
-                );
+                $this->addFlash("success", "Page saved");
 
-                return $this->redirectToRoute('app_page', ['id' => $id]);
+                return $this->redirectToRoute("app_page", ["id" => $id]);
             } else {
-                $this->addFlash(
-                    'error',
-                    'Validation error(s) occurred'
-                );
+                $this->addFlash("error", "Validation error(s) occurred");
             }
         } else {
             foreach ($page->getData() as $data) {
-                $block = CmsUtils::getBlockData($data['_type']);
-                $block['fields'] = self::attachValuesAndErrors($block['fields'], $data, []);
+                $block = CmsUtils::getBlockData($data["_type"]);
+                $block["fields"] = self::attachValuesAndErrors(
+                    $block["fields"],
+                    $data,
+                    [],
+                );
                 $blocks[] = $block;
             }
         }
 
         $blockList = CmsUtils::listBlocks();
-        return $this->render('page/edit.twig', [
-            'blockList' => $blockList,
+        return $this->render("page/edit.twig", [
+            "blockList" => $blockList,
             "page" => $page,
-            'blocks' => $blocks,
+            "blocks" => $blocks,
         ]);
     }
 
-
-    #[Route('/admin/pages/{id}/delete', name: 'app_page_delete', requirements: ['id' => '\d+'])]
-    public function delete(int $id, EntityManagerInterface $entityManager): Response
-    {
+    #[
+        Route(
+            "/admin/pages/{id}/delete",
+            name: "app_page_delete",
+            requirements: ["id" => "\d+"],
+        ),
+    ]
+    public function delete(
+        int $id,
+        EntityManagerInterface $entityManager,
+    ): Response {
         $page = $entityManager->getRepository(Page::class)->find($id);
         if ($page === null) {
             throw new NotFoundHttpException();
@@ -136,15 +163,12 @@ final class PageController extends AbstractController
         $entityManager->remove($page);
         $entityManager->flush();
 
-        $this->addFlash(
-            'success',
-            'Page deleted'
-        );
+        $this->addFlash("success", "Page deleted");
 
-        return $this->redirectToRoute('app_pages');
+        return $this->redirectToRoute("app_pages");
     }
 
-    #[Route('/admin/pages/blocks/{type}', name: 'app_page_block')]
+    #[Route("/admin/pages/blocks/{type}", name: "app_page_block")]
     public function block(string $type): Response
     {
         $block = CmsUtils::getBlockData($type);
@@ -155,9 +179,18 @@ final class PageController extends AbstractController
         return $this->json($block);
     }
 
-    #[Route('/admin/pages/{id}/meta', name: 'app_page_meta', requirements: ['id' => '\d+'])]
-    public function meta(int $id, EntityManagerInterface $entityManager, Request $request): Response
-    {
+    #[
+        Route(
+            "/admin/pages/{id}/meta",
+            name: "app_page_meta",
+            requirements: ["id" => "\d+"],
+        ),
+    ]
+    public function meta(
+        int $id,
+        EntityManagerInterface $entityManager,
+        Request $request,
+    ): Response {
         $page = $entityManager->getRepository(Page::class)->find($id);
         if ($page === null) {
             throw new NotFoundHttpException();
@@ -167,23 +200,24 @@ final class PageController extends AbstractController
         $page->setMeta($data);
         $entityManager->flush();
 
-        $this->addFlash(
-            'success',
-            'Meta saved'
-        );
+        $this->addFlash("success", "Meta saved");
 
         return $this->json($data);
     }
 
-    private static function attachValuesAndErrors(array $fields, array $data, array $errors, string $prefix = ''): array
-    {
+    private static function attachValuesAndErrors(
+        array $fields,
+        array $data,
+        array $errors,
+        string $prefix = "",
+    ): array {
         foreach ($fields as &$field) {
-            $key = $field['key'];
+            $key = $field["key"];
 
-            if ($field['type'] === 'array' && isset($field['fields'])) {
-                $field['value'] = [];
+            if ($field["type"] === "array" && isset($field["fields"])) {
+                $field["value"] = [];
 
-                if (! empty($data[$key]) && is_array($data[$key])) {
+                if (!empty($data[$key]) && is_array($data[$key])) {
                     foreach ($data[$key] as $index => $item) {
                         // Handle nested array errors
                         $arrayItemErrors = [];
@@ -193,61 +227,67 @@ final class PageController extends AbstractController
                             $arrayItemErrors = $errors[$key][$index];
                         }
 
-                        $field['value'][] = [
-                            'fields' => self::attachValuesAndErrors(
-                                $field['fields'],
+                        $field["value"][] = [
+                            "fields" => self::attachValuesAndErrors(
+                                $field["fields"],
                                 $item,
                                 $arrayItemErrors,
-                                '' // Reset prefix for array items
-                            )
+                                "", // Reset prefix for array items
+                            ),
                         ];
                     }
                 }
             } else {
-                $field['value'] = $data[$key] ?? null;
-                $field['error'] = $errors[$key] ?? null;
+                $field["value"] = $data[$key] ?? null;
+                $field["error"] = $errors[$key] ?? null;
             }
         }
 
         return $fields;
     }
 
-    private static function buildValidationDataAndRules(array $fields, array $data, string $prefix = ''): array
-    {
+    private static function buildValidationDataAndRules(
+        array $fields,
+        array $data,
+        string $prefix = "",
+    ): array {
         $validationData = [];
         $validationRules = [];
 
         foreach ($fields as $field) {
-            $key = $field['key'];
-            $fullKey = $prefix === '' ? $key : $prefix.'.'.$key;
+            $key = $field["key"];
+            $fullKey = $prefix === "" ? $key : $prefix . "." . $key;
 
-            if ($field['type'] === 'array' && isset($field['fields'])) {
+            if ($field["type"] === "array" && isset($field["fields"])) {
                 $validationData[$key] = [];
 
-                if (! empty($data[$key]) && is_array($data[$key])) {
+                if (!empty($data[$key]) && is_array($data[$key])) {
                     foreach ($data[$key] as $index => $item) {
                         // Recursively build validation for nested arrays
                         $nestedResult = self::buildValidationDataAndRules(
-                            $field['fields'],
+                            $field["fields"],
                             $item,
-                            $fullKey.'.'.$index
+                            $fullKey . "." . $index,
                         );
 
                         // Merge the nested validation data
-                        $validationData[$key][] = $nestedResult['data'];
+                        $validationData[$key][] = $nestedResult["data"];
 
                         // Merge the nested validation rules
-                        $validationRules = array_merge($validationRules, $nestedResult['rules']);
+                        $validationRules = array_merge(
+                            $validationRules,
+                            $nestedResult["rules"],
+                        );
                     }
                 }
             } else {
                 $validationData[$key] = $data[$key] ?? null;
-                if (! empty($field['rules'])) {
-                    $validationRules[$fullKey] = $field['rules'];
+                if (!empty($field["rules"])) {
+                    $validationRules[$fullKey] = $field["rules"];
                 }
             }
         }
 
-        return ['data' => $validationData, 'rules' => $validationRules];
+        return ["data" => $validationData, "rules" => $validationRules];
     }
 }

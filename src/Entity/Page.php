@@ -8,7 +8,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PageRepository::class)]
-#[UniqueEntity('path')]
+#[UniqueEntity("path")]
 class Page
 {
     #[ORM\Id]
@@ -19,12 +19,16 @@ class Page
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 1, max: 512)]
-    #[Assert\Regex(pattern: '/^(\/([a-zA-Z0-9\-_]+|\{[a-zA-Z0-9_]+\})(\/([a-zA-Z0-9\-_]+|\{[a-zA-Z0-9_]+\}))*)|\/$/')]
+    #[
+        Assert\Regex(
+            pattern: '/^(\/([a-zA-Z0-9\-_]+|\{[a-zA-Z0-9_]+\})(\/([a-zA-Z0-9\-_]+|\{[a-zA-Z0-9_]+\}))*)|\/$/',
+        ),
+    ]
     private ?string $path = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    #[Assert\Choice(options: ['default'])]
+    #[Assert\Choice(options: ["default"])]
     private ?string $type = null;
 
     #[ORM\Column]

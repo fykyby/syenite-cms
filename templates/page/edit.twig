@@ -27,7 +27,7 @@
         method="post"
         x-init="
             $watch('blocks', value => somethingChanged = true);
-            window.addEventListener('beforeunload', (event) => { 
+            window.addEventListener('beforeunload', (event) => {
                 if (somethingChanged) {
                 event.preventDefault();
                 event.returnValue = true;
@@ -38,8 +38,8 @@
             somethingChanged = false;
             return true;
         "
-        x-data="{ 
-            blocks: {{ blocks|json_encode }}, 
+        x-data="{
+            blocks: {{ blocks|json_encode }},
             somethingChanged: {{ app.flashes(
             'error'
         )|length }} > 0,
@@ -112,7 +112,7 @@
         <div id="page-edit-meta-modal" data-uk-modal>
             <div
                 class="uk-modal-dialog uk-margin-auto-vertical"
-                x-data="{ 
+                x-data="{
                     meta: {
                         title: '{{
                 page.meta.title
@@ -127,7 +127,7 @@
                     ?? ''
                 }}'
                     },
-                    
+
                     async saveMeta() {
                         const formData = new FormData();
                         formData.append('title', this.meta.title);
@@ -139,7 +139,7 @@
                             method: 'POST',
                             body: formData
                         });
-                        
+
                         if (response.ok) {
                             window.location.reload();
                         }

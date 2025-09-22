@@ -3,47 +3,47 @@
 @import "./theme.css";
 
 @theme inline {
-    --spacing-smallest: 0.2rem;
-    --spacing-small: 0.9rem;
-    --spacing-medium: 1.5rem;
-    --spacing-large: 2.5rem;
+  --spacing-smallest: 0.2rem;
+  --spacing-small: 0.9rem;
+  --spacing-medium: 1.5rem;
+  --spacing-large: 2.5rem;
 }
 
 @layer base {
-    * {
-        @apply border-border;
-    }
+  * {
+    @apply border-border;
+  }
 
-    html {
-        zoom: 120%;
-        @apply bg-background text-foreground;
-    }
+  html {
+    zoom: 120%;
+    @apply bg-background text-foreground;
+  }
 
-    button {
-        @apply cursor-pointer;
-    }
+  button {
+    @apply cursor-pointer;
+  }
 
-    form {
-        @apply mx-auto flex w-full flex-col gap-6;
-    }
+  form {
+    @apply mx-auto flex w-full flex-col gap-6;
+  }
 
-    h1 {
-        @apply text-2xl font-semibold;
-    }
+  h1 {
+    @apply text-2xl font-semibold;
+  }
 
-    textarea {
-        @apply h-[6lh] resize-none;
-    }
+  textarea {
+    @apply h-[6lh] resize-none;
+  }
 
-    form div.form-destructive {
-        & > .uk-form-controls > input {
-            @apply border-destructive!;
-        }
-        & > .uk-form-label {
-            @apply text-destructive!;
-        }
-        & > .uk-form-help {
-            @apply text-destructive;
-        }
+  form div.form-destructive {
+    & > .uk-form-controls > input {
+      @apply border-destructive!;
     }
+    & > .uk-form-label {
+      @apply text-destructive!;
+    }
+    & > .uk-form-help {
+      @apply text-destructive;
+    }
+  }
 }
