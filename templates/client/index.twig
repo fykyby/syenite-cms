@@ -12,7 +12,8 @@
 
     <meta name="canonical" content="{{ app.request.uri }}" />
 
-    {{- page.getMeta()['raw_html'] ?? '' -}}
+    {% set _meta_raw_html = page.getMeta()['raw_html'] ?? '' %}
+    {{- _meta_raw_html|raw -}}
 {% endblock %}
 
 {% block body %}
