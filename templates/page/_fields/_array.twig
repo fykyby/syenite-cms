@@ -1,5 +1,5 @@
 <fieldset
-    class="gap-medium p-medium uk-rounded relative flex flex-col border shadow-lg"
+    class="gap-medium p-medium uk-rounded relative flex flex-col border shadow"
     x-data="{
         addItem() {
             if (!field.value) field.value = [];
@@ -23,7 +23,7 @@
 >
     <div class="right-medium absolute -top-[1.75rem] flex">
         <button
-            class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs block-movedown-btn"
+            class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs block-movedown-btn border-border"
             type="button"
             @click="addItem()"
         >
@@ -31,9 +31,7 @@
         </button>
     </div>
 
-    <legend
-        class="uk-btn-default uk-btn-xs uk-btn mr-auto place-self-start hover:bg-transparent"
-    >
+    <legend class="uk-btn-default uk-btn-xs uk-btn mr-auto place-self-start">
         <span x-text="field.key"></span>
     </legend>
 
@@ -44,21 +42,21 @@
         >
             <div class="right-medium absolute -top-[1.75rem] flex">
                 <button
-                    class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs mr-smallest"
+                    class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs mr-smallest border-border"
                     type="button"
                     @click="moveItemUp(k)"
                 >
                     <uk-icon icon="arrow-up"></uk-icon>
                 </button>
                 <button
-                    class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs mr-medium"
+                    class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs mr-medium border-border"
                     type="button"
                     @click="moveItemDown(k)"
                 >
                     <uk-icon icon="arrow-down"></uk-icon>
                 </button>
                 <button
-                    class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs"
+                    class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs border-border"
                     type="button"
                     @click="deleteItem(k)"
                 >
@@ -67,7 +65,7 @@
             </div>
 
             <legend
-                class="uk-btn-default uk-btn-xs uk-btn mr-auto place-self-start hover:bg-transparent"
+                class="uk-btn-default uk-btn-xs uk-btn border-border mr-auto place-self-start"
             >
                 <span x-text="k + 1"></span>
             </legend>

@@ -11,7 +11,7 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border!;
   }
 
   html {
@@ -23,6 +23,11 @@
     @apply cursor-pointer;
   }
 
+  button.uk-btn-ghost,
+  a.uk-btn-ghost {
+    @apply border-0!;
+  }
+
   form {
     @apply mx-auto flex w-full flex-col gap-6;
   }
@@ -31,8 +36,12 @@
     @apply text-2xl font-semibold;
   }
 
+  input {
+    @apply border-input!;
+  }
+
   textarea {
-    @apply h-[6lh] resize-none;
+    @apply border-input! h-[6lh] resize-none;
   }
 
   form div.form-destructive {

@@ -40,8 +40,8 @@
         "
         x-data="{
             blocks: {{ blocks|json_encode }},
-            somethingChanged: {{ app.flashes(
-            'errors'
+            somethingChanged: {{ app.session.flashbag.peek(
+            'error'
         )|length }} > 0,
 
             switchIndexes(arr, i, j) {

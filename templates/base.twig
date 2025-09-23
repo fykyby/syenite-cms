@@ -18,7 +18,7 @@
     </head>
     <body class="flex h-full overflow-hidden">
         <aside
-            class="p-small gap-small bg-sidebar-background sticky top-0 flex h-full w-56 flex-col border-r shadow-lg"
+            class="p-small gap-small bg-sidebar-background sticky top-0 flex h-full w-56 flex-col border-r shadow"
         >
             <nav class="space-y-smallest grow">
                 <a
@@ -40,7 +40,7 @@
                     <span>Pages</span>
                 </a>
             </nav>
-            <hr class="uk-hr" />
+
             <form method="post" action="{{ path('app_auth_logout') }}">
                 <button class="uk-btn uk-btn-ghost w-full">
                     <div class="size-4">
@@ -53,7 +53,7 @@
 
         <div class="grow overflow-auto">
             <header
-                class="p-small gap-small bg-background sticky top-0 z-40 box-content flex h-10 items-center border-b shadow-lg"
+                class="p-small gap-small bg-background sticky top-0 z-40 box-content flex h-10 items-center border-b shadow"
             >
                 <h1 class="grow">{{ block('title') ?? '' }}</h1>
                 <div class="gap-small flex">
@@ -73,7 +73,7 @@
         <div
             class="bottom-small right-small gap-smallest fixed flex w-full max-w-[24rem] flex-col"
         >
-            {% for i, message in app.flashes('errors') %}
+            {% for i, message in app.flashes('error') %}
                 <div
                     class="uk-alert uk-alert-destructive"
                     id="flash-error-{{ i }}"
@@ -96,9 +96,9 @@
             {% for i, message in app.flashes('success') %}
                 <div
                     class="uk-alert"
-                    id="flash-error-{{ i }}"
+                    id="flash-success-{{ i }}"
                     data-uk-alert
-                    x-init="setTimeout(() => UIkit.alert('#flash-error-{{
+                    x-init="setTimeout(() => UIkit.alert('#flash-success-{{
                     i
                     }}').close(), 3000)"
                 >

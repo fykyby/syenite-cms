@@ -1,26 +1,26 @@
 <fieldset
-    class="gap-medium p-medium uk-rounded relative flex flex-col border shadow-lg"
+    class="gap-medium p-medium uk-rounded bg-card text-card-foreground relative flex flex-col border shadow"
     x-data="{ key: `blocks[${i}]` }"
 >
     <input type="hidden" :name="`blocks[${i}][_type]`" :value="block.type" />
 
     <div class="right-medium absolute -top-[1.75rem] flex">
         <button
-            class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs mr-smallest block-moveup-btn"
+            class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs mr-smallest block-moveup-btn bg-card text-card-foreground border-border"
             type="button"
             @click="moveBlockUp(i)"
         >
             <uk-icon icon="arrow-up"></uk-icon>
         </button>
         <button
-            class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs mr-medium block-movedown-btn"
+            class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs mr-medium block-movedown-btn bg-card text-card-foreground border-border"
             type="button"
             @click="moveBlockDown(i)"
         >
             <uk-icon icon="arrow-down"></uk-icon>
         </button>
         <button
-            class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs block-delete-btn"
+            class="uk-btn uk-btn-default uk-btn-icon uk-btn-xs block-delete-btn bg-card text-card-foreground border-border"
             type="button"
             x-on:click="deleteBlock(i)"
         >
@@ -29,7 +29,7 @@
     </div>
 
     <legend
-        class="uk-btn-default uk-btn-xs uk-btn mr-auto place-self-start hover:bg-transparent"
+        class="uk-btn-default uk-btn-xs uk-btn bg-card text-card-foreground border-border mr-auto place-self-start"
     >
         <span x-text="i + 1 + '.'"></span>
         <span x-text="block.type"></span>

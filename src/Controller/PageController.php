@@ -54,7 +54,7 @@ final class PageController extends AbstractController
                     "id" => $page->getId(),
                 ]);
             } else {
-                $this->addFlash("errors", "Validation error(s) occurred");
+                $this->addFlash("error", "Validation error(s) occurred");
             }
         }
 
@@ -122,7 +122,7 @@ final class PageController extends AbstractController
 
                 return $this->redirectToRoute("app_page", ["id" => $id]);
             } else {
-                $this->addFlash("errors", "Validation error(s) occurred");
+                $this->addFlash("error", "Validation error(s) occurred");
             }
         } else {
             foreach ($page->getData() as $data) {
