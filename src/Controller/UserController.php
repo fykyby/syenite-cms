@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Utils\ValidationUtils;
+use App\Service\ValidationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,6 +23,7 @@ final class UserController extends AbstractController
         UserPasswordHasherInterface $passwordHasher,
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator,
+        ValidationService $validationService,
     ): Response {
         $userCount = $entityManager->getRepository(User::class)->count();
         if ($userCount > 0) {
@@ -36,7 +37,7 @@ final class UserController extends AbstractController
             $user->setPassword($request->get('password'));
             $user->setRoles(['ROLE_SUPER_ADMIN']);
 
-            $errors = ValidationUtils::formatErrors(
+            $errors = $validationService->formatErrors(
                 $validator->validate($user),
             );
             if (

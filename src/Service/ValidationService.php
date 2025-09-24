@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Utils;
+namespace App\Service;
 
 use Rakit\Validation\Validator;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
-class ValidationUtils
+class ValidationService
 {
     private static $validator;
 
@@ -74,7 +74,7 @@ class ValidationUtils
      * @param array<int,mixed> $values
      * @param array<int,mixed> $rules
      */
-    public static function validate(array $values, array $rules): ?array
+    public function validate(array $values, array $rules): ?array
     {
         $validation = self::$validator->validate($values, $rules);
 
@@ -85,7 +85,7 @@ class ValidationUtils
         return null;
     }
 
-    public static function formatErrors(
+    public function formatErrors(
         ConstraintViolationListInterface $errors,
     ): ?array {
         $formatted = null;
@@ -96,4 +96,4 @@ class ValidationUtils
     }
 }
 
-ValidationUtils::init();
+ValidationService::init();
