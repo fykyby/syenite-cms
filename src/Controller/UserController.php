@@ -17,7 +17,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class UserController extends AbstractController
 {
-    #[Route("/admin/auth/signup", name: "app_auth_signup")]
+    #[Route('/admin/auth/signup', name: 'app_auth_signup')]
     public function signup(
         Request $request,
         UserPasswordHasherInterface $passwordHasher,
@@ -26,67 +26,67 @@ final class UserController extends AbstractController
     ): Response {
         $userCount = $entityManager->getRepository(User::class)->count();
         if ($userCount > 0) {
-            return $this->redirectToRoute("app_auth_login");
+            return $this->redirectToRoute('app_auth_login');
         }
 
         $errors = null;
-        if ($request->isMethod("POST")) {
+        if ($request->isMethod('POST')) {
             $user = new User();
-            $user->setEmail($request->get("email"));
-            $user->setPassword($request->get("password"));
-            $user->setRoles(["ROLE_SUPER_ADMIN"]);
+            $user->setEmail($request->get('email'));
+            $user->setPassword($request->get('password'));
+            $user->setRoles(['ROLE_SUPER_ADMIN']);
 
             $errors = ValidationUtils::formatErrors(
                 $validator->validate($user),
             );
             if (
-                $request->get("password") !== $request->get("passwordconfirm")
+                $request->get('password') !== $request->get('passwordconfirm')
             ) {
-                $errors["passwordconfirm"] = "Passwords do not match";
+                $errors['passwordconfirm'] = 'Passwords do not match';
             }
 
             if ($errors === null) {
                 $user->setPassword(
                     $passwordHasher->hashPassword(
                         $user,
-                        $request->get("password"),
+                        $request->get('password'),
                     ),
                 );
                 $entityManager->persist($user);
                 $entityManager->flush();
 
-                return $this->redirectToRoute("app_auth_login");
+                return $this->redirectToRoute('app_auth_login');
             }
         }
 
-        return $this->render("user/signup.twig", [
-            "errors" => $errors,
-            "values" => $request->request->all(),
+        return $this->render('user/signup.twig', [
+            'errors' => $errors,
+            'values' => $request->request->all(),
         ]);
     }
 
-    #[Route("/admin/auth/login", name: "app_auth_login")]
+    #[Route('/admin/auth/login', name: 'app_auth_login')]
     public function login(
         EntityManagerInterface $entityManager,
         AuthenticationUtils $authUtils,
     ): Response {
         $userCount = $entityManager->getRepository(User::class)->count();
         if ($userCount === 0) {
-            return $this->redirectToRoute("app_auth_signup");
+            return $this->redirectToRoute('app_auth_signup');
         }
 
         $error = $authUtils->getLastAuthenticationError();
         $lastEmail = $authUtils->getLastUsername();
 
-        return $this->render("user/login.twig", [
-            "last_email" => $lastEmail,
-            "error" => $error,
+        return $this->render('user/login.twig', [
+            'last_email' => $lastEmail,
+            'error' => $error,
         ]);
     }
 
-    #[Route("/admin/auth/logout", name: "app_auth_logout")]
+    #[Route('/admin/auth/logout', name: 'app_auth_logout')]
     public function logout(): Response
     {
-        return $this->render("user/login.twig", []);
+        return $this->render('user/login.twig', []);
     }
 }

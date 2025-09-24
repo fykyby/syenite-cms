@@ -18,19 +18,19 @@ final class ClientController extends AbstractController
         $path = "/{$path}";
         $page = $entityManager
             ->getRepository(Page::class)
-            ->findOneBy(["path" => $path]);
+            ->findOneBy(['path' => $path]);
 
         if ($page === null) {
             throw new NotFoundHttpException();
         }
 
         // TODO: make layout configurable
-        $layout = "base";
+        $layout = 'base';
         $layoutPath = CmsUtils::getLayoutTemplatePath($layout);
 
-        return $this->render("client/index.twig", [
-            "layoutPath" => $layoutPath,
-            "page" => $page,
+        return $this->render('client/index.twig', [
+            'layoutPath' => $layoutPath,
+            'page' => $page,
         ]);
     }
 }

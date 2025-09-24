@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\PageRepository;
@@ -8,7 +10,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PageRepository::class)]
-#[UniqueEntity("path")]
+#[UniqueEntity('path')]
 class Page
 {
     #[ORM\Id]
@@ -28,7 +30,7 @@ class Page
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    #[Assert\Choice(options: ["default"])]
+    #[Assert\Choice(options: ['default'])]
     private ?string $type = null;
 
     #[ORM\Column]
@@ -71,7 +73,10 @@ class Page
         return $this->data;
     }
 
-    public function setData(array $data): static
+    /**
+     * @param array<int,mixed> $data
+     */
+    public function setData(array $data): Page
     {
         $this->data = $data;
 
@@ -83,7 +88,10 @@ class Page
         return $this->meta;
     }
 
-    public function setMeta(array $meta): static
+    /**
+     * @param array<int,mixed> $meta
+     */
+    public function setMeta(array $meta): Page
     {
         $this->meta = $meta;
 

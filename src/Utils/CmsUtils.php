@@ -23,25 +23,25 @@ class CmsUtils
     public static function getBlocksDir(): string
     {
         return dirname(dirname(dirname(__FILE__))) .
-            "/cms/themes/" .
+            '/cms/themes/' .
             self::$theme .
-            "/blocks";
+            '/blocks';
     }
 
     public static function getBlockTemplatePath(string $blockName): string
     {
-        return "@themes/" .
+        return '@themes/' .
             self::$theme .
-            "/blocks/" .
+            '/blocks/' .
             $blockName .
-            "/" .
+            '/' .
             $blockName .
-            ".twig";
+            '.twig';
     }
 
     public static function getLayoutTemplatePath(string $layoutName): string
     {
-        return "@themes/" . self::$theme . "/layouts/" . $layoutName . ".twig";
+        return '@themes/' . self::$theme . '/layouts/' . $layoutName . '.twig';
     }
 
     public static function listBlocks(): array
@@ -55,11 +55,11 @@ class CmsUtils
     {
         $block = Yaml::parseFile(
             self::getBlocksDir() .
-                "/" .
+                '/' .
                 $blockName .
-                "/" .
+                '/' .
                 $blockName .
-                ".yaml",
+                '.yaml',
         );
         return $block;
     }

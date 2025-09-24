@@ -7,6 +7,12 @@
     ],
     "overrides": [
         {
+            "files": ["*.php"],
+            "options": {
+            "singleQuote": true
+            }
+        },
+        {
             "files": ["*.twig", "*.yaml"],
             "options": {
                 "tabWidth": 4
