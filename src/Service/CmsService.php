@@ -10,8 +10,9 @@ class CmsService
 {
     private static string $theme;
 
-    public static function init(): void
+    public function __construct()
     {
+        // TODO: get theme from db
         self::$theme = 'default';
     }
 
@@ -73,5 +74,3 @@ class CmsService
         return $block;
     }
 }
-
-CmsService::init();

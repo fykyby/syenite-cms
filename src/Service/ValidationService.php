@@ -11,7 +11,7 @@ class ValidationService
 {
     private static $validator;
 
-    public static function init(): void
+    public function __construct()
     {
         if (!isset(self::$validator)) {
             self::$validator = new Validator([
@@ -95,5 +95,3 @@ class ValidationService
         return $formatted;
     }
 }
-
-ValidationService::init();
