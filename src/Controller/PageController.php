@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Page;
-use App\Service\CmsService;
-use App\Service\ValidationService;
+use App\Service\Cms;
+use App\Service\Validation;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,7 +32,7 @@ final class PageController extends AbstractController
         Request $request,
         ValidatorInterface $validator,
         EntityManagerInterface $entityManager,
-        ValidationService $validationService,
+        Validation $validation,
     ): Response {
         $errors = null;
         if ($request->isMethod('POST')) {
@@ -42,9 +42,7 @@ final class PageController extends AbstractController
             $page->setData([]);
             $page->setMeta([]);
 
-            $errors = $validationService->formatErrors(
-                $validator->validate($page),
-            );
+            $errors = $validation->formatErrors($validator->validate($page));
             if ($errors === null) {
                 $entityManager->persist($page);
                 $entityManager->flush();
@@ -76,8 +74,8 @@ final class PageController extends AbstractController
         int $id,
         EntityManagerInterface $entityManager,
         Request $request,
-        CmsService $cmsService,
-        ValidationService $validationService,
+        Cms $cms,
+        Validation $validation,
     ): Response {
         $page = $entityManager->getRepository(Page::class)->find($id);
         if ($page === null) {
@@ -90,8 +88,8 @@ final class PageController extends AbstractController
             $pageData = $request->request->all()['blocks'] ?? [];
 
             foreach ($pageData as $key => $data) {
-                $block = $cmsService->getBlockData($data['_type']);
-                $pageData[$key]['_path'] = $cmsService->getBlockTemplatePath(
+                $block = $cms->getBlockData($data['_type']);
+                $pageData[$key]['_path'] = $cms->getBlockTemplatePath(
                     $data['_type'],
                 );
 
@@ -103,10 +101,8 @@ final class PageController extends AbstractController
                 $validationRules = $built['rules'];
 
                 $blockErrors =
-                    $validationService->validate(
-                        $validationData,
-                        $validationRules,
-                    ) ?? [];
+                    $validation->validate($validationData, $validationRules) ??
+                    [];
                 $hasErrors = $hasErrors || !empty($blockErrors);
 
                 $block['fields'] = self::attachValuesAndErrors(
@@ -129,7 +125,7 @@ final class PageController extends AbstractController
             }
         } else {
             foreach ($page->getData() as $data) {
-                $block = $cmsService->getBlockData($data['_type']);
+                $block = $cms->getBlockData($data['_type']);
                 $block['fields'] = self::attachValuesAndErrors(
                     $block['fields'],
                     $data,
@@ -139,7 +135,7 @@ final class PageController extends AbstractController
             }
         }
 
-        $blockList = $cmsService->listBlocks();
+        $blockList = $cms->listBlocks();
         return $this->render('page/edit.twig', [
             'blockList' => $blockList,
             'page' => $page,
@@ -172,9 +168,9 @@ final class PageController extends AbstractController
     }
 
     #[Route('/admin/pages/blocks/{type}', name: 'app_page_block')]
-    public function block(string $type, CmsService $cmsService): Response
+    public function block(string $type, Cms $cms): Response
     {
-        $block = $cmsService->getBlockData($type);
+        $block = $cms->getBlockData($type);
         if ($block === null) {
             throw new NotFoundHttpException();
         }

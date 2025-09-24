@@ -6,7 +6,7 @@ namespace App\Service;
 
 use Symfony\Component\Yaml\Yaml;
 
-class CmsService
+class Cms
 {
     private static string $theme;
 

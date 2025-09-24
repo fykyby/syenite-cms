@@ -7,7 +7,7 @@ namespace App\Service;
 use Rakit\Validation\Validator;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
-class ValidationService
+class Validation
 {
     private static $validator;
 

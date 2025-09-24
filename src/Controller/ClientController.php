@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Page;
-use App\Service\CmsService;
+use App\Service\Cms;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,7 +14,7 @@ final class ClientController extends AbstractController
     public function index(
         string $path,
         EntityManagerInterface $entityManager,
-        CmsService $cmsService,
+        Cms $cms,
     ): Response {
         $path = "/{$path}";
         $page = $entityManager
@@ -27,7 +27,7 @@ final class ClientController extends AbstractController
 
         // TODO: make layout configurable
         $layout = 'base';
-        $layoutPath = $cmsService->getLayoutTemplatePath($layout);
+        $layoutPath = $cms->getLayoutTemplatePath($layout);
 
         return $this->render('client/index.twig', [
             'layoutPath' => $layoutPath,
