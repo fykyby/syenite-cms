@@ -7,6 +7,9 @@
     <template x-if="field.type === 'textarea'">
         {% include 'page/_fields/_textarea.twig' %}
     </template>
+    <template x-if="field.type === 'image'">
+        {% include 'page/_fields/_image.twig' %}
+    </template>
     <template x-if="field.type === 'array'">
         {% if depth < 4 %}
             {% include 'page/_fields/_array.twig' with {

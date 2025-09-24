@@ -22,10 +22,3 @@ fields:
           - key: subtitle
             type: input
             rules: required|min:3|max:255
-
-          - key: things
-            type: array
-            fields:
-                - key: title
-                  type: input
-                  rules: required|min:3|max:255
