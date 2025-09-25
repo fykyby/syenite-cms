@@ -29,6 +29,7 @@
         id="media-upload-form"
         method="post"
         enctype="multipart/form-data"
+        @submit.prevent="submit"
     >
         <div
             id="upload-area"
@@ -83,6 +84,14 @@
                                 x-text="formatFileSize(file.size)"
                             ></div>
                         </div>
+
+                        <button
+                            class="uk-btn uk-btn-default uk-btn-icon"
+                            type="button"
+                            @click="deleteFile(index)"
+                        >
+                            <uk-icon icon="trash"></uk-icon>
+                        </button>
                     </li>
                 </template>
             </ul>
@@ -103,12 +112,18 @@
                         file.id = `${file.name}-${file.size}-${Date.now()}-${Math.random()}`;
                         this.files.push(file);
                     });
+                    this.$refs.fileInput.value = '';
                 },
                 
                 handleDrop(event) {
                     this.isDragOver = false;
                     const files = event.dataTransfer.files;
                     this.handleFiles(files);
+                },
+
+                deleteFile(index) {
+                    this.files.splice(index, 1);
+                    this.$refs.fileInput.value = '';
                 },
                 
                 clearAll() {
@@ -122,6 +137,32 @@
                     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
                     const i = Math.floor(Math.log(bytes) / Math.log(k));
                     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+                },
+
+                async submit() {
+                    // Create a temporary fake form to persist flash message from response
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '{{ path('app_media_new') }}';
+                    form.enctype = 'multipart/form-data';
+                    form.style.visibility = 'hidden';
+
+                    this.files.forEach((file, index) => {
+                        const input = document.createElement('input');
+                        input.type = 'file';
+                        input.name = `media[]`;
+                        input.files = this.createFileList(file); 
+                        form.appendChild(input);
+                    });
+
+                    document.querySelector('main').appendChild(form);
+                    form.submit();
+                },
+
+                createFileList(file) {
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    return dataTransfer.files;
                 },
             }));
         });

@@ -204,12 +204,6 @@ final class PageController extends AbstractController
         return $this->json($data);
     }
 
-    /**
-     * @param array<int,mixed> $fields
-     * @param array<int,mixed> $data
-     * @param array<int,mixed> $errors
-     * @return array<int,mixed>
-     */
     private static function attachValuesAndErrors(
         array $fields,
         array $data,
@@ -249,11 +243,6 @@ final class PageController extends AbstractController
         return $fields;
     }
 
-    /**
-     * @param array<int,mixed> $fields
-     * @param array<int,mixed> $data
-     * @return array<string,mixed>
-     */
     private static function buildValidationDataAndRules(
         array $fields,
         array $data,

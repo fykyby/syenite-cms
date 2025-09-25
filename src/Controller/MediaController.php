@@ -40,16 +40,16 @@ final class MediaController extends AbstractController
         $files = $request->files->get('media', []);
         if (empty($files)) {
             $this->addFlash('error', 'At least one file is required');
-            return $this->redirectToRoute('app_media_new');
+
+            return $this->render('media/new.twig');
         }
 
         $error = null;
-
         foreach ($files as $file) {
             try {
                 $filename = $uploader->upload($file);
             } catch (\Exception $e) {
-                $this->addFlash('error', 'Error occurred while uploading file');
+                $error = 'Error occurred while uploading file';
                 break;
             }
 
@@ -76,10 +76,12 @@ final class MediaController extends AbstractController
         if ($error === null) {
             $entityManager->flush();
             $this->addFlash('success', 'Media uploaded');
+
             return $this->redirectToRoute('app_media');
         } else {
             $this->addFlash('error', $error);
-            return $this->redirectToRoute('app_media_new');
+
+            return $this->render('media/new.twig');
         }
     }
 
