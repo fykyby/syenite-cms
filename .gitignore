@@ -16,5 +16,5 @@
 
 /node_modules
 ###> liip/imagine-bundle ###
-/public/media/cache/
+/public/media/variants/
 ###< liip/imagine-bundle ###

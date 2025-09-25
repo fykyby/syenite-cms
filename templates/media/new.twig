@@ -4,10 +4,148 @@
     Media
 {% endblock %}
 
-{% block body %}
-    <form method="post" enctype="multipart/form-data">
-        <input type="file" name="image" />
+{% block actions %}
+    <button
+        class="uk-btn uk-btn-default"
+        type="button"
+        x-show="files.length > 0"
+        @click="clearAll()"
+    >
+        Clear All
+    </button>
 
-        <button type="submit">Upload</button>
+    <button
+        class="uk-btn uk-btn-primary"
+        form="media-upload-form"
+        type="submit"
+    >
+        Submit
+    </button>
+{% endblock %}
+
+{% block body %}
+    <form
+        class="uk-form-stacked uk-form-destructive"
+        id="media-upload-form"
+        method="post"
+        enctype="multipart/form-data"
+    >
+        <div
+            id="upload-area"
+            class="uk-rounded p-medium hover:bg-muted flex cursor-pointer flex-col items-center border text-center transition-colors"
+            @click="$refs.fileInput.click()"
+            @dragover.prevent="isDragOver = true"
+            @dragleave.prevent="isDragOver = false"
+            @drop.prevent="handleDrop($event)"
+            :class="isDragOver ? 'bg-muted' : ''"
+        >
+            <input
+                class="hidden"
+                type="file"
+                id="file-input"
+                name="media[]"
+                multiple
+                x-ref="fileInput"
+                @change="handleFiles($event.target.files)"
+            />
+
+            <div class="mb-small">
+                <uk-icon icon="upload"></uk-icon>
+            </div>
+
+            <p class="text-lg">
+                Drop files here
+            </p>
+
+            <p class="text-sm">
+                or click to browse
+            </p>
+        </div>
+
+        <div x-show="files.length > 0">
+            <label class="uk-form-label flex items-center">
+                Selected Files (<span x-text="files.length"></span>)
+            </label>
+
+            <ul class="gap-small grid grid-cols-3">
+                <template
+                    x-for="(file, index) in files"
+                    :key="file.name + file.size"
+                >
+                    <li
+                        class="uk-rounded p-small flex items-center justify-between border"
+                    >
+                        <div>
+                            <div class="truncate" x-text="file.name"></div>
+                            <div
+                                class="text-muted-foreground text-sm"
+                                x-text="formatFileSize(file.size)"
+                            ></div>
+                        </div>
+
+                        <button
+                            class="uk-btn uk-btn-ghost uk-btn-icon uk-btn-sm"
+                            @click="removeFile(index)"
+                        >
+                            <uk-icon icon="trash"></uk-icon>
+                        </button>
+                    </li>
+                </template>
+            </ul>
+        </div>
     </form>
+{% endblock %}
+
+{% block javascripts %}
+    {# prettier-ignore #}
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('body', () => ({ 
+                files: [],
+                isDragOver: false,
+                isUploading: false,
+                uploadProgress: 0,
+                
+                handleFiles(fileList) {
+                    Array.from(fileList).forEach(file => {
+                        // Check for duplicates
+                        if (!this.files.find(f => f.name === file.name && f.size === file.size)) {
+                            this.files.push(file);
+                        }
+                    });
+                },
+                
+                handleDrop(event) {
+                    this.isDragOver = false;
+                    const files = event.dataTransfer.files;
+                    this.handleFiles(files);
+                },
+                
+                removeFile(index) {
+                    this.files.splice(index, 1);
+                },
+                
+                clearAll() {
+                    this.files = [];
+                    this.$refs.fileInput.value = '';
+                },
+                
+                formatFileSize(bytes) {
+                    if (bytes === 0) return '0 Bytes';
+                    const k = 1024;
+                    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                    const i = Math.floor(Math.log(bytes) / Math.log(k));
+                    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+                },
+            }));
+        });
+
+        document.addEventListener('dragover', function(e) {
+            e.preventDefault();
+        });
+        
+        document.addEventListener('drop', function(e) {
+            e.preventDefault();
+        });
+    </script>
 {% endblock %}

@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 final class MediaController extends AbstractController
 {
@@ -21,33 +22,47 @@ final class MediaController extends AbstractController
     public function new(Request $request, ImageUploader $uploader): Response
     {
         if ($request->isMethod('POST')) {
-            $file = $request->files->get('image');
+            $files = $request->files->get('media');
 
-            if (!$file) {
+            if (!$files || count($files) === 0) {
                 throw new BadRequestException('No file uploaded');
             }
 
-            $filename = '';
-            try {
-                $filename = $uploader->upload($file);
-            } catch (\Exception $e) {
-                throw new BadRequestException($e->getMessage());
+            $results = [];
+
+            foreach ($files as $file) {
+                $filename = '';
+                try {
+                    $filename = $uploader->upload($file);
+                } catch (\Exception $e) {
+                    throw new BadRequestException($e->getMessage());
+                }
+
+                $result = [
+                    'name' => $filename,
+                    'variants' => [
+                        'thumbnail' => $this->generateUrl(
+                            'liip_imagine_filter',
+                            [
+                                'filter' => 'thumbnail',
+                                'path' => $filename,
+                            ],
+                        ),
+                        'medium' => $this->generateUrl('liip_imagine_filter', [
+                            'filter' => 'medium',
+                            'path' => $filename,
+                        ]),
+                        'large' => $this->generateUrl('liip_imagine_filter', [
+                            'filter' => 'large',
+                            'path' => $filename,
+                        ]),
+                    ],
+                ];
+
+                $results[] = $result;
             }
 
-            $variants = [
-                'thumbnail' => $this->generateUrl('liip_imagine_filter', [
-                    'filter' => 'thumbnail',
-                    'path' => $filename,
-                ]),
-                'medium' => $this->generateUrl('liip_imagine_filter', [
-                    'filter' => 'medium',
-                    'path' => $filename,
-                ]),
-                'large' => $this->generateUrl('liip_imagine_filter', [
-                    'filter' => 'large',
-                    'path' => $filename,
-                ]),
-            ];
+            dd($results);
 
             // TODO: create database entry
 

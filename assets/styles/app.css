@@ -11,7 +11,7 @@
 
 @layer base {
   * {
-    @apply border-border!;
+    @apply border-border! duration-150!;
   }
 
   html {
@@ -21,6 +21,10 @@
 
   button {
     @apply cursor-pointer;
+  }
+
+  button.uk-btn-destructive {
+    @apply border-none!;
   }
 
   button.uk-btn-ghost,
