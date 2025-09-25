@@ -20,31 +20,40 @@ final class MediaController extends AbstractController
     #[Route('/admin/media/new', name: 'app_media_new')]
     public function new(Request $request, ImageUploader $uploader): Response
     {
-        $file = $request->files->get('image');
+        if ($request->isMethod('POST')) {
+            $file = $request->files->get('image');
 
-        if (!$file) {
-            throw new BadRequestException('No file uploaded');
+            if (!$file) {
+                throw new BadRequestException('No file uploaded');
+            }
+
+            $filename = '';
+            try {
+                $filename = $uploader->upload($file);
+            } catch (\Exception $e) {
+                throw new BadRequestException($e->getMessage());
+            }
+
+            $variants = [
+                'thumbnail' => $this->generateUrl('liip_imagine_filter', [
+                    'filter' => 'thumbnail',
+                    'path' => $filename,
+                ]),
+                'medium' => $this->generateUrl('liip_imagine_filter', [
+                    'filter' => 'medium',
+                    'path' => $filename,
+                ]),
+                'large' => $this->generateUrl('liip_imagine_filter', [
+                    'filter' => 'large',
+                    'path' => $filename,
+                ]),
+            ];
+
+            // TODO: create database entry
+
+            return $this->redirectToRoute('app_media');
         }
 
-        $filename = $uploader->upload($file);
-
-        $variants = [
-            'thumbnail' => $this->generateUrl('liip_imagine_filter', [
-                'filter' => 'thumbnail',
-                'path' => $filename,
-            ]),
-            'medium' => $this->generateUrl('liip_imagine_filter', [
-                'filter' => 'medium',
-                'path' => $filename,
-            ]),
-            'large' => $this->generateUrl('liip_imagine_filter', [
-                'filter' => 'large',
-                'path' => $filename,
-            ]),
-        ];
-
-        // TODO: create database entry
-
-        return $this->redirectToRoute('app_media');
+        return $this->render('media/new.twig', []);
     }
 }

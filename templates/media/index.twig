@@ -4,14 +4,12 @@
     Media
 {% endblock %}
 
-{% block body %}
-    <form
-        action="{{ path('app_media_new') }}"
-        method="post"
-        enctype="multipart/form-data"
-    >
-        <input type="file" name="image" />
+{% block actions %}
+    <a class="uk-btn uk-btn-primary" href="{{ path('app_media_new') }}">
+        Add Media
+    </a>
+{% endblock %}
 
-        <button type="submit">Upload</button>
-    </form>
+{% block body %}
+
 {% endblock %}
