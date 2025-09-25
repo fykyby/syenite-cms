@@ -1,0 +1,17 @@
+{% extends 'base.twig' %}
+
+{% block title %}
+    Media
+{% endblock %}
+
+{% block body %}
+    <form
+        action="{{ path('app_media_new') }}"
+        method="post"
+        enctype="multipart/form-data"
+    >
+        <input type="file" name="image" />
+
+        <button type="submit">Upload</button>
+    </form>
+{% endblock %}

@@ -11,7 +11,11 @@
 
 ###> symfony/asset-mapper ###
 /public/assets/
+/public/media/
 /assets/vendor/
 ###< symfony/asset-mapper ###
 
 /node_modules
+###> liip/imagine-bundle ###
+/public/media/cache/
+###< liip/imagine-bundle ###
