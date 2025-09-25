@@ -24,11 +24,15 @@
   }
 
   button.uk-btn-destructive {
-    @apply border-none!;
+    @apply border-0!;
   }
 
   button.uk-btn-ghost,
   a.uk-btn-ghost {
+    @apply border-0!;
+  }
+
+  .uk-alert-destructive {
     @apply border-0!;
   }
 

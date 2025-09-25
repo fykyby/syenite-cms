@@ -21,54 +21,63 @@ final class MediaController extends AbstractController
     #[Route('/admin/media/new', name: 'app_media_new')]
     public function new(Request $request, ImageUploader $uploader): Response
     {
+        $error = null;
         if ($request->isMethod('POST')) {
             $files = $request->files->get('media');
 
-            if (!$files || count($files) === 0) {
-                throw new BadRequestException('No file uploaded');
-            }
+            if ($files && count($files) > 0) {
+                $results = [];
 
-            $results = [];
+                foreach ($files as $file) {
+                    $filename = '';
+                    try {
+                        $filename = $uploader->upload($file);
+                    } catch (\Exception $e) {
+                        $error = $e->getMessage();
+                        break;
+                    }
 
-            foreach ($files as $file) {
-                $filename = '';
-                try {
-                    $filename = $uploader->upload($file);
-                } catch (\Exception $e) {
-                    throw new BadRequestException($e->getMessage());
+                    $result = [
+                        'name' => $filename,
+                        'variants' => [
+                            'thumbnail' => $this->generateUrl(
+                                'liip_imagine_filter',
+                                [
+                                    'filter' => 'thumbnail',
+                                    'path' => $filename,
+                                ],
+                            ),
+                            'medium' => $this->generateUrl(
+                                'liip_imagine_filter',
+                                [
+                                    'filter' => 'medium',
+                                    'path' => $filename,
+                                ],
+                            ),
+                            'large' => $this->generateUrl(
+                                'liip_imagine_filter',
+                                [
+                                    'filter' => 'large',
+                                    'path' => $filename,
+                                ],
+                            ),
+                        ],
+                    ];
+
+                    $results[] = $result;
                 }
 
-                $result = [
-                    'name' => $filename,
-                    'variants' => [
-                        'thumbnail' => $this->generateUrl(
-                            'liip_imagine_filter',
-                            [
-                                'filter' => 'thumbnail',
-                                'path' => $filename,
-                            ],
-                        ),
-                        'medium' => $this->generateUrl('liip_imagine_filter', [
-                            'filter' => 'medium',
-                            'path' => $filename,
-                        ]),
-                        'large' => $this->generateUrl('liip_imagine_filter', [
-                            'filter' => 'large',
-                            'path' => $filename,
-                        ]),
-                    ],
-                ];
+                dd($results);
+                // TODO: create database entry
 
-                $results[] = $result;
+                return $this->redirectToRoute('app_media');
+            } else {
+                $error = 'No file uploaded';
             }
-
-            dd($results);
-
-            // TODO: create database entry
-
-            return $this->redirectToRoute('app_media');
         }
 
-        return $this->render('media/new.twig', []);
+        return $this->render('media/new.twig', [
+            'error' => $error,
+        ]);
     }
 }

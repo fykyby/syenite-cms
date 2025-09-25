@@ -25,11 +25,24 @@
 
 {% block body %}
     <form
-        class="uk-form-stacked uk-form-destructive"
+        class="uk-form-stacked"
         id="media-upload-form"
         method="post"
         enctype="multipart/form-data"
     >
+        {% if error != '' %}
+            <div class="uk-alert uk-alert-destructive" data-uk-alert>
+                <div class="gap-small flex items-center">
+                    <div class="size-4">
+                        <uk-icon icon="circle-x"></uk-icon>
+                    </div>
+                    <p>
+                        {{ error }}
+                    </p>
+                </div>
+            </div>
+        {% endif %}
+
         <div
             id="upload-area"
             class="uk-rounded p-medium hover:bg-muted flex cursor-pointer flex-col items-center border text-center transition-colors"
@@ -44,6 +57,7 @@
                 type="file"
                 id="file-input"
                 name="media[]"
+                accept="image/*"
                 multiple
                 x-ref="fileInput"
                 @change="handleFiles($event.target.files)"
@@ -70,7 +84,7 @@
             <ul class="gap-small grid grid-cols-3">
                 <template
                     x-for="(file, index) in files"
-                    :key="file.name + file.size"
+                    :key="file.id || (file.name + file.size + index)"
                 >
                     <li
                         class="uk-rounded p-small flex items-center justify-between border"
@@ -82,13 +96,6 @@
                                 x-text="formatFileSize(file.size)"
                             ></div>
                         </div>
-
-                        <button
-                            class="uk-btn uk-btn-ghost uk-btn-icon uk-btn-sm"
-                            @click="removeFile(index)"
-                        >
-                            <uk-icon icon="trash"></uk-icon>
-                        </button>
                     </li>
                 </template>
             </ul>
@@ -103,15 +110,11 @@
             Alpine.data('body', () => ({ 
                 files: [],
                 isDragOver: false,
-                isUploading: false,
-                uploadProgress: 0,
                 
                 handleFiles(fileList) {
                     Array.from(fileList).forEach(file => {
-                        // Check for duplicates
-                        if (!this.files.find(f => f.name === file.name && f.size === file.size)) {
-                            this.files.push(file);
-                        }
+                        file.id = `${file.name}-${file.size}-${Date.now()}-${Math.random()}`;
+                        this.files.push(file);
                     });
                 },
                 
@@ -119,10 +122,6 @@
                     this.isDragOver = false;
                     const files = event.dataTransfer.files;
                     this.handleFiles(files);
-                },
-                
-                removeFile(index) {
-                    this.files.splice(index, 1);
                 },
                 
                 clearAll() {
