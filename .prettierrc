@@ -9,7 +9,7 @@
         {
             "files": ["*.php"],
             "options": {
-            "singleQuote": true
+                "singleQuote": true
             }
         },
         {

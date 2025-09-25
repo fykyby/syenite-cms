@@ -25,199 +25,199 @@
         class="flex flex-col"
         id="page-edit-form"
         method="post"
-        x-init="
-            $watch('blocks', value => somethingChanged = true);
-            window.addEventListener('beforeunload', (event) => {
-                if (somethingChanged) {
-                event.preventDefault();
-                event.returnValue = true;
-                }
-            });
-        "
-        @submit="
-            somethingChanged = false;
-            return true;
-        "
-        x-data="{
-            blocks: {{ blocks|json_encode }},
-            somethingChanged: {{ app.session.flashbag.peek(
-            'error'
-        )|length }} > 0,
-
-            switchIndexes(arr, i, j) {
-                const temp = arr[i]
-                arr[i] = arr[j]
-                arr[j] = temp
-            },
-
-            async addBlock(type) {
-                const response = await fetch('/admin/pages/blocks/' + type);
-                const data = await response.json();
-                this.blocks.push(data);
-            },
-
-            deleteBlock(index) {
-                this.blocks.splice(index, 1);
-            },
-
-            moveBlockUp(index) {
-                if (index === 0) return;
-                this.switchIndexes(this.blocks, index, index - 1);
-            },
-
-            moveBlockDown(index) {
-                if (index === this.blocks.length - 1) return;
-                this.switchIndexes(this.blocks, index, index + 1);
-            }
-        }"
+        @submit="this.somethingChanged = false; return true;"
     >
         <template x-for="(block, i) in blocks">
             {% include 'page/_block_fieldset.twig' %}
         </template>
+    </form>
+{% endblock %}
 
-        <div id="page-add-block-modal" data-uk-modal>
-            <div class="uk-modal-dialog uk-margin-auto-vertical">
-                <button
-                    class="uk-modal-close absolute right-4 top-4"
-                    type="button"
-                    data-uk-close
-                >
+{% block modals %}
+    <div id="page-add-block-modal" data-uk-modal>
+        <div class="uk-modal-dialog uk-margin-auto-vertical">
+            <button
+                class="uk-modal-close absolute right-4 top-4"
+                type="button"
+                data-uk-close
+            >
 
-                </button>
-                <div class="uk-modal-header">
-                    <h2 class="uk-modal-title">Add Block</h2>
-                </div>
-                <div class="uk-modal-body gap-small grid grid-cols-3">
-                    {% for block in blockList %}
-                        <button
-                            class="uk-btn uk-btn-default uk-modal-close"
-                            @click="addBlock('{{ block }}')"
-                        >
-                            {{ block|capitalize }}
-                        </button>
-                    {% endfor %}
-                </div>
+            </button>
 
-                <div class="uk-modal-footer uk-text-right">
+            <div class="uk-modal-header">
+                <h2 class="uk-modal-title">Add Block</h2>
+            </div>
+
+            <div class="uk-modal-body gap-small grid grid-cols-3">
+                {% for block in blockList %}
                     <button
-                        class="uk-modal-close uk-btn uk-btn-default"
-                        type="button"
+                        class="uk-btn uk-btn-default uk-modal-close"
+                        @click="addBlock('{{ block }}')"
                     >
-                        Cancel
+                        {{ block|capitalize }}
                     </button>
-                </div>
+                {% endfor %}
+            </div>
+
+            <div class="uk-modal-footer uk-text-right">
+                <button
+                    class="uk-modal-close uk-btn uk-btn-default"
+                    type="button"
+                >
+                    Cancel
+                </button>
             </div>
         </div>
+    </div>
 
-        <div id="page-edit-meta-modal" data-uk-modal>
-            <div
-                class="uk-modal-dialog uk-margin-auto-vertical"
-                x-data="{
-                    meta: {
-                        title: '{{
-                page.meta.title
-                    ?? ''
-                }}',
-                        description: '{{
-                page.meta.description
-                    ?? ''
-                }}',
-                        raw_html: '{{
-                page.meta.raw_html
-                    ?? ''
-                }}'
-                    },
-
-                    async saveMeta() {
-                        const formData = new FormData();
-                        formData.append('title', this.meta.title);
-                        formData.append('description', this.meta.description);
-                        formData.append('raw_html', this.meta.raw_html);
-                        const response = await fetch('/admin/pages/{{
-                page.getId()
-                }}/meta', {
-                            method: 'POST',
-                            body: formData
-                        });
-
-                        if (response.ok) {
-                            window.location.reload();
-                        }
-                    }
-                }"
+    <div id="page-edit-meta-modal" data-uk-modal>
+        <div
+            class="uk-modal-dialog uk-margin-auto-vertical"
+            x-data="editMetaModal"
+        >
+            <button
+                class="uk-modal-close absolute right-4 top-4"
+                type="button"
+                data-uk-close
             >
-                <button
-                    class="uk-modal-close absolute right-4 top-4"
-                    type="button"
-                    data-uk-close
-                >
 
-                </button>
-                <div class="uk-modal-header">
-                    <h2 class="uk-modal-title">Edit Meta</h2>
-                </div>
+            </button>
 
-                <div class="uk-modal-body">
-                    <div class="uk-form-stacked flex w-full flex-col gap-6">
-                        <div>
-                            <label class="uk-form-label" for="meta.title">
-                                Title
-                            </label>
-                            <div class="uk-form-controls">
-                                <input
-                                    class="uk-input"
-                                    id="meta.title"
-                                    x-model="meta.title"
-                                />
-                            </div>
+            <div class="uk-modal-header">
+                <h2 class="uk-modal-title">Edit Meta</h2>
+            </div>
+
+            <div class="uk-modal-body">
+                <div class="uk-form-stacked flex w-full flex-col gap-6">
+                    <div>
+                        <label class="uk-form-label" for="meta.title">
+                            Title
+                        </label>
+                        <div class="uk-form-controls">
+                            <input
+                                class="uk-input"
+                                id="meta.title"
+                                x-model="meta.title"
+                            />
                         </div>
+                    </div>
 
-                        <div>
-                            <label class="uk-form-label" for="meta.description">
-                                Description
-                            </label>
-                            <div class="uk-form-controls">
-                                <textarea
-                                    class="uk-textarea"
-                                    id="meta.description"
-                                    x-model="meta.description"
-                                ></textarea>
-                            </div>
+                    <div>
+                        <label class="uk-form-label" for="meta.description">
+                            Description
+                        </label>
+                        <div class="uk-form-controls">
+                            <textarea
+                                class="uk-textarea"
+                                id="meta.description"
+                                x-model="meta.description"
+                            ></textarea>
                         </div>
+                    </div>
 
-                        <div>
-                            <label class="uk-form-label" for="meta.raw_html">
-                                Raw HTML
-                            </label>
-                            <div class="uk-form-controls">
-                                <textarea
-                                    class="uk-textarea"
-                                    id="meta.raw_html"
-                                    x-model="meta.raw_html"
-                                >
-                                    {{- page.meta.raw_html ?? '' -}}
-                                </textarea>
-                            </div>
+                    <div>
+                        <label class="uk-form-label" for="meta.raw_html">
+                            Raw HTML
+                        </label>
+                        <div class="uk-form-controls">
+                            <textarea
+                                class="uk-textarea"
+                                id="meta.raw_html"
+                                x-model="meta.raw_html"
+                            >
+                                {{- page.meta.raw_html ?? '' -}}
+                            </textarea>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="uk-modal-footer gap-small flex justify-end">
-                    <button
-                        class="uk-modal-close uk-btn uk-btn-default"
-                        type="button"
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        class="uk-btn uk-btn-primary"
-                        type="button"
-                        @click="saveMeta()"
-                    >
-                        Save
-                    </button>
-                </div>
+            <div class="uk-modal-footer gap-small flex justify-end">
+                <button
+                    class="uk-modal-close uk-btn uk-btn-default"
+                    type="button"
+                >
+                    Cancel
+                </button>
+                <button
+                    class="uk-btn uk-btn-primary"
+                    type="button"
+                    @click="saveMeta()"
+                >
+                    Save
+                </button>
             </div>
         </div>
-    </form>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {# prettier-ignore #}
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('body', () => ({ 
+                blocks: {{ blocks|json_encode|raw }},
+                somethingChanged: {{ app.session.flashbag.peek('error')|length }} > 0,
+
+                init() {
+                    this.$watch('blocks', value => somethingChanged = true);
+                    window.addEventListener('beforeunload', (event) => {
+                        if (somethingChanged) {
+                            event.preventDefault();
+                            event.returnValue = true;
+                        }
+                    });
+                },
+
+                async addBlock(type) {
+                    const response = await fetch('/admin/pages/blocks/' + type);
+                    const data = await response.json();
+                    this.blocks.push(data);
+                },
+
+                deleteBlock(index) {
+                    this.blocks.splice(index, 1);
+                },
+
+                moveBlockUp(index) {
+                    if (index === 0) return;
+                    this.switchIndexes(this.blocks, index, index - 1);
+                },
+
+                moveBlockDown(index) {
+                    if (index === this.blocks.length - 1) return;
+                    this.switchIndexes(this.blocks, index, index + 1);
+                },
+
+                switchIndexes(arr, i, j) {
+                    const temp = arr[i];
+                    arr[i] = arr[j];
+                    arr[j] = temp;
+                },
+            }));
+
+            Alpine.data('editMetaModal', () => ({
+                meta: { 
+                    title: '{{ page.meta.title ?? '' }}',
+                    description: '{{ page.meta.description ?? '' }}',
+                    raw_html: '{{ page.meta.raw_html ?? '' }}'
+                },
+
+                async saveMeta() {
+                    const formData = new FormData();
+                    formData.append('title', this.meta.title);
+                    formData.append('description', this.meta.description);
+                    formData.append('raw_html', this.meta.raw_html);
+                    const response = await fetch('/admin/pages/{{ page.getId() }}/meta', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        window.location.reload();
+                    }
+                }
+            }));
+        })
+    </script>
 {% endblock %}
