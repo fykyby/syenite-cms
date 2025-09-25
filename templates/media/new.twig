@@ -30,19 +30,6 @@
         method="post"
         enctype="multipart/form-data"
     >
-        {% if error != '' %}
-            <div class="uk-alert uk-alert-destructive" data-uk-alert>
-                <div class="gap-small flex items-center">
-                    <div class="size-4">
-                        <uk-icon icon="circle-x"></uk-icon>
-                    </div>
-                    <p>
-                        {{ error }}
-                    </p>
-                </div>
-            </div>
-        {% endif %}
-
         <div
             id="upload-area"
             class="uk-rounded p-medium hover:bg-muted flex cursor-pointer flex-col items-center border text-center transition-colors"

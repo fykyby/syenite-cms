@@ -6,6 +6,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Liip\ImagineBundle\Imagine\Filter\FilterManager;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Liip\ImagineBundle\Binary\Loader\LoaderInterface;
+use Symfony\Component\Filesystem\Filesystem;
 
 class ImageUploader
 {
@@ -13,6 +14,7 @@ class ImageUploader
     private CacheManager $cacheManager;
     private FilterManager $filterManager;
     private LoaderInterface $loader;
+    private Filesystem $filesystem;
 
     public function __construct(
         string $targetDirectory,
@@ -24,6 +26,7 @@ class ImageUploader
         $this->cacheManager = $cacheManager;
         $this->filterManager = $filterManager;
         $this->loader = $loader;
+        $this->filesystem = new Filesystem();
     }
 
     private function generateFormats(string $filename, array $filters): void
@@ -69,6 +72,20 @@ class ImageUploader
         }
 
         return $newFilename;
+    }
+
+    public function delete(string $filename): void
+    {
+        $filePath = $this->targetDirectory . '/' . $filename;
+
+        if ($this->filesystem->exists($filePath)) {
+            $this->filesystem->remove($filePath);
+        }
+
+        try {
+            $this->cacheManager->remove($filename);
+        } catch (\Exception $e) {
+        }
     }
 
     private function convertAndSave(
