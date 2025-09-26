@@ -163,6 +163,7 @@
                 init() {
                     this.$watch('blocks', value => somethingChanged = true);
                     window.addEventListener('beforeunload', (event) => {
+                        console.log(somethingChanged);
                         if (somethingChanged) {
                             event.preventDefault();
                             event.returnValue = true;

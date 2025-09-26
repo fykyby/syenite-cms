@@ -3,24 +3,12 @@
         idKey: key.replaceAll('[', '-').replaceAll(']', ''),
 
         init() {
-            if (!field.value) {
-                this.resetMedia();
-            }
+            if (!field.value) this.resetMedia();
             const currentMedia = media.find((m) => m.name === field.value.name);
-            
+
             if (!currentMedia && field.value.url) {
                 this.resetMedia();
-                return;
-            } else if (!currentMedia) {
-                return;
-            }
-
-            field.value.variants = currentMedia.variants;
-            field.value.name = currentMedia.name;
-
-            const split = field.value.url.split('/');
-            const variant = split[4];
-            field.value.url = field.value.variants[variant];
+            } 
         },
 
         setMedia(m) {
@@ -80,25 +68,40 @@
                 Variant
             </label>
             <div class="uk-form-controls relative">
+                <template x-for="(url, variant) in field.value.variants">
+                    <input
+                        type="hidden"
+                        :name="`${key}[variants][${variant}]`"
+                        x-model="field.value.variants[variant]"
+                    />
+                </template>
+
                 <select
                     class="uk-select"
                     :id="key + '[variant]'"
                     :name="key + '[url]'"
                     x-model="field.value.url"
                 >
-                    <template x-for="(url, variant) in field.value.variants">
-                        <div>
-                            <template x-if="field.value.url === url">
-                                <option
-                                    :value="url"
-                                    x-text="variant"
-                                    selected
-                                ></option>
-                            </template>
-                            <template x-if="field.value.url !== url">
-                                <option :value="url" x-text="variant"></option>
-                            </template>
-                        </div>
+                    <template x-if="field.value.url">
+                        <template
+                            x-for="(url, variant) in field.value.variants"
+                        >
+                            <div>
+                                <template x-if="field.value.url === url">
+                                    <option
+                                        :value="url"
+                                        x-text="variant"
+                                        selected
+                                    ></option>
+                                </template>
+                                <template x-if="field.value.url !== url">
+                                    <option
+                                        :value="url"
+                                        x-text="variant"
+                                    ></option>
+                                </template>
+                            </div>
+                        </template>
                     </template>
                 </select>
             </div>

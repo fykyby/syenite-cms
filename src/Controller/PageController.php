@@ -239,6 +239,7 @@ final class PageController extends AbstractController
                     'url' => $data[$key]['url'] ?? null,
                     'alt' => $data[$key]['alt'] ?? null,
                     'name' => $data[$key]['name'] ?? null,
+                    'variants' => $data[$key]['variants'] ?? null,
                 ];
                 $field['error'] = $errors[$key] ?? null;
             } else {
@@ -284,8 +285,6 @@ final class PageController extends AbstractController
                 // Data always has url + alt + name
                 $validationData[$key] = [
                     'url' => $data[$key]['url'] ?? null,
-                    'alt' => $data[$key]['alt'] ?? null,
-                    'name' => $data[$key]['name'] ?? null,
                 ];
 
                 // Attach rules if defined
