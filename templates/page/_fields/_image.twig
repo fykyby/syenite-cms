@@ -3,7 +3,6 @@
         idKey: key.replaceAll('[', '-').replaceAll(']', ''),
 
         init() {
-        console.log(field.value)
             if (!field.value) this.resetMedia();
             const currentMedia = media.find((m) => m.name === field.value.name);
 

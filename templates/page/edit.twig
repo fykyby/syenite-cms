@@ -21,12 +21,7 @@
 {% endblock %}
 
 {% block body %}
-    <form
-        class="flex flex-col"
-        id="page-edit-form"
-        method="post"
-        @submit="this.somethingChanged = false; return true;"
-    >
+    <form class="flex flex-col" id="page-edit-form" method="post">
         <template x-for="(block, i) in blocks">
             {% include 'page/_block_fieldset.twig' %}
         </template>
@@ -158,15 +153,27 @@
             Alpine.data('body', () => ({ 
                 blocks: {{ blocks|json_encode|raw }},
                 media: JSON.parse({{ media|json_encode|raw }}),
-                somethingChanged: {{ app.session.flashbag.peek('error')|length }} > 0,
+                somethingChanged: {{ (app.session.flashbag.peek('error')|length > 0) ? 'true' : 'false' }},
 
                 init() {
-                    this.$watch('blocks', value => this.somethingChanged = true);
-                    window.addEventListener('beforeunload', (event) => {
+                    this.$watch('blocks', () => {
+                        this.somethingChanged = true;
+                    });
+
+                    const self = this;
+                    const unloadHandler = (event) => {
                         if (self.somethingChanged) {
                             event.preventDefault();
                             event.returnValue = '';
+                            return '';
                         }
+                    }
+
+                    window.addEventListener('beforeunload', unloadHandler);
+                    const form = document.getElementById('page-edit-form');
+                    form.addEventListener('submit', () => {
+                        self.somethingChanged = false;
+                        window.removeEventListener('beforeunload', unloadHandler);
                     });
                 },
 
