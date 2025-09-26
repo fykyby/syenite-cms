@@ -157,6 +157,7 @@
         document.addEventListener('alpine:init', () => {
             Alpine.data('body', () => ({ 
                 blocks: {{ blocks|json_encode|raw }},
+                media: JSON.parse({{ media|json_encode|raw }}),
                 somethingChanged: {{ app.session.flashbag.peek('error')|length }} > 0,
 
                 init() {

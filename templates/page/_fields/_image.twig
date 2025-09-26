@@ -1,3 +1,183 @@
-<div>
-    TODO IMAGE
+<div
+    x-data="{
+        idKey: key.replaceAll('[', '-').replaceAll(']', ''),
+
+        init() {
+            if (!field.value) {
+                this.resetMedia();
+            }
+            const currentMedia = media.find((m) => m.name === field.value.name);
+            
+            if (!currentMedia && field.value.url) {
+                this.resetMedia();
+                return;
+            } else if (!currentMedia) {
+                return;
+            }
+
+            field.value.variants = currentMedia.variants;
+            field.value.name = currentMedia.name;
+
+            const split = field.value.url.split('/');
+            const variant = split[4];
+            field.value.url = field.value.variants[variant];
+        },
+
+        setMedia(m) {
+            field.value.variants = m.variants;
+            field.value.name = m.name;
+            field.value.url = m.variants[Object.keys(m.variants)[0]];
+        },
+
+        resetMedia() {
+            field.value = {
+                url: '',
+                name: '',
+                variants: {},
+                alt: '',
+            };
+        },
+    }"
+>
+    <fieldset
+        :class="field.error ? 'form-destructive' : ''"
+        class="gap-medium p-medium uk-rounded relative grid grid-cols-3 border shadow"
+    >
+        <legend
+            class="uk-btn-default uk-btn-xs uk-btn bg-card text-card-foreground border-border mr-auto place-self-start"
+        >
+            <span x-text="field.key"></span>
+        </legend>
+
+        <div>
+            <label class="uk-form-label" :for="key + '[name]-btn'">Media</label>
+            <div class="uk-form-controls relative">
+                <input
+                    type="hidden"
+                    :id="key + '[name]'"
+                    :name="key + '[name]'"
+                    x-model="field.value.name"
+                />
+
+                <button
+                    class="uk-input-fake"
+                    type="button"
+                    :id="key + '[name]-btn'"
+                    :data-uk-toggle="`target: #media-select-modal-${idKey}`"
+                >
+                    <span
+                        class="pointer-events-none flex h-full items-center pr-3"
+                    >
+                        <uk-icon icon="paperclip"></uk-icon>
+                    </span>
+                    <span class="truncate" x-text="field.value.name"></span>
+                </button>
+            </div>
+        </div>
+
+        <div>
+            <label class="uk-form-label" :for="key + '[variant]'">
+                Variant
+            </label>
+            <div class="uk-form-controls relative">
+                <select
+                    class="uk-select"
+                    :id="key + '[variant]'"
+                    :name="key + '[url]'"
+                    x-model="field.value.url"
+                >
+                    <template x-for="(url, variant) in field.value.variants">
+                        <div>
+                            <template x-if="field.value.url === url">
+                                <option
+                                    :value="url"
+                                    x-text="variant"
+                                    selected
+                                ></option>
+                            </template>
+                            <template x-if="field.value.url !== url">
+                                <option :value="url" x-text="variant"></option>
+                            </template>
+                        </div>
+                    </template>
+                </select>
+            </div>
+        </div>
+
+        <div>
+            <label class="uk-form-label" :for="key + '[alt]'">Alt</label>
+            <div class="uk-form-controls">
+                <input
+                    class="uk-input"
+                    x-model="field.value.alt"
+                    :id="key + '[alt]'"
+                    :name="key + '[alt]'"
+                />
+            </div>
+        </div>
+    </fieldset>
+
+    <div class="uk-form-help text-destructive" x-text="field.error?.url"></div>
+
+    <div
+        :id="`media-select-modal-${idKey}`"
+        class="uk-modal-container"
+        data-uk-modal
+    >
+        <div class="uk-modal-dialog uk-margin-auto-vertical">
+            <button
+                class="uk-modal-close absolute right-4 top-4"
+                type="button"
+                data-uk-close
+            >
+
+            </button>
+            <div class="uk-modal-header">
+                <h2 class="uk-modal-title">Select Media</h2>
+            </div>
+            <div class="uk-modal-body">
+                <ul class="gap-medium grid grid-cols-4">
+                    <template x-for="m in media">
+                        <button class="uk-modal-close" @click="setMedia(m)">
+                            <li class="uk-card overflow-hidden">
+                                <div>
+                                    <img
+                                        class="h-full w-full object-cover"
+                                        :src="m.variants.thumbnail"
+                                        alt=""
+                                    />
+                                </div>
+                                <div class="uk-card-body">
+                                    <h3
+                                        class="uk-card-title truncate"
+                                        x-text="m.name"
+                                    >
+
+                                    </h3>
+                                </div>
+                            </li>
+                        </button>
+                    </template>
+                </ul>
+            </div>
+            <div class="uk-modal-footer gap-small flex justify-end">
+                <span class="grow"></span>
+
+                <button
+                    class="uk-modal-close uk-btn uk-btn-default"
+                    type="button"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    class="uk-modal-close uk-btn uk-btn-default"
+                    type="button"
+                    @click="resetMedia()"
+                >
+                    Unset
+                </button>
+            </div>
+        </div>
+    </div>
 </div>

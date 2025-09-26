@@ -52,7 +52,7 @@
     @apply border-input! h-[6lh] resize-none;
   }
 
-  form div.form-destructive {
+  form .form-destructive {
     & > .uk-form-controls > input {
       @apply border-destructive!;
     }
@@ -61,6 +61,14 @@
     }
     & > .uk-form-help {
       @apply text-destructive;
+    }
+  }
+
+  fieldset .form-destructive {
+    @apply border-destructive!;
+
+    & > legend {
+      @apply border-destructive! text-destructive!;
     }
   }
 }

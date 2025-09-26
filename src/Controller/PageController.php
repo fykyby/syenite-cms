@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Media;
 use App\Entity\Page;
 use App\Service\Cms;
 use App\Service\Validation;
@@ -13,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class PageController extends AbstractController
@@ -76,6 +78,7 @@ final class PageController extends AbstractController
         Request $request,
         Cms $cms,
         Validation $validation,
+        SerializerInterface $serializer,
     ): Response {
         $page = $entityManager->getRepository(Page::class)->find($id);
         if ($page === null) {
@@ -135,11 +138,15 @@ final class PageController extends AbstractController
             }
         }
 
+        $media = $entityManager->getRepository(Media::class)->findAll();
+        $mediaJson = $serializer->serialize($media, 'json');
+
         $blockList = $cms->listBlocks();
         return $this->render('page/edit.twig', [
             'blockList' => $blockList,
             'page' => $page,
             'blocks' => $blocks,
+            'media' => $mediaJson,
         ]);
     }
 
@@ -217,14 +224,7 @@ final class PageController extends AbstractController
 
                 if (!empty($data[$key]) && is_array($data[$key])) {
                     foreach ($data[$key] as $index => $item) {
-                        // Handle nested array errors
-                        $arrayItemErrors = [];
-
-                        // Look for errors at this level (items.0, items.1, etc.)
-                        if (isset($errors[$key][$index])) {
-                            $arrayItemErrors = $errors[$key][$index];
-                        }
-
+                        $arrayItemErrors = $errors[$key][$index] ?? [];
                         $field['value'][] = [
                             'fields' => self::attachValuesAndErrors(
                                 $field['fields'],
@@ -234,6 +234,13 @@ final class PageController extends AbstractController
                         ];
                     }
                 }
+            } elseif ($field['type'] === 'image') {
+                $field['value'] = [
+                    'url' => $data[$key]['url'] ?? null,
+                    'alt' => $data[$key]['alt'] ?? null,
+                    'name' => $data[$key]['name'] ?? null,
+                ];
+                $field['error'] = $errors[$key] ?? null;
             } else {
                 $field['value'] = $data[$key] ?? null;
                 $field['error'] = $errors[$key] ?? null;
@@ -260,22 +267,30 @@ final class PageController extends AbstractController
 
                 if (!empty($data[$key]) && is_array($data[$key])) {
                     foreach ($data[$key] as $index => $item) {
-                        // Recursively build validation for nested arrays
                         $nestedResult = self::buildValidationDataAndRules(
                             $field['fields'],
                             $item,
                             $fullKey . '.' . $index,
                         );
 
-                        // Merge the nested validation data
                         $validationData[$key][] = $nestedResult['data'];
-
-                        // Merge the nested validation rules
                         $validationRules = array_merge(
                             $validationRules,
                             $nestedResult['rules'],
                         );
                     }
+                }
+            } elseif ($field['type'] === 'image') {
+                // Data always has url + alt + name
+                $validationData[$key] = [
+                    'url' => $data[$key]['url'] ?? null,
+                    'alt' => $data[$key]['alt'] ?? null,
+                    'name' => $data[$key]['name'] ?? null,
+                ];
+
+                // Attach rules if defined
+                if (!empty($field['rules'])) {
+                    $validationRules[$fullKey . '.url'] = $field['rules'];
                 }
             } else {
                 $validationData[$key] = $data[$key] ?? null;

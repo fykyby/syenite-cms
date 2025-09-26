@@ -7,3 +7,7 @@ fields:
     - key: subtitle
       type: textarea
       rules: max:255
+
+    - key: background
+      type: image
+      rules:
