@@ -1,5 +1,7 @@
 <div :class="field.error ? 'form-destructive' : ''">
-    <label class="uk-form-label" :for="key" x-text="field.key"></label>
+    <label class="uk-form-label capitalize" :for="key" x-text="field.key">
+
+    </label>
     <div class="uk-form-controls">
         <input class="uk-input" x-model="field.value" :id="key" :name="key" />
     </div>

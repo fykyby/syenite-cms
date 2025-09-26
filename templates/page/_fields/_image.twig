@@ -34,7 +34,7 @@
         <legend
             class="uk-btn-default uk-btn-xs uk-btn bg-card text-card-foreground border-border mr-auto place-self-start"
         >
-            <span x-text="field.key"></span>
+            <span class="capitalize" x-text="field.key"></span>
         </legend>
 
         <div>
@@ -77,7 +77,7 @@
                 </template>
 
                 <select
-                    class="uk-select"
+                    class="uk-select capitalize"
                     :id="key + '[variant]'"
                     :name="key + '[url]'"
                     x-model="field.value.url"
@@ -89,6 +89,7 @@
                             :key="url"
                         >
                             <option
+                                class="capitalize"
                                 :value="url"
                                 x-text="variant"
                                 :selected="field.value.url === url"
