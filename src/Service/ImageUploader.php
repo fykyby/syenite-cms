@@ -29,7 +29,7 @@ class ImageUploader
         $this->filesystem = new Filesystem();
     }
 
-    private function generateFormats(string $filename, array $filters): void
+    private function cacheFormats(string $filename, array $filters): void
     {
         $binary = $this->loader->find($filename);
 
@@ -65,7 +65,7 @@ class ImageUploader
             $file->getClientOriginalExtension(),
         );
 
-        $this->generateFormats($newFilename, ['thumbnail', 'medium', 'large']);
+        $this->cacheFormats($newFilename, ['thumbnail', 'medium', 'large']);
 
         if (file_exists($fullPath)) {
             unlink($fullPath);

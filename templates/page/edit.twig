@@ -161,12 +161,11 @@
                 somethingChanged: {{ app.session.flashbag.peek('error')|length }} > 0,
 
                 init() {
-                    this.$watch('blocks', value => somethingChanged = true);
+                    this.$watch('blocks', value => this.somethingChanged = true);
                     window.addEventListener('beforeunload', (event) => {
-                        console.log(somethingChanged);
-                        if (somethingChanged) {
+                        if (self.somethingChanged) {
                             event.preventDefault();
-                            event.returnValue = true;
+                            event.returnValue = '';
                         }
                     });
                 },

@@ -9,11 +9,7 @@
 {% endblock %}
 
 {% block body %}
-    <form
-        id="new-page-form"
-        class="uk-form-stacked"
-        method="post"
-    >
+    <form id="new-page-form" class="uk-form-stacked" method="post">
         <div class="{{ errors.path ?? '' ? 'form-destructive' : '' }}">
             <label class="uk-form-label" for="path">Path</label>
             <div class="uk-form-controls">
@@ -32,18 +28,23 @@
 
         <div class="{{ errors.type ?? '' ? 'form-destructive' : '' }}">
             <label class="uk-form-label" for="type">Type</label>
-            <div class="uk-form-controls relative">
-                <uk-select
+            <div class="uk-form-controls">
+                <select
+                    class="uk-select"
                     id="type"
                     name="type"
-                    cls-custom="button: uk-input-fake; dropdown: w-full !left-0 !top-[calc(100%+var(--spacing-smallest))]"
+                    x-model="field.value.url"
                 >
-                    <select hidden>
-                        <option value="default" {% if (values.type ?? 'default') == 'default' %}selected{% endif %}>
+                    {% if values.type ?? 'default' == 'default' %}
+                        <option value="default" selected>
                             Default
                         </option>
-                    </select>
-                </uk-select>
+                    {% else %}
+                        <option value="default">
+                            Default
+                        </option>
+                    {% endif %}
+                </select>
             </div>
             <div class="uk-form-help">
                 {{ errors.type ?? '' }}

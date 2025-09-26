@@ -115,18 +115,9 @@ final class MediaController extends AbstractController
     private function generateVariants(string $filename): array
     {
         return [
-            'thumbnail' => $this->generateUrl('liip_imagine_filter', [
-                'filter' => 'thumbnail',
-                'path' => $filename,
-            ]),
-            'medium' => $this->generateUrl('liip_imagine_filter', [
-                'filter' => 'medium',
-                'path' => $filename,
-            ]),
-            'large' => $this->generateUrl('liip_imagine_filter', [
-                'filter' => 'large',
-                'path' => $filename,
-            ]),
+            'thumbnail' => '/media/variants/thumbnail/' . $filename,
+            'medium' => '/media/variants/medium/' . $filename,
+            'large' => '/media/variants/large/' . $filename,
         ];
     }
 }

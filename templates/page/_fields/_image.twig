@@ -3,6 +3,7 @@
         idKey: key.replaceAll('[', '-').replaceAll(']', ''),
 
         init() {
+        console.log(field.value)
             if (!field.value) this.resetMedia();
             const currentMedia = media.find((m) => m.name === field.value.name);
 
@@ -81,26 +82,18 @@
                     :id="key + '[variant]'"
                     :name="key + '[url]'"
                     x-model="field.value.url"
+                    :disabled="!field.value.url"
                 >
                     <template x-if="field.value.url">
                         <template
                             x-for="(url, variant) in field.value.variants"
+                            :key="url"
                         >
-                            <div>
-                                <template x-if="field.value.url === url">
-                                    <option
-                                        :value="url"
-                                        x-text="variant"
-                                        selected
-                                    ></option>
-                                </template>
-                                <template x-if="field.value.url !== url">
-                                    <option
-                                        :value="url"
-                                        x-text="variant"
-                                    ></option>
-                                </template>
-                            </div>
+                            <option
+                                :value="url"
+                                x-text="variant"
+                                :selected="field.value.url === url"
+                            ></option>
                         </template>
                     </template>
                 </select>
