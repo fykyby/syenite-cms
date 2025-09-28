@@ -56,6 +56,11 @@
     @apply border-input! h-[6lh] resize-none;
   }
 
+  select.uk-select,
+  select.uk-select option {
+    @apply text-foreground! bg-card!;
+  }
+
   form .form-destructive {
     & > .uk-form-controls > input {
       @apply border-destructive!;
