@@ -1,25 +1,25 @@
 liip_imagine:
-    driver: "gd" # or imagick if available
-    resolvers:
-        default:
-            web_path:
-                web_root: "%kernel.project_dir%/public"
-                cache_prefix: "media/variants"
-    loaders:
-        default:
-            filesystem:
-                data_root: "%kernel.project_dir%/public/media/tmp"
-    filter_sets:
-        cache: ~
-        thumbnail:
-            quality: 75
-            filters:
-                thumbnail: { size: [200, 150], mode: outbound }
-        medium:
-            quality: 80
-            filters:
-                thumbnail: { size: [768, 768], mode: inset }
-        large:
-            quality: 85
-            filters:
-                thumbnail: { size: [1440, 1440], mode: inset }
+  driver: "gd" # or imagick if available
+  resolvers:
+    default:
+      web_path:
+        web_root: "%kernel.project_dir%/public"
+        cache_prefix: "media/variants"
+  loaders:
+    default:
+      filesystem:
+        data_root: "%kernel.project_dir%/public/media/tmp"
+  filter_sets:
+    cache: ~
+    thumbnail:
+      quality: 75
+      filters:
+        thumbnail: { size: [200, 150], mode: outbound }
+    medium:
+      quality: 80
+      filters:
+        thumbnail: { size: [768, 768], mode: inset }
+    large:
+      quality: 85
+      filters:
+        thumbnail: { size: [1440, 1440], mode: inset }

@@ -13,13 +13,13 @@
             }
         },
         {
-            "files": ["*.twig", "*.yaml"],
+            "files": ["*.twig"],
             "options": {
                 "tabWidth": 4
             }
         },
         {
-            "files": ["*.css"],
+            "files": ["*.css", "*.json", "*.yaml"],
             "options": {
                 "tabWidth": 2
             }

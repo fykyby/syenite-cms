@@ -1,13 +1,13 @@
 type: hero
 fields:
-    - key: title
-      type: input
-      rules: required|min:3|max:255
+  - key: title
+    type: input
+    rules: required|min:3|max:255
 
-    - key: subtitle
-      type: textarea
-      rules: max:255
+  - key: subtitle
+    type: textarea
+    rules: max:255
 
-    - key: background
-      type: image
-      rules:
+  - key: background
+    type: image
+    rules:
