@@ -15,7 +15,7 @@ security:
       security: false
     admin:
       lazy: true
-      pattern: ^/admin
+      pattern: ^/__admin
       provider: app_user_provider
       entry_point: form_login
       form_login:
@@ -23,7 +23,7 @@ security:
         check_path: app_auth_login
         username_parameter: email
         password_parameter: password
-        default_target_path: /admin
+        default_target_path: /__admin
         always_use_default_target_path: false
       logout:
         path: app_auth_logout
@@ -41,9 +41,9 @@ security:
   # Easy way to control access for large sections of your site
   # Note: Only the *first* access control that matches will be used
   access_control:
-    - { path: ^/admin/auth/signup, roles: PUBLIC_ACCESS }
-    - { path: ^/admin/auth/login, roles: PUBLIC_ACCESS }
-    - { path: ^/admin, roles: ROLE_ADMIN }
+    - { path: ^/__admin/auth/signup, roles: PUBLIC_ACCESS }
+    - { path: ^/__admin/auth/login, roles: PUBLIC_ACCESS }
+    - { path: ^/__admin, roles: ROLE_ADMIN }
 
 when@test:
   security:

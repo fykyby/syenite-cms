@@ -1,0 +1,135 @@
+{% extends 'base.twig' %}
+
+{% block title %}
+    Page {{ page.path }}
+{% endblock %}
+
+{% block actions %}
+    <button
+        class="uk-btn uk-btn-default"
+        data-uk-toggle="target: #page-add-block-modal"
+    >
+        Add Block
+    </button>
+    <a
+        class="uk-btn uk-btn-default"
+        href="{{
+        path(
+            'app_page_edit',
+            {
+                id: page.id
+            }
+        )
+        }}"
+    >
+        Edit Page
+    </a>
+    <button class="uk-btn uk-btn-primary" form="page-edit-form">Save</button>
+{% endblock %}
+
+{% block body %}
+    <form class="flex flex-col" id="page-edit-form" method="post">
+        <template x-for="(block, i) in blocks">
+            {% include 'page/_block_fieldset.twig' %}
+        </template>
+    </form>
+{% endblock %}
+
+{% block modals %}
+    <div id="page-add-block-modal" data-uk-modal>
+        <div class="uk-modal-dialog uk-margin-auto-vertical">
+            <button
+                class="uk-modal-close absolute right-4 top-4"
+                type="button"
+                data-uk-close
+            >
+
+            </button>
+
+            <div class="uk-modal-header">
+                <h2 class="uk-modal-title">Add Block</h2>
+            </div>
+
+            <div class="uk-modal-body gap-small grid grid-cols-3">
+                {% for block in blockList %}
+                    <button
+                        class="uk-btn uk-btn-default uk-modal-close"
+                        @click="addBlock('{{ block }}')"
+                    >
+                        {{ block|capitalize }}
+                    </button>
+                {% endfor %}
+            </div>
+
+            <div class="uk-modal-footer uk-text-right">
+                <button
+                    class="uk-modal-close uk-btn uk-btn-default"
+                    type="button"
+                >
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {# prettier-ignore #}
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('body', () => ({ 
+                blocks: {{ blocks|json_encode|raw }},
+                media: JSON.parse({{ media|json_encode|raw }}),
+                somethingChanged: {{ (app.session.flashbag.peek('error')|length > 0) ? 'true' : 'false' }},
+
+                init() {
+                    this.$watch('blocks', () => {
+                        this.somethingChanged = true;
+                    });
+
+                    const self = this;
+                    const unloadHandler = (event) => {
+                        if (self.somethingChanged) {
+                            event.preventDefault();
+                            event.returnValue = '';
+                            return '';
+                        }
+                    }
+
+                    window.addEventListener('beforeunload', unloadHandler);
+                    const form = document.getElementById('page-edit-form');
+                    form.addEventListener('submit', () => {
+                        self.somethingChanged = false;
+                        window.removeEventListener('beforeunload', unloadHandler);
+                    });
+                },
+
+                async addBlock(type) {
+                    const response = await fetch('/__admin/pages/blocks/' + type);
+                    const data = await response.json();
+                    this.blocks.push(data);
+                },
+
+                deleteBlock(index) {
+                    this.blocks.splice(index, 1);
+                },
+
+                moveBlockUp(index) {
+                    if (index === 0) return;
+                    this.switchIndexes(this.blocks, index, index - 1);
+                },
+
+                moveBlockDown(index) {
+                    if (index === this.blocks.length - 1) return;
+                    this.switchIndexes(this.blocks, index, index + 1);
+                },
+
+                switchIndexes(arr, i, j) {
+                    const temp = arr[i];
+                    arr[i] = arr[j];
+                    arr[j] = temp;
+                },
+            }));
+        })
+    </script>
+{% endblock %}

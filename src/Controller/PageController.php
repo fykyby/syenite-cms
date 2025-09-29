@@ -19,7 +19,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class PageController extends AbstractController
 {
-    #[Route('/admin/pages', name: 'app_pages')]
+    #[Route('/__admin/pages', name: 'app_pages')]
     public function index(EntityManagerInterface $entityManager): Response
     {
         $pages = $entityManager->getRepository(Page::class)->findAll();
@@ -29,7 +29,7 @@ final class PageController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/pages/new', name: 'app_pages_new')]
+    #[Route('/__admin/pages/new', name: 'app_pages_new')]
     public function new(
         Request $request,
         ValidatorInterface $validator,
@@ -67,12 +67,57 @@ final class PageController extends AbstractController
 
     #[
         Route(
-            '/admin/pages/{id}',
-            name: 'app_page',
+            '/__admin/pages/{id}/edit',
+            name: 'app_page_edit',
             requirements: ['id' => '\d+'],
         ),
     ]
     public function edit(
+        int $id,
+        EntityManagerInterface $entityManager,
+        Request $request,
+        Validation $validation,
+        ValidatorInterface $validator,
+    ): Response {
+        $page = $entityManager->getRepository(Page::class)->find($id);
+        if ($page === null) {
+            throw new NotFoundHttpException();
+        }
+
+        $errors = null;
+        if ($request->isMethod('POST')) {
+            $page->setPath($request->get('path'));
+            $page->setType($request->get('type'));
+            $page->setMeta($request->get('meta'));
+
+            $errors = $validation->formatErrors($validator->validate($page));
+            if ($errors === null) {
+                $entityManager->flush();
+
+                $this->addFlash('success', 'Page saved');
+
+                return $this->redirectToRoute('app_page_edit', [
+                    'id' => $page->getId(),
+                ]);
+            } else {
+                $this->addFlash('error', 'Validation error(s) occurred');
+            }
+        }
+
+        return $this->render('page/edit.twig', [
+            'page' => $page,
+            'errors' => $errors,
+        ]);
+    }
+
+    #[
+        Route(
+            '/__admin/pages/{id}',
+            name: 'app_page',
+            requirements: ['id' => '\d+'],
+        ),
+    ]
+    public function show(
         int $id,
         EntityManagerInterface $entityManager,
         Request $request,
@@ -91,9 +136,9 @@ final class PageController extends AbstractController
             $pageData = $request->request->all()['blocks'] ?? [];
 
             foreach ($pageData as $key => $data) {
-                $block = $cms->getBlockData($data['_type']);
+                $block = $cms->getBlockData($data['_name']);
                 $pageData[$key]['_path'] = $cms->getBlockTemplatePath(
-                    $data['_type'],
+                    $data['_name'],
                 );
 
                 $built = self::buildValidationDataAndRules(
@@ -128,7 +173,7 @@ final class PageController extends AbstractController
             }
         } else {
             foreach ($page->getData() as $data) {
-                $block = $cms->getBlockData($data['_type']);
+                $block = $cms->getBlockData($data['_name']);
                 $block['fields'] = self::attachValuesAndErrors(
                     $block['fields'],
                     $data,
@@ -142,7 +187,7 @@ final class PageController extends AbstractController
         $mediaJson = $serializer->serialize($media, 'json');
 
         $blockList = $cms->listBlocks();
-        return $this->render('page/edit.twig', [
+        return $this->render('page/show.twig', [
             'blockList' => $blockList,
             'page' => $page,
             'blocks' => $blocks,
@@ -152,7 +197,7 @@ final class PageController extends AbstractController
 
     #[
         Route(
-            '/admin/pages/{id}/delete',
+            '/__admin/pages/{id}/delete',
             name: 'app_page_delete',
             requirements: ['id' => '\d+'],
         ),
@@ -174,10 +219,10 @@ final class PageController extends AbstractController
         return $this->redirectToRoute('app_pages');
     }
 
-    #[Route('/admin/pages/blocks/{type}', name: 'app_page_block')]
-    public function block(string $type, Cms $cms): Response
+    #[Route('/__admin/pages/blocks/{name}', name: 'app_page_block')]
+    public function block(string $name, Cms $cms): Response
     {
-        $block = $cms->getBlockData($type);
+        $block = $cms->getBlockData($name);
         if ($block === null) {
             throw new NotFoundHttpException();
         }
@@ -187,7 +232,7 @@ final class PageController extends AbstractController
 
     #[
         Route(
-            '/admin/pages/{id}/meta',
+            '/__admin/pages/{id}/meta',
             name: 'app_page_meta',
             requirements: ['id' => '\d+'],
         ),

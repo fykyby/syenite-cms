@@ -1,0 +1,5 @@
+emails:
+  contact:
+    name: required
+    email: required|email
+    message: required

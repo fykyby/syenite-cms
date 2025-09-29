@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c996d3e355a1152e861dd961e8ee87b1",
+    "content-hash": "36a71d6bec2be612bb61b4c28d7488c9",
     "packages": [
         {
             "name": "composer/semver",
@@ -5035,16 +5035,16 @@
         },
         {
             "name": "symfony/security-core",
-            "version": "v7.3.3",
+            "version": "v7.3.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/security-core.git",
-                "reference": "4465a3b9cefbaebaeeeb98c2becfdb4b59d22488"
+                "reference": "68b9d3ca57615afde6152a1e1441fa035bea43f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/security-core/zipball/4465a3b9cefbaebaeeeb98c2becfdb4b59d22488",
-                "reference": "4465a3b9cefbaebaeeeb98c2becfdb4b59d22488",
+                "url": "https://api.github.com/repos/symfony/security-core/zipball/68b9d3ca57615afde6152a1e1441fa035bea43f8",
+                "reference": "68b9d3ca57615afde6152a1e1441fa035bea43f8",
                 "shasum": ""
             },
             "require": {
@@ -5102,7 +5102,7 @@
             "description": "Symfony Security Component - Core Library",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/security-core/tree/v7.3.3"
+                "source": "https://github.com/symfony/security-core/tree/v7.3.4"
             },
             "funding": [
                 {
@@ -5122,7 +5122,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-08-25T06:35:40+00:00"
+            "time": "2025-09-24T14:32:13+00:00"
         },
         {
             "name": "symfony/security-csrf",
@@ -6773,7 +6773,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
@@ -6781,6 +6781,6 @@
         "ext-ctype": "*",
         "ext-iconv": "*"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }

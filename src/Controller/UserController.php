@@ -17,7 +17,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class UserController extends AbstractController
 {
-    #[Route('/admin/auth/signup', name: 'app_auth_signup')]
+    #[Route('/__admin/auth/signup', name: 'app_auth_signup')]
     public function signup(
         Request $request,
         UserPasswordHasherInterface $passwordHasher,
@@ -64,7 +64,7 @@ final class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/auth/login', name: 'app_auth_login')]
+    #[Route('/__admin/auth/login', name: 'app_auth_login')]
     public function login(
         EntityManagerInterface $entityManager,
         AuthenticationUtils $authUtils,
@@ -83,7 +83,7 @@ final class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/auth/logout', name: 'app_auth_logout')]
+    #[Route('/__admin/auth/logout', name: 'app_auth_logout')]
     public function logout(): Response
     {
         return $this->render('user/login.twig', []);

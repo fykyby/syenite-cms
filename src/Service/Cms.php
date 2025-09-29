@@ -9,11 +9,15 @@ use Symfony\Component\Yaml\Yaml;
 class Cms
 {
     private static string $theme;
+    private static array $config;
 
     public function __construct()
     {
         // TODO: get theme from db
         self::$theme = 'default';
+
+        $config = $this->readConfig();
+        self::$config = $config;
     }
 
     public function getTheme(): string
@@ -26,12 +30,28 @@ class Cms
         self::$theme = $theme;
     }
 
+    public function getConfig(): array
+    {
+        return self::$config;
+    }
+
+    public function setConfig(array $config): void
+    {
+        self::$config = $config;
+    }
+
+    public function readConfig(): array
+    {
+        $config = Yaml::parseFile(
+            ROOT_DIR . '/cms/themes/' . $this->getTheme() . '/config.yaml',
+        );
+
+        return $config;
+    }
+
     public function getBlocksDir(): string
     {
-        return dirname(dirname(dirname(__FILE__))) .
-            '/cms/themes/' .
-            $this->getTheme() .
-            '/blocks';
+        return ROOT_DIR . '/cms/themes/' . $this->getTheme() . '/blocks';
     }
 
     public function getBlockTemplatePath(string $blockName): string

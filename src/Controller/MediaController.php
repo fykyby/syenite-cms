@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class MediaController extends AbstractController
 {
-    #[Route('/admin/media', name: 'app_media')]
+    #[Route('/__admin/media', name: 'app_media')]
     public function index(EntityManagerInterface $entityManager): Response
     {
         $media = $entityManager->getRepository(Media::class)->findAll();
@@ -25,7 +25,7 @@ final class MediaController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/media/new', name: 'app_media_new')]
+    #[Route('/__admin/media/new', name: 'app_media_new')]
     public function new(
         Request $request,
         ImageUploader $uploader,
@@ -87,7 +87,7 @@ final class MediaController extends AbstractController
 
     #[
         Route(
-            '/admin/media/{id}/delete',
+            '/__admin/media/{id}/delete',
             name: 'app_media_delete',
             requirements: ['id' => '\d+'],
         ),
