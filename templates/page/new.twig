@@ -35,7 +35,7 @@
                     name="type"
                     x-model="field.value.url"
                 >
-                    {% if values.type ?? 'default' == 'default' %}
+                    {% if values.type is defined and values.type == 'default' %}
                         <option value="default" selected>
                             Default
                         </option>
