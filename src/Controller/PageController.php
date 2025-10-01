@@ -145,6 +145,7 @@ final class PageController extends AbstractController
                     $block['fields'],
                     $data,
                 );
+
                 $validationData = $built['data'];
                 $validationRules = $built['rules'];
 
@@ -279,6 +280,18 @@ final class PageController extends AbstractController
                         ];
                     }
                 }
+            } elseif (
+                $field['type'] === 'fieldset' &&
+                isset($field['fields'])
+            ) {
+                $fieldsetData = $data[$key] ?? [];
+                $fieldsetErrors = $errors[$key] ?? [];
+
+                $field['fields'] = self::attachValuesAndErrors(
+                    $field['fields'],
+                    $fieldsetData,
+                    $fieldsetErrors,
+                );
             } elseif ($field['type'] === 'image') {
                 $field['value'] = [
                     'url' => $data[$key]['url'] ?? null,
@@ -327,13 +340,28 @@ final class PageController extends AbstractController
                         );
                     }
                 }
-            } elseif ($field['type'] === 'image') {
-                // Data always has url + alt + name
+            } elseif (
+                $field['type'] === 'fieldset' &&
+                isset($field['fields'])
+            ) {
+                $validationData[$key] = [];
+
+                $nestedResult = self::buildValidationDataAndRules(
+                    $field['fields'],
+                    $data[$key] ?? [],
+                    $fullKey,
+                );
+
+                $validationData[$key] = $nestedResult['data'];
+                $validationRules = array_merge(
+                    $validationRules,
+                    $nestedResult['rules'],
+                );
+            } elseif ($field['type'] === 'media') {
                 $validationData[$key] = [
                     'url' => $data[$key]['url'] ?? null,
                 ];
 
-                // Attach rules if defined
                 if (!empty($field['rules'])) {
                     $validationRules[$fullKey . '.url'] = $field['rules'];
                 }

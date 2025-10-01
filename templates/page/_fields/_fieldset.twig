@@ -1,0 +1,15 @@
+<fieldset
+    class="gap-medium p-medium uk-rounded relative flex flex-col border shadow"
+>
+    <legend
+        class="uk-btn-default uk-btn-xs uk-btn bg-card text-card-foreground border-border mr-auto place-self-start"
+    >
+        <span class="capitalize" x-text="field.key"></span>
+    </legend>
+
+    <template x-for="(field, l) in field.fields">
+        {% include 'page/_block_fieldset_field.twig' with {
+            depth: depth|default(0)
+        } %}
+    </template>
+</fieldset>

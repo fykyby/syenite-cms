@@ -142,7 +142,9 @@
                 <h2 class="uk-modal-title">Select Media</h2>
             </div>
             <div class="uk-modal-body">
-                <ul class="gap-medium grid grid-cols-4">
+                <ul
+                    class="gap-medium grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
+                >
                     <template x-for="m in media">
                         <button class="uk-modal-close" @click="setMedia(m)">
                             <li

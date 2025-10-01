@@ -5,12 +5,14 @@ fields:
     rules: required|min:3|max:255
 
   - key: link
-    type: input
-    rules: required
-
-  - key: link_label
-    type: input
-    rules: required
+    type: fieldset
+    fields:
+      - key: label
+        type: input
+        rules: required
+      - key: url
+        type: input
+        rules: required
 
   - key: items
     type: array
@@ -18,7 +20,6 @@ fields:
       - key: title
         type: input
         rules: required|min:3|max:255
-
       - key: subtitle
         type: input
         rules: required|min:3|max:255
