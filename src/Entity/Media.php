@@ -19,7 +19,7 @@ class Media
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\Choice(options: ['image'])]
+    #[Assert\Choice(options: ['image', 'file'])]
     private ?string $type = null;
 
     #[ORM\Column(length: 255)]

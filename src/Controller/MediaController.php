@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Media;
+use App\Service\FileUploader;
 use App\Service\ImageUploader;
 use App\Service\Validation;
 use Doctrine\ORM\EntityManagerInterface;
@@ -28,7 +29,8 @@ final class MediaController extends AbstractController
     #[Route('/__admin/media/new', name: 'app_media_new')]
     public function new(
         Request $request,
-        ImageUploader $uploader,
+        ImageUploader $imageUploader,
+        FileUploader $fileUploader,
         EntityManagerInterface $entityManager,
         Validation $validation,
         ValidatorInterface $validator,
@@ -46,22 +48,30 @@ final class MediaController extends AbstractController
 
         $error = null;
         foreach ($files as $file) {
+            $media = new Media();
+            $isImage = str_starts_with($file->getClientMimeType(), 'image/');
+
             try {
-                $filename = $uploader->upload($file);
+                if ($isImage) {
+                    $filename = $imageUploader->upload($file);
+                    $media->setName($filename);
+                    $media->setType('image');
+                    $media->setVariants(
+                        $this->generateImageVariants($filename),
+                    );
+                } else {
+                    $filename = $fileUploader->upload($file);
+                    $media->setName($filename);
+                    $media->setType('file');
+                    $media->setVariants($this->generateFileVariants($filename));
+                }
             } catch (\Exception $e) {
                 $error = 'Error occurred while uploading file';
                 break;
             }
 
-            $variants = $this->generateVariants($filename);
-
-            $image = new Media();
-            $image->setType('image');
-            $image->setName($filename);
-            $image->setVariants($variants);
-
             $validationErrors = $validation->formatErrors(
-                $validator->validate($image),
+                $validator->validate($media),
             );
 
             if ($validationErrors) {
@@ -70,7 +80,7 @@ final class MediaController extends AbstractController
                 break;
             }
 
-            $entityManager->persist($image);
+            $entityManager->persist($media);
         }
 
         if ($error === null) {
@@ -96,6 +106,7 @@ final class MediaController extends AbstractController
         int $id,
         EntityManagerInterface $entityManager,
         ImageUploader $imageUploader,
+        FileUploader $fileUploader,
     ): Response {
         $media = $entityManager->getRepository(Media::class)->find($id);
         if ($media === null) {
@@ -105,14 +116,25 @@ final class MediaController extends AbstractController
         $entityManager->remove($media);
         $entityManager->flush();
 
-        $imageUploader->delete($media->getName());
+        if ($media->getType() === 'image') {
+            $imageUploader->delete($media->getName());
+        } else {
+            $fileUploader->delete($media->getName());
+        }
 
         $this->addFlash('success', 'Media deleted');
 
         return $this->redirectToRoute('app_media');
     }
 
-    private function generateVariants(string $filename): array
+    private function generateFileVariants(string $filename): array
+    {
+        return [
+            'default' => '/media/uploads/' . $filename,
+        ];
+    }
+
+    private function generateImageVariants(string $filename): array
     {
         return [
             'thumbnail' => $this->generateUrl('liip_imagine_filter', [

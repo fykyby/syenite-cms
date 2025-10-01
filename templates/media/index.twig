@@ -11,9 +11,11 @@
 {% endblock %}
 
 {% block body %}
-    <ul class="gap-medium grid grid-cols-4">
+    <ul
+        class="gap-medium grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
+    >
         {% for media in media %}
-            <li class="uk-card group relative overflow-hidden">
+            <li class="uk-card group relative flex flex-col overflow-hidden">
                 <div
                     class="right-small top-small absolute opacity-0 group-hover:opacity-100"
                 >
@@ -27,15 +29,28 @@
                     </button>
                 </div>
 
-                <div>
-                    <img
-                        class="h-full w-full object-cover"
-                        src="{{ media.variants['thumbnail'] }}"
-                        alt=""
-                    />
+                <div class="h-56 overflow-hidden">
+                    {% if media.type == 'image' %}
+                        <img
+                            class="h-full w-full object-cover"
+                            src="{{ media.variants['thumbnail'] }}"
+                            alt=""
+                        />
+                    {% else %}
+                        <div class="flex h-full items-center justify-center">
+                            <uk-icon
+                                icon="file"
+                                height="48"
+                                width="48"
+                            ></uk-icon>
+                        </div>
+                    {% endif %}
                 </div>
-                <div class="uk-card-body">
-                    <h3 class="uk-card-title truncate">{{ media.name }}</h3>
+
+                <div class="uk-card-body shrink-0">
+                    <h3 class="uk-card-title py-smallest truncate">
+                        {{ media.name }}
+                    </h3>
                 </div>
             </li>
         {% endfor %}

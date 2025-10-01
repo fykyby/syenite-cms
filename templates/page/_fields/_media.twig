@@ -15,6 +15,8 @@
             field.value.variants = m.variants;
             field.value.name = m.name;
             field.value.url = m.variants[Object.keys(m.variants)[0]];
+            field.value.type = m.type;
+            field.value.alt = '';
         },
 
         resetMedia() {
@@ -45,6 +47,13 @@
                     :id="key + '[name]'"
                     :name="key + '[name]'"
                     x-model="field.value.name"
+                />
+
+                <input
+                    type="hidden"
+                    :id="key + '[type]'"
+                    :name="key + '[type]'"
+                    x-model="field.value.type"
                 />
 
                 <button
@@ -108,6 +117,7 @@
                     x-model="field.value.alt"
                     :id="key + '[alt]'"
                     :name="key + '[alt]'"
+                    :disabled="field.value.type !== 'image'"
                 />
             </div>
         </div>
@@ -135,17 +145,33 @@
                 <ul class="gap-medium grid grid-cols-4">
                     <template x-for="m in media">
                         <button class="uk-modal-close" @click="setMedia(m)">
-                            <li class="uk-card overflow-hidden">
-                                <div>
-                                    <img
-                                        class="h-full w-full object-cover"
-                                        :src="m.variants.thumbnail"
-                                        alt=""
-                                    />
+                            <li
+                                class="uk-card group relative flex flex-col overflow-hidden"
+                            >
+                                <div class="h-56 overflow-hidden">
+                                    <template x-if="m.type == 'image'">
+                                        <img
+                                            class="h-full w-full object-cover"
+                                            :src="m.variants.thumbnail"
+                                            alt=""
+                                        />
+                                    </template>
+                                    <template x-if="m.type == 'file'">
+                                        <div
+                                            class="flex h-full items-center justify-center"
+                                        >
+                                            <uk-icon
+                                                icon="file"
+                                                height="48"
+                                                width="48"
+                                            ></uk-icon>
+                                        </div>
+                                    </template>
                                 </div>
-                                <div class="uk-card-body">
+
+                                <div class="uk-card-body shrink-0">
                                     <h3
-                                        class="uk-card-title truncate"
+                                        class="uk-card-title py-smallest truncate"
                                         x-text="m.name"
                                     >
 

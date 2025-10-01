@@ -9,5 +9,5 @@ fields:
     rules: max:255
 
   - key: background
-    type: image
+    type: media
     rules:

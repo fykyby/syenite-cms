@@ -285,6 +285,7 @@ final class PageController extends AbstractController
                     'alt' => $data[$key]['alt'] ?? null,
                     'name' => $data[$key]['name'] ?? null,
                     'variants' => $data[$key]['variants'] ?? null,
+                    'type' => $data[$key]['type'] ?? null,
                 ];
                 $field['error'] = $errors[$key] ?? null;
             } else {
