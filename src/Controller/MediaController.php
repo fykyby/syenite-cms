@@ -137,18 +137,9 @@ final class MediaController extends AbstractController
     private function generateImageVariants(string $filename): array
     {
         return [
-            'thumbnail' => $this->generateUrl('liip_imagine_filter', [
-                'filter' => 'thumbnail',
-                'path' => $filename,
-            ]),
-            'medium' => $this->generateUrl('liip_imagine_filter', [
-                'filter' => 'medium',
-                'path' => $filename,
-            ]),
-            'large' => $this->generateUrl('liip_imagine_filter', [
-                'filter' => 'large',
-                'path' => $filename,
-            ]),
+            'thumbnail' => "/media/cache/thumbnail/$filename",
+            'medium' => "/media/cache/medium/$filename",
+            'large' => "/media/cache/large/$filename",
         ];
     }
 }

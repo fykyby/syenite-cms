@@ -15,7 +15,23 @@
   }
 
   * {
-    @apply border-border! duration-150!;
+    @apply border-border duration-150!;
+  }
+
+  .uk-card,
+  .uk-table *,
+  .uk-input-fake,
+  .uk-select,
+  .uk-btn-default,
+  .uk-tab::before {
+    @apply border-border!;
+  }
+
+  .uk-btn:disabled,
+  .uk-input:disabled,
+  .uk-textarea:disabled,
+  .uk-select:disabled {
+    @apply opacity-50! cursor-not-allowed! bg-[var(--uk-disabled-color)]!;
   }
 
   html {
@@ -54,6 +70,10 @@
 
   textarea {
     @apply border-input! h-[6lh] resize-none;
+  }
+
+  ul.uk-tab > li.uk-active {
+    @apply border-[var(--uk-tab-active-border-color)]!;
   }
 
   select.uk-select,

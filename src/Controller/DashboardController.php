@@ -8,13 +8,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-final class AdminController extends AbstractController
+final class DashboardController extends AbstractController
 {
     #[Route('/__admin', name: 'app_dashboard')]
     public function index(): Response
     {
-        return $this->render('admin/index.twig', [
-            'controller_name' => 'AdminController',
-        ]);
+        return $this->render('dashboard/index.twig', []);
     }
 }

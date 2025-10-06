@@ -231,32 +231,6 @@ final class PageController extends AbstractController
         return $this->json($block);
     }
 
-    #[
-        Route(
-            '/__admin/pages/{id}/meta',
-            name: 'app_page_meta',
-            requirements: ['id' => '\d+'],
-        ),
-    ]
-    public function meta(
-        int $id,
-        EntityManagerInterface $entityManager,
-        Request $request,
-    ): Response {
-        $page = $entityManager->getRepository(Page::class)->find($id);
-        if ($page === null) {
-            throw new NotFoundHttpException();
-        }
-
-        $data = $request->request->all();
-        $page->setMeta($data);
-        $entityManager->flush();
-
-        $this->addFlash('success', 'Meta saved');
-
-        return $this->json($data);
-    }
-
     private static function attachValuesAndErrors(
         array $fields,
         array $data,

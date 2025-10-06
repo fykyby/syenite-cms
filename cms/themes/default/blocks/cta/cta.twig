@@ -1,4 +1,12 @@
 <div>
     <h2>{{ title }}</h2>
-    <a href="{{ link }}">{{ link_label }}</a>
+    <a href="{{ link.url }}">{{ link.label }}</a>
+    <ul>
+        {% for item in items|default([]) %}
+            <li>
+                <span>{{ item.title }}</span>
+                <span>{{ item.subtitle }}</span>
+            </li>
+        {% endfor %}
+    </ul>
 </div>

@@ -1,5 +1,16 @@
 {% extends 'base.twig' %}
 
+{% block back_link %}
+    {{
+        path(
+            'app_page',
+            {
+                id: page.id
+            }
+        )
+    }}
+{% endblock %}
+
 {% block title %}
     Edit Page {{ page.path }}
 {% endblock %}

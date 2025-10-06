@@ -1,5 +1,9 @@
 {% extends 'base.twig' %}
 
+{% block back_link %}
+    {{ path('app_media') }}
+{% endblock %}
+
 {% block title %}
     Media
 {% endblock %}

@@ -1,5 +1,9 @@
 {% extends 'base.twig' %}
 
+{% block back_link %}
+    {{ path('app_pages') }}
+{% endblock %}
+
 {% block title %}
     Page {{ page.path }}
 {% endblock %}
