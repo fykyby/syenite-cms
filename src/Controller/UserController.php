@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Settings;
 use App\Entity\User;
 use App\Service\Validation;
 use Doctrine\ORM\EntityManagerInterface;
@@ -51,7 +52,10 @@ final class UserController extends AbstractController
                         $request->get('password'),
                     ),
                 );
+
+                $settings = new Settings();
                 $entityManager->persist($user);
+                $entityManager->persist($settings);
                 $entityManager->flush();
 
                 return $this->redirectToRoute('app_auth_login');

@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Settings;
 use App\Service\Cms;
 use App\Service\Validation;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,16 +29,14 @@ final class EmailController extends AbstractController
         Cms $cms,
         Request $request,
         Validation $validation,
+        EntityManagerInterface $entityManager,
     ): Response {
         $data = $request->request->all();
         $rules = $cms->getConfig()['emails'][$name];
-        // TODO: get from db
-        $settings = [
-            'username' => 'user',
-            'password' => 'pass',
-            'host' => 'smtp.example.com',
-            'port' => 25,
-        ];
+        $settings = $entityManager
+            ->getRepository(Settings::class)
+            ->find(1)
+            ->getEmailSettings();
 
         $errors = $validation->validate($data, $rules);
         if (!empty($errors)) {
@@ -45,19 +45,30 @@ final class EmailController extends AbstractController
             ])->setStatusCode(400);
         }
 
-        // TODO: send email
-
-        $dsn = "smtp://{$settings['username']}:{$settings['password']}@{$settings['host']}:{$settings['port']}";
-        $transport = Transport::fromDsn($dsn);
-        $mailer = new Mailer($transport);
+        $html = $this->render('client/_email.twig', [
+            'data' => $data,
+        ]);
 
         $email = new Email();
+        if ($data['email']) {
+            $email->replyTo($data['email']);
+        } else {
+            $data['email'] = '';
+        }
         $email->from($settings['username']);
         $email->to($settings['username']);
-        $email->subject('todo');
-        // $email->replyTo($data['email']);
+        $email->subject("{$name} - {$request->getHost()} - {$data['email']}");
+        $email->html($html->getContent());
 
-        // $mailer->send();
+        $username = urlencode($settings['username']);
+        $password = urlencode($settings['password']);
+        $host = urlencode($settings['host']);
+        $port = urlencode($settings['port']);
+
+        $dsn = "smtp://{$username}:{$password}@{$host}:{$port}";
+        $transport = Transport::fromDsn($dsn);
+        $mailer = new Mailer($transport);
+        $mailer->send($email);
 
         return $this->json([
             'errors' => null,

@@ -32,96 +32,97 @@
         >
             <div
                 class="{{
-                errors.email_account.username ?? ''
+                errors.email_account_username ?? ''
                     ? 'form-destructive'
                     : ''
                 }}"
             >
-                <label class="uk-form-label" for="email_account[username]">
+                <label class="uk-form-label" for="email_account_username">
                     Username
                 </label>
                 <div class="uk-form-controls">
                     <input
                         class="uk-input"
                         type="text"
-                        id="email_account[username]"
-                        name="email_account[username]"
-                        value="{{ values.email_account.username ?? '' }}"
+                        id="email_account_username"
+                        name="email_account_username"
+                        value="{{ values.getEmailAccountUsername() ?? '' }}"
                     />
                 </div>
                 <div class="uk-form-help">
-                    {{ errors.email_account.username ?? '' }}
+                    {{ errors.email_account_username ?? '' }}
                 </div>
             </div>
 
             <div
                 class="{{
-                errors.email_account.password ?? ''
+                errors.email_account_password ?? ''
                     ? 'form-destructive'
                     : ''
                 }}"
             >
-                <label class="uk-form-label" for="email_account[password]">
+                <label class="uk-form-label" for="email_account_password">
                     Password
                 </label>
                 <div class="uk-form-controls">
                     <input
                         class="uk-input"
                         type="password"
-                        id="email_account[password]"
-                        name="email_account[password]"
+                        id="email_account_password"
+                        name="email_account_password"
+                        value="{{ values.getEmailAccountPassword() ?? '' }}"
                     />
                 </div>
                 <div class="uk-form-help">
-                    {{ errors.email_account.password ?? '' }}
+                    {{ errors.email_account_password ?? '' }}
                 </div>
             </div>
 
             <div
                 class="{{
-                errors.email_account.host ?? ''
+                errors.email_account_host ?? ''
                     ? 'form-destructive'
                     : ''
                 }}"
             >
-                <label class="uk-form-label" for="email_account[host]">
+                <label class="uk-form-label" for="email_account_host">
                     Host
                 </label>
                 <div class="uk-form-controls">
                     <input
                         class="uk-input"
                         type="text"
-                        id="email_account[host]"
-                        name="email_account[host]"
-                        value="{{ values.email_account.host ?? '' }}"
+                        id="email_account_host"
+                        name="email_account_host"
+                        value="{{ values.getEmailAccountHost() ?? '' }}"
                     />
                 </div>
                 <div class="uk-form-help">
-                    {{ errors.email_account.host ?? '' }}
+                    {{ errors.email_account_host ?? '' }}
                 </div>
             </div>
 
             <div
                 class="{{
-                errors.email_account.port ?? ''
+                errors.email_account_port ?? ''
                     ? 'form-destructive'
                     : ''
                 }}"
             >
-                <label class="uk-form-label" for="email_account[port]">
+                <label class="uk-form-label" for="email_account_port">
                     Port
                 </label>
                 <div class="uk-form-controls">
                     <input
                         class="uk-input"
                         type="number"
-                        id="email_account[port]"
-                        name="email_account[port]"
-                        value="{{ values.email_account.port ?? '' }}"
+                        id="email_account_port"
+                        name="email_account_port"
+                        value="{{ values.getEmailAccountPort() ?? '' }}"
                     />
                 </div>
                 <div class="uk-form-help">
-                    {{ errors.email_account.port ?? '' }}
+                    {{ errors.email_account_port ?? '' }}
                 </div>
             </div>
         </form>
