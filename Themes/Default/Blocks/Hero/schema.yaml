@@ -1,4 +1,4 @@
-name: hero
+name: Hero
 fields:
   - key: title
     type: input

@@ -4,6 +4,7 @@
 
         init() {
             if (!field.value) this.resetMedia();
+
             const currentMedia = media.find((m) => m.name === field.value.name);
 
             if (!currentMedia && field.value.url) {
@@ -25,7 +26,9 @@
                 name: '',
                 variants: {},
                 alt: '',
+                type: '',
             };
+
         },
     }"
 >

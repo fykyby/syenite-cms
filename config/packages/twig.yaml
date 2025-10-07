@@ -2,7 +2,7 @@ twig:
   file_name_pattern: "*.twig"
   auto_reload: true
   paths:
-    "cms/themes": "themes"
+    "Themes": "Themes"
 
 when@test:
   twig:

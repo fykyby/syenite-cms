@@ -1,4 +1,4 @@
-name: cta
+name: CTA
 fields:
   - key: title
     type: input

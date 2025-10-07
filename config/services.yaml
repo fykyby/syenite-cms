@@ -7,6 +7,8 @@ parameters:
   images_directory: "%kernel.project_dir%/public/media/tmp"
 
 services:
+  Symfony\Component\HttpKernel\Controller\ArgumentResolverInterface: "@argument_resolver"
+
   # default configuration for services in *this* file
   _defaults:
     autowire: true # Automatically injects dependencies in your services.
@@ -17,9 +19,19 @@ services:
   App\:
     resource: "../src/"
 
+  Themes\:
+    resource: "../Themes/*/Actions/*"
+    autowire: true
+    public: true
+
   App\Service\ImageUploader:
     arguments:
       $targetDirectory: "%images_directory%"
       $loader: "@liip_imagine.binary.loader.default"
+
+  App\Controller\ActionController:
+    arguments:
+      $argumentResolver: "@debug.argument_resolver.inner"
+      $fullContainer: "@service_container"
   # add more service definitions when explicit configuration is needed
   # please note that last definitions always *replace* previous ones

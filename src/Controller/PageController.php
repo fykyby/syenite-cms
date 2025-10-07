@@ -67,57 +67,12 @@ final class PageController extends AbstractController
 
     #[
         Route(
-            '/__admin/pages/{id}/edit',
-            name: 'app_page_edit',
-            requirements: ['id' => '\d+'],
-        ),
-    ]
-    public function edit(
-        int $id,
-        EntityManagerInterface $entityManager,
-        Request $request,
-        Validation $validation,
-        ValidatorInterface $validator,
-    ): Response {
-        $page = $entityManager->getRepository(Page::class)->find($id);
-        if ($page === null) {
-            throw new NotFoundHttpException();
-        }
-
-        $errors = null;
-        if ($request->isMethod('POST')) {
-            $page->setPath($request->get('path'));
-            $page->setType($request->get('type'));
-            $page->setMeta($request->get('meta'));
-
-            $errors = $validation->formatErrors($validator->validate($page));
-            if ($errors === null) {
-                $entityManager->flush();
-
-                $this->addFlash('success', 'Page saved');
-
-                return $this->redirectToRoute('app_page_edit', [
-                    'id' => $page->getId(),
-                ]);
-            } else {
-                $this->addFlash('error', 'Validation error(s) occurred');
-            }
-        }
-
-        return $this->render('page/edit.twig', [
-            'page' => $page,
-            'errors' => $errors,
-        ]);
-    }
-
-    #[
-        Route(
             '/__admin/pages/{id}',
             name: 'app_page',
             requirements: ['id' => '\d+'],
         ),
     ]
-    public function show(
+    public function edit(
         int $id,
         EntityManagerInterface $entityManager,
         Request $request,
@@ -136,7 +91,7 @@ final class PageController extends AbstractController
             $pageData = $request->request->all()['blocks'] ?? [];
 
             foreach ($pageData as $key => $data) {
-                $block = $cms->getBlockData($data['_name']);
+                $block = $cms->getBlockSchema($data['_name']);
                 $pageData[$key]['_path'] = $cms->getBlockTemplatePath(
                     $data['_name'],
                 );
@@ -174,7 +129,7 @@ final class PageController extends AbstractController
             }
         } else {
             foreach ($page->getData() as $data) {
-                $block = $cms->getBlockData($data['_name']);
+                $block = $cms->getBlockSchema($data['_name']);
                 $block['fields'] = self::attachValuesAndErrors(
                     $block['fields'],
                     $data,
@@ -188,11 +143,56 @@ final class PageController extends AbstractController
         $mediaJson = $serializer->serialize($media, 'json');
 
         $blockList = $cms->listBlocks();
-        return $this->render('page/show.twig', [
+        return $this->render('page/edit.twig', [
             'blockList' => $blockList,
             'page' => $page,
             'blocks' => $blocks,
             'media' => $mediaJson,
+        ]);
+    }
+
+    #[
+        Route(
+            '/__admin/pages/{id}/edit',
+            name: 'app_page_edit',
+            requirements: ['id' => '\d+'],
+        ),
+    ]
+    public function editDetails(
+        int $id,
+        EntityManagerInterface $entityManager,
+        Request $request,
+        Validation $validation,
+        ValidatorInterface $validator,
+    ): Response {
+        $page = $entityManager->getRepository(Page::class)->find($id);
+        if ($page === null) {
+            throw new NotFoundHttpException();
+        }
+
+        $errors = null;
+        if ($request->isMethod('POST')) {
+            $page->setPath($request->get('path'));
+            $page->setType($request->get('type'));
+            $page->setMeta($request->get('meta'));
+
+            $errors = $validation->formatErrors($validator->validate($page));
+            if ($errors === null) {
+                $entityManager->flush();
+
+                $this->addFlash('success', 'Page saved');
+
+                return $this->redirectToRoute('app_page_edit', [
+                    'id' => $page->getId(),
+                ]);
+            } else {
+                $this->addFlash('error', 'Validation error(s) occurred');
+            }
+        }
+
+        return $this->render('page/edit_details.twig', [
+            'page' => $page,
+            'errors' => $errors,
         ]);
     }
 
@@ -223,7 +223,7 @@ final class PageController extends AbstractController
     #[Route('/__admin/pages/blocks/{name}', name: 'app_page_block')]
     public function block(string $name, Cms $cms): Response
     {
-        $block = $cms->getBlockData($name);
+        $block = $cms->getBlockSchema($name);
         if ($block === null) {
             throw new NotFoundHttpException();
         }

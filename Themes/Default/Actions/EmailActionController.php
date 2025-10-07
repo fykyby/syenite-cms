@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Controller;
+declare(strict_types=1);
+
+namespace Themes\Default\Actions;
 
 use App\Entity\Settings;
-use App\Service\Cms;
 use App\Service\Validation;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,27 +13,21 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mime\Email;
-use Symfony\Component\Routing\Attribute\Route;
 
-final class EmailController extends AbstractController
+final class EmailActionController extends AbstractController
 {
-    #[
-        Route(
-            '/__emails/{name}',
-            name: 'app_email',
-            requirements: ['name' => '\w+'],
-            methods: ['POST'],
-        ),
-    ]
-    public function send(
-        string $name,
-        Cms $cms,
+    public function sendContact(
         Request $request,
-        Validation $validation,
         EntityManagerInterface $entityManager,
+        Validation $validation,
     ): Response {
         $data = $request->request->all();
-        $rules = $cms->getConfig()['emails'][$name];
+        $rules = [
+            'name' => 'required',
+            'email' => 'required|email',
+            'message' => 'required',
+        ];
+
         $settings = $entityManager
             ->getRepository(Settings::class)
             ->find(1)
@@ -57,7 +52,7 @@ final class EmailController extends AbstractController
         }
         $email->from($settings['username']);
         $email->to($settings['username']);
-        $email->subject("{$name} - {$request->getHost()} - {$data['email']}");
+        $email->subject("Contact - {$request->getHost()} - {$data['email']}");
         $email->html($html->getContent());
 
         $username = urlencode($settings['username']);

@@ -1,0 +1,10 @@
+<div>
+    <h1>{{ title }}</h1>
+    <p>
+        {{ subtitle|default('') }}
+    </p>
+
+    {% if background.url|default(false) %}
+        <img src="{{ background.url }}" alt="{{ background.alt }}" />
+    {% endif %}
+</div>

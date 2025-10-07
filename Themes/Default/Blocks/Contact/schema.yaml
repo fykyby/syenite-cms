@@ -1,4 +1,4 @@
-name: contact
+name: Contact
 fields:
   - key: title
     type: input

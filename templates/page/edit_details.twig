@@ -1,0 +1,122 @@
+{% extends 'base.twig' %}
+
+{% block back_link %}
+    {{
+        path(
+            'app_page',
+            {
+                id: page.id
+            }
+        )
+    }}
+{% endblock %}
+
+{% block title %}
+    Edit Details {{ page.path }}
+{% endblock %}
+
+{% block actions %}
+    <button class="uk-btn uk-btn-primary" form="edit-page-form">Save</button>
+{% endblock %}
+
+{% block body %}
+    <form id="edit-page-form" class="uk-form-stacked" method="post">
+        <fieldset
+            class="gap-medium p-medium uk-rounded relative flex flex-col border shadow"
+        >
+            <legend
+                class="uk-btn-default uk-btn-xs uk-btn bg-card text-card-foreground border-border mr-auto place-self-start"
+            >
+                Page
+            </legend>
+
+            <div class="{{ errors.path ?? '' ? 'form-destructive' : '' }}">
+                <label class="uk-form-label" for="path">Path</label>
+                <div class="uk-form-controls">
+                    <input
+                        class="uk-input"
+                        type="text"
+                        id="path"
+                        name="path"
+                        value="{{ page.path ?? '/' }}"
+                    />
+                </div>
+                <div class="uk-form-help">
+                    {{ errors.path ?? '' }}
+                </div>
+            </div>
+
+            <div class="{{ errors.type ?? '' ? 'form-destructive' : '' }}">
+                <label class="uk-form-label" for="type">Type</label>
+                <div class="uk-form-controls">
+                    <select class="uk-select" id="type" name="type">
+                        {% if
+                            values.type is defined
+                                and values.type == 'default' %}
+                            <option value="default" selected>
+                                Default
+                            </option>
+                        {% else %}
+                            <option value="default">
+                                Default
+                            </option>
+                        {% endif %}
+                    </select>
+                </div>
+                <div class="uk-form-help">
+                    {{ errors.type ?? '' }}
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset
+            class="gap-medium p-medium uk-rounded relative flex flex-col border shadow"
+        >
+            <legend
+                class="uk-btn-default uk-btn-xs uk-btn bg-card text-card-foreground border-border mr-auto place-self-start"
+            >
+                Meta
+            </legend>
+
+            <div>
+                <label class="uk-form-label" for="meta[title]">Title</label>
+                <div class="uk-form-controls">
+                    <input
+                        class="uk-input"
+                        id="meta[title]"
+                        name="meta[title]"
+                        value="{{ page.meta.title ?? '' }}"
+                    />
+                </div>
+            </div>
+            <div>
+                <label class="uk-form-label" for="meta[description]">
+                    Description
+                </label>
+                <div class="uk-form-controls">
+                    <textarea
+                        class="uk-textarea"
+                        id="meta[description]"
+                        name="meta[description]"
+                    >
+                        {{- page.meta.description ?? '' -}}
+                    </textarea>
+                </div>
+            </div>
+            <div>
+                <label class="uk-form-label" for="meta[raw_html]">
+                    Raw HTML
+                </label>
+                <div class="uk-form-controls">
+                    <textarea
+                        class="uk-textarea"
+                        id="meta[raw_html]"
+                        name="meta[raw_html]"
+                    >
+                        {{- page.meta.raw_html ?? '' -}}
+                    </textarea>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+{% endblock %}

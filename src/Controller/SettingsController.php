@@ -38,7 +38,11 @@ final class SettingsController extends AbstractController
                 $entityManager->persist($settings);
                 $entityManager->flush();
 
+                $this->addFlash('success', 'Settings saved');
+
                 return $this->redirectToRoute('app_settings');
+            } else {
+                $this->addFlash('error', 'Validation error(s) occurred');
             }
         }
 

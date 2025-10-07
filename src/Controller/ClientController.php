@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Page;
@@ -26,8 +28,8 @@ final class ClientController extends AbstractController
         }
 
         // TODO: make layout configurable
-        $layout = 'base';
-        $layoutPath = $cms->getLayoutTemplatePath($layout);
+        $layoutName = 'Base';
+        $layoutPath = $cms->getLayoutTemplatePath($layoutName);
 
         return $this->render('client/index.twig', [
             'layoutPath' => $layoutPath,
