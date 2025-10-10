@@ -30,22 +30,27 @@ final class ThemeController extends AbstractController
         $themes = $cms->listThemes();
         $currentTheme = $cms->getThemeName();
 
+        $error = null;
         if ($request->isMethod('POST')) {
             $settings = $entityManager->getRepository(Settings::class)->find(1);
             $targetTheme = $request->request->get('theme');
 
-            $settings->setCurrentTheme($targetTheme);
-            $entityManager->flush();
+            if (!in_array($targetTheme, $themes)) {
+                $error = 'Invalid theme';
+            } else {
+                $settings->setCurrentTheme($targetTheme);
+                $entityManager->flush();
 
-            $this->addFlash('success', 'Theme changed');
+                $this->addFlash('success', 'Theme changed');
 
-            return $this->redirectToRoute('app_theme');
+                return $this->redirectToRoute('app_theme');
+            }
         }
 
         return $this->render('theme/change.html.twig', [
             'themes' => $themes,
             'currentTheme' => $currentTheme,
-            'error' => null,
+            'error' => $error,
         ]);
     }
 }
