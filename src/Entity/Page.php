@@ -39,6 +39,9 @@ class Page
     #[ORM\Column]
     private array $meta = [];
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $layout_name = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -94,6 +97,18 @@ class Page
     public function setMeta(array $meta): Page
     {
         $this->meta = $meta;
+
+        return $this;
+    }
+
+    public function getLayoutName(): ?string
+    {
+        return $this->layout_name;
+    }
+
+    public function setLayoutName(?string $layout_name): static
+    {
+        $this->layout_name = $layout_name;
 
         return $this;
     }

@@ -67,6 +67,31 @@
                     {{ errors.type ?? '' }}
                 </div>
             </div>
+
+            <div class="{{ errors.layout ?? '' ? 'form-destructive' : '' }}">
+                <label class="uk-form-label" for="layout">Layout</label>
+                <div class="uk-form-controls">
+                    <select class="uk-select" id="layout" name="layout">
+                        <option value="">
+                            -
+                        </option>
+                        {% for layout in layouts %}
+                            {% if page.getLayoutName() == layout %}
+                                <option value="{{ layout }}" selected>
+                                    {{ layout }}
+                                </option>
+                            {% else %}
+                                <option value="{{ layout }}">
+                                    {{ layout }}
+                                </option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="uk-form-help">
+                    {{ errors.layout ?? '' }}
+                </div>
+            </div>
         </fieldset>
 
         <fieldset

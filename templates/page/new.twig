@@ -50,5 +50,24 @@
                 {{ errors.type ?? '' }}
             </div>
         </div>
+
+        <div class="{{ errors.layout ?? '' ? 'form-destructive' : '' }}">
+            <label class="uk-form-label" for="layout">Layout</label>
+            <div class="uk-form-controls">
+                <select class="uk-select" id="layout" name="layout">
+                    <option value="">
+                        -
+                    </option>
+                    {% for layout in layouts %}
+                        <option value="{{ layout }}">
+                            {{ layout }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="uk-form-help">
+                {{ errors.layout ?? '' }}
+            </div>
+        </div>
     </form>
 {% endblock %}

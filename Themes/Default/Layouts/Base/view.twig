@@ -6,6 +6,12 @@
         {{ block('meta') ?? '' }}
     </head>
     <body>
+        <header>
+            {% for link in layout.header.links %}
+                <a href="{{ link.url }}">{{ link.title }}</a>
+            {% endfor %}
+        </header>
+
         {{ block('body') ?? '' }}
     </body>
 </html>

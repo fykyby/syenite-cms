@@ -64,6 +64,10 @@
     @apply text-2xl font-semibold;
   }
 
+  h2 {
+    @apply text-xl font-semibold;
+  }
+
   input {
     @apply border-input!;
   }

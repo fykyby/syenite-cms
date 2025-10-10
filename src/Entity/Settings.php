@@ -32,6 +32,9 @@ class Settings
     #[ORM\Column(length: 255)]
     private ?string $current_theme = null;
 
+    #[ORM\Column(nullable: true)]
+    private array $layout_data = [];
+
     public function getId(): ?int
     {
         return $this->id;
@@ -105,6 +108,18 @@ class Settings
     public function setCurrentTheme(string $current_theme): static
     {
         $this->current_theme = $current_theme;
+
+        return $this;
+    }
+
+    public function getLayoutData(): array
+    {
+        return $this->layout_data;
+    }
+
+    public function setLayoutData(array $layout_data): static
+    {
+        $this->layout_data = $layout_data;
 
         return $this;
     }

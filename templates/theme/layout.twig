@@ -1,0 +1,40 @@
+{% extends 'base.twig' %}
+
+{% block back_link %}
+    {{ path('app_theme') }}
+{% endblock %}
+
+{% block title %}
+    Layout - {{ name }}
+{% endblock %}
+
+{% block actions %}
+    <button class="uk-btn uk-btn-primary" form="layout-edit-form" type="submit">
+        Save
+    </button>
+{% endblock %}
+
+{% block body %}
+    <form id="layout-edit-form" method="post" x-data="{ key: `layout` }">
+        <template x-for="(field, j) in data" :key="`block-${j}-${field.key}`">
+            {% include 'page/_block_fieldset_field.twig' %}
+        </template>
+    </form>
+{% endblock %}
+
+{% block javascripts %}
+    {# prettier-ignore #}
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('body', () => ({ 
+                data: {{ data|json_encode|raw }},
+
+                switchIndexes(arr, i, j) {
+                    const temp = arr[i];
+                    arr[i] = arr[j];
+                    arr[j] = temp;
+                },
+            }));
+        })
+    </script>
+{% endblock %}

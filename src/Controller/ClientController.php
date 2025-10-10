@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Page;
+use App\Entity\Settings;
 use App\Service\Cms;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,12 +28,16 @@ final class ClientController extends AbstractController
             throw new NotFoundHttpException();
         }
 
-        // TODO: make layout configurable
-        $layoutName = 'Base';
-        $layoutPath = $cms->getLayoutTemplatePath($layoutName);
+        $settings = $entityManager->getRepository(Settings::class)->find(1);
+        $layoutData = $settings->getLayoutData();
+
+        $layoutPath = $page->getLayoutName()
+            ? $cms->getLayoutTemplatePath($page->getLayoutName())
+            : null;
 
         return $this->render('client/index.twig', [
             'layoutPath' => $layoutPath,
+            'layout' => $layoutData,
             'page' => $page,
         ]);
     }

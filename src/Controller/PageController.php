@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Entity\Media;
 use App\Entity\Page;
 use App\Service\Cms;
+use App\Service\DataTransformer;
 use App\Service\Validation;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,7 +36,9 @@ final class PageController extends AbstractController
         ValidatorInterface $validator,
         EntityManagerInterface $entityManager,
         Validation $validation,
+        Cms $cms,
     ): Response {
+        $layouts = $cms->listLayouts();
         $errors = null;
         if ($request->isMethod('POST')) {
             $page = new Page();
@@ -45,6 +48,16 @@ final class PageController extends AbstractController
             $page->setMeta([]);
 
             $errors = $validation->formatErrors($validator->validate($page));
+
+            $newLayoutName = $request->get('layout');
+            if ($newLayoutName === '') {
+                $page->setLayoutName(null);
+            } elseif (in_array($newLayoutName, $layouts)) {
+                $page->setLayoutName($newLayoutName);
+            } else {
+                $errors['layout'] = 'Invalid layout';
+            }
+
             if ($errors === null) {
                 $entityManager->persist($page);
                 $entityManager->flush();
@@ -62,6 +75,7 @@ final class PageController extends AbstractController
         return $this->render('page/new.twig', [
             'errors' => $errors,
             'values' => $request->request->all(),
+            'layouts' => $layouts,
         ]);
     }
 
@@ -79,6 +93,7 @@ final class PageController extends AbstractController
         Cms $cms,
         Validation $validation,
         SerializerInterface $serializer,
+        DataTransformer $dataTransformer,
     ): Response {
         $page = $entityManager->getRepository(Page::class)->find($id);
         if ($page === null) {
@@ -92,11 +107,12 @@ final class PageController extends AbstractController
 
             foreach ($pageData as $key => $data) {
                 $block = $cms->getBlockSchema($data['_name']);
+
                 $pageData[$key]['_path'] = $cms->getBlockTemplatePath(
                     $data['_name'],
                 );
 
-                $built = self::buildValidationDataAndRules(
+                $built = $dataTransformer->buildValidationDataAndRules(
                     $block['fields'],
                     $data,
                 );
@@ -109,7 +125,7 @@ final class PageController extends AbstractController
                     [];
                 $hasErrors = $hasErrors || !empty($blockErrors);
 
-                $block['fields'] = self::attachValuesAndErrors(
+                $block['fields'] = $dataTransformer->attachValuesAndErrors(
                     $block['fields'],
                     $data,
                     $blockErrors,
@@ -130,7 +146,11 @@ final class PageController extends AbstractController
         } else {
             foreach ($page->getData() as $data) {
                 $block = $cms->getBlockSchema($data['_name']);
-                $block['fields'] = self::attachValuesAndErrors(
+                if ($block === null) {
+                    continue;
+                }
+
+                $block['fields'] = $dataTransformer->attachValuesAndErrors(
                     $block['fields'],
                     $data,
                     [],
@@ -164,12 +184,14 @@ final class PageController extends AbstractController
         Request $request,
         Validation $validation,
         ValidatorInterface $validator,
+        Cms $cms,
     ): Response {
         $page = $entityManager->getRepository(Page::class)->find($id);
         if ($page === null) {
             throw new NotFoundHttpException();
         }
 
+        $layouts = $cms->listLayouts();
         $errors = null;
         if ($request->isMethod('POST')) {
             $page->setPath($request->get('path'));
@@ -177,6 +199,16 @@ final class PageController extends AbstractController
             $page->setMeta($request->get('meta'));
 
             $errors = $validation->formatErrors($validator->validate($page));
+
+            $newLayoutName = $request->get('layout');
+            if ($newLayoutName === '') {
+                $page->setLayoutName(null);
+            } elseif (in_array($newLayoutName, $layouts)) {
+                $page->setLayoutName($newLayoutName);
+            } else {
+                $errors['layout'] = 'Invalid layout';
+            }
+
             if ($errors === null) {
                 $entityManager->flush();
 
@@ -192,6 +224,7 @@ final class PageController extends AbstractController
 
         return $this->render('page/edit_details.twig', [
             'page' => $page,
+            'layouts' => $layouts,
             'errors' => $errors,
         ]);
     }
@@ -229,124 +262,5 @@ final class PageController extends AbstractController
         }
 
         return $this->json($block);
-    }
-
-    private static function attachValuesAndErrors(
-        array $fields,
-        array $data,
-        array $errors,
-    ): array {
-        foreach ($fields as &$field) {
-            $key = $field['key'];
-
-            if ($field['type'] === 'array' && isset($field['fields'])) {
-                $field['value'] = [];
-
-                if (!empty($data[$key]) && is_array($data[$key])) {
-                    foreach ($data[$key] as $index => $item) {
-                        $arrayItemErrors = $errors[$key][$index] ?? [];
-                        $field['value'][] = [
-                            'fields' => self::attachValuesAndErrors(
-                                $field['fields'],
-                                $item,
-                                $arrayItemErrors,
-                            ),
-                        ];
-                    }
-                }
-            } elseif (
-                $field['type'] === 'fieldset' &&
-                isset($field['fields'])
-            ) {
-                $fieldsetData = $data[$key] ?? [];
-                $fieldsetErrors = $errors[$key] ?? [];
-
-                $field['fields'] = self::attachValuesAndErrors(
-                    $field['fields'],
-                    $fieldsetData,
-                    $fieldsetErrors,
-                );
-            } elseif ($field['type'] === 'image') {
-                $field['value'] = [
-                    'url' => $data[$key]['url'] ?? null,
-                    'alt' => $data[$key]['alt'] ?? null,
-                    'name' => $data[$key]['name'] ?? null,
-                    'variants' => $data[$key]['variants'] ?? null,
-                    'type' => $data[$key]['type'] ?? null,
-                ];
-                $field['error'] = $errors[$key] ?? null;
-            } else {
-                $field['value'] = $data[$key] ?? null;
-                $field['error'] = $errors[$key] ?? null;
-            }
-        }
-
-        return $fields;
-    }
-
-    private static function buildValidationDataAndRules(
-        array $fields,
-        array $data,
-        string $prefix = '',
-    ): array {
-        $validationData = [];
-        $validationRules = [];
-
-        foreach ($fields as $field) {
-            $key = $field['key'];
-            $fullKey = $prefix === '' ? $key : $prefix . '.' . $key;
-
-            if ($field['type'] === 'array' && isset($field['fields'])) {
-                $validationData[$key] = [];
-
-                if (!empty($data[$key]) && is_array($data[$key])) {
-                    foreach ($data[$key] as $index => $item) {
-                        $nestedResult = self::buildValidationDataAndRules(
-                            $field['fields'],
-                            $item,
-                            $fullKey . '.' . $index,
-                        );
-
-                        $validationData[$key][] = $nestedResult['data'];
-                        $validationRules = array_merge(
-                            $validationRules,
-                            $nestedResult['rules'],
-                        );
-                    }
-                }
-            } elseif (
-                $field['type'] === 'fieldset' &&
-                isset($field['fields'])
-            ) {
-                $validationData[$key] = [];
-
-                $nestedResult = self::buildValidationDataAndRules(
-                    $field['fields'],
-                    $data[$key] ?? [],
-                    $fullKey,
-                );
-
-                $validationData[$key] = $nestedResult['data'];
-                $validationRules = array_merge(
-                    $validationRules,
-                    $nestedResult['rules'],
-                );
-            } elseif ($field['type'] === 'media') {
-                $validationData[$key] = [
-                    'url' => $data[$key]['url'] ?? null,
-                ];
-
-                if (!empty($field['rules'])) {
-                    $validationRules[$fullKey . '.url'] = $field['rules'];
-                }
-            } else {
-                $validationData[$key] = $data[$key] ?? null;
-                if (!empty($field['rules'])) {
-                    $validationRules[$fullKey] = $field['rules'];
-                }
-            }
-        }
-
-        return ['data' => $validationData, 'rules' => $validationRules];
     }
 }

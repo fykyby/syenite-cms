@@ -14,12 +14,11 @@ class Cms
 
     public function __construct(private EntityManagerInterface $entityManager)
     {
-        $currentTheme = $entityManager
-            ->getRepository(Settings::class)
-            ->find(1)
-            ->getCurrentTheme();
+        $settings = $entityManager->getRepository(Settings::class)->find(1);
 
-        self::$themeName = $currentTheme;
+        if ($settings !== null) {
+            self::$themeName = $settings->getCurrentTheme();
+        }
     }
 
     public function getThemeName(): string
@@ -49,12 +48,16 @@ class Cms
         return $dir;
     }
 
-    public function getBlockSchema(string $blockName): array
+    public function getBlockSchema(string $blockName): ?array
     {
-        $block = Yaml::parseFile(
-            "{$this->getBlocksDir()}/{$blockName}/schema.yaml",
-        );
-        return $block;
+        try {
+            $block = Yaml::parseFile(
+                "{$this->getBlocksDir()}/{$blockName}/schema.yaml",
+            );
+            return $block;
+        } catch (\Exception) {
+            return null;
+        }
     }
 
     public function getThemesDir(): string
@@ -69,12 +72,23 @@ class Cms
         return $dir;
     }
 
-    public function getLayoutSchema(string $layoutName): array
+    public function getLayoutSchema(string $layoutName): ?array
     {
-        $layout = Yaml::parseFile(
-            "{$this->getLayoutsDir()}/{$layoutName}/schema.yaml",
-        );
-        return $layout;
+        try {
+            $layout = Yaml::parseFile(
+                "{$this->getLayoutsDir()}/{$layoutName}/schema.yaml",
+            );
+            return $layout;
+        } catch (\Exception) {
+            return null;
+        }
+    }
+
+    public function listLayouts(): array
+    {
+        $dir = scandir($this->getLayoutsDir());
+        array_splice($dir, 0, 2);
+        return $dir;
     }
 
     public function getBlockTemplatePath(string $blockName): string
