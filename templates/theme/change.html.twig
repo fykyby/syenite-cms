@@ -1,0 +1,48 @@
+{% extends 'base.twig' %}
+
+{% block back_link %}
+    {{ path('app_theme') }}
+{% endblock %}
+
+{% block title %}
+    Change Theme
+{% endblock %}
+
+{% block actions %}
+    <button
+        class="uk-btn uk-btn-primary"
+        form="change-theme-form"
+        type="submit"
+    >
+        Submit
+    </button>
+{% endblock %}
+
+{% block body %}
+    <form class="uk-form-stacked" id="change-theme-form" method="post">
+        <div>
+            <label class="uk-form-label" for="theme">Theme</label>
+            <div class="uk-form-controls">
+                <select name="theme" class="uk-select" id="theme">
+                    {% for theme in themes %}
+                        {% if theme == currentTheme %}
+                            <option value="{{ theme }}" selected>
+                                {{ theme }}
+                            </option>
+                        {% else %}
+                            <option value="{{ theme }}">
+                                {{ theme }}
+                            </option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        {% if error %}
+            <div class="uk-alert uk-alert-destructive" data-uk-alert>
+                {{ error }}
+            </div>
+        {% endif %}
+    </form>
+{% endblock %}

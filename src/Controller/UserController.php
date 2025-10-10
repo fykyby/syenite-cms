@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Entity\Settings;
 use App\Entity\User;
+use App\Service\Cms;
 use App\Service\Validation;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,6 +26,7 @@ final class UserController extends AbstractController
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator,
         Validation $validation,
+        Cms $cms,
     ): Response {
         $userCount = $entityManager->getRepository(User::class)->count();
         if ($userCount > 0) {
@@ -54,6 +56,13 @@ final class UserController extends AbstractController
                 );
 
                 $settings = new Settings();
+
+                $themes = $cms->listThemes();
+                if (count($themes) === 0) {
+                    throw new \Exception('No themes found');
+                }
+                $settings->setCurrentTheme($themes[0]);
+
                 $entityManager->persist($user);
                 $entityManager->persist($settings);
                 $entityManager->flush();

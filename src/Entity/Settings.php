@@ -29,6 +29,9 @@ class Settings
     #[ORM\Column(nullable: true)]
     private ?string $email_account_port = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $current_theme = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -92,5 +95,17 @@ class Settings
             'host' => $this->getEmailAccountHost(),
             'port' => $this->getEmailAccountPort(),
         ];
+    }
+
+    public function getCurrentTheme(): ?string
+    {
+        return $this->current_theme;
+    }
+
+    public function setCurrentTheme(string $current_theme): static
+    {
+        $this->current_theme = $current_theme;
+
+        return $this;
     }
 }
