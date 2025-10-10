@@ -4,10 +4,14 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         {{ block('meta') ?? '' }}
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/gh/nandaleio/shadcn-classless@main/dist/shadcn-classless.css"
+        />
     </head>
     <body>
         <header>
-            {% for link in layout.header.links %}
+            {% for link in layout.header.links|default([]) %}
                 <a href="{{ link.url }}">{{ link.title }}</a>
             {% endfor %}
         </header>

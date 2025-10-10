@@ -19,12 +19,14 @@
         >
             <thead>
                 <tr>
+                    <th class="uk-table-shrink">#</th>
                     <th>Name</th>
                 </tr>
             </thead>
             <tbody>
-                {% for layout in layouts %}
+                {% for i, layout in layouts %}
                     <tr>
+                        <td>{{ i + 1 }}</td>
                         <td class="uk-table-link">
                             <a
                                 href="{{

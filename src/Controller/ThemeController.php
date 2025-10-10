@@ -85,7 +85,7 @@ final class ThemeController extends AbstractController
         $data = [];
         $hasErrors = false;
         if ($request->isMethod('POST')) {
-            $requestData = $request->request->all()['layout'];
+            $requestData = $request->request->all()['layout'] ?? [];
 
             $built = $dataTransformer->buildValidationDataAndRules(
                 $schema['fields'],
