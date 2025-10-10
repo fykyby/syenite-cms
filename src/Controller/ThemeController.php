@@ -37,6 +37,8 @@ final class ThemeController extends AbstractController
 
             if (!in_array($targetTheme, $themes)) {
                 $error = 'Invalid theme';
+
+                $this->addFlash('error', 'Validation error(s) occurred');
             } else {
                 $settings->setCurrentTheme($targetTheme);
                 $entityManager->flush();
