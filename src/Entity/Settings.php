@@ -32,6 +32,9 @@ class Settings
     #[ORM\Column(length: 255)]
     private ?string $current_theme = null;
 
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?DataLocale $default_locale = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -105,6 +108,18 @@ class Settings
     public function setCurrentTheme(string $current_theme): static
     {
         $this->current_theme = $current_theme;
+
+        return $this;
+    }
+
+    public function getDefaultLocale(): ?DataLocale
+    {
+        return $this->default_locale;
+    }
+
+    public function setDefaultLocale(?DataLocale $default_locale): static
+    {
+        $this->default_locale = $default_locale;
 
         return $this;
     }

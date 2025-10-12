@@ -1,0 +1,58 @@
+{% extends 'base.twig' %}
+
+{% block title %}
+    Locale
+{% endblock %}
+
+{% block actions %}
+    <a class="uk-btn uk-btn-primary" href="{{ path('app_locale_new') }}">
+        New Locale
+    </a>
+{% endblock %}
+
+{% block body %}
+    <table class="uk-table uk-table-divider uk-table-middle uk-table-justify">
+        <thead>
+            <tr>
+                <th class="uk-table-shrink">ID</th>
+                <th>Name</th>
+                <th class="uk-table-shrink">Code</th>
+                <th class="uk-table-shrink">Default</th>
+                <th class="uk-table-shrink">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for locale in locales %}
+                <tr>
+                    <td>{{ locale.id }}</td>
+                    <td class="uk-table-link">
+                        <a
+                            href="{{
+                            path(
+                                'app_locale_edit',
+                                {
+                                    id: locale.id
+                                }
+                            )
+                            }}"
+                        >
+                            {{ locale.name }}
+                        </a>
+                    </td>
+                    <td>{{ locale.code }}</td>
+                    <td>{{ defaultLocaleId == locale.id ? 'True' : '' }}</td>
+                    <td class="py-0">
+                        <button
+                            class="uk-btn uk-btn-ghost uk-btn-icon uk-btn-sm"
+                            data-uk-toggle="target: #locale-delete-modal-{{
+                            locale.id
+                            }}"
+                        >
+                            <uk-icon icon="trash"></uk-icon>
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends 'base.twig' %}
+
+{% block back_link %}
+    {{ path('app_locale') }}
+{% endblock %}
+
+{% block title %}
+    Edit Locale - {{ locale.name }}
+{% endblock %}
+
+{% block actions %}
+    <button class="uk-btn uk-btn-primary" form="new-page-form">Save</button>
+{% endblock %}
+
+{% block body %}
+    <form id="new-page-form" class="uk-form-stacked" method="post">
+        <div class="{{ errors.name ?? '' ? 'form-destructive' : '' }}">
+            <label class="uk-form-label" for="name">Name</label>
+            <div class="uk-form-controls">
+                <input
+                    class="uk-input"
+                    type="text"
+                    id="name"
+                    name="name"
+                    value="{{ locale.name ?? '' }}"
+                />
+            </div>
+            <div class="uk-form-help">
+                {{ errors.name ?? '' }}
+            </div>
+        </div>
+
+        <div class="{{ errors.code ?? '' ? 'form-destructive' : '' }}">
+            <label class="uk-form-label" for="code">Code</label>
+            <div class="uk-form-controls">
+                <input
+                    class="uk-input"
+                    type="text"
+                    id="code"
+                    name="code"
+                    maxlength="5"
+                    value="{{ locale.code ?? '' }}"
+                />
+            </div>
+            <div class="uk-form-help">
+                {{ errors.code ?? '' }}
+            </div>
+        </div>
+
+        <div class="{{ errors.domain ?? '' ? 'form-destructive' : '' }}">
+            <label class="uk-form-label" for="domain">Domain</label>
+            <div class="uk-form-controls">
+                <input
+                    class="uk-input"
+                    type="text"
+                    id="domain"
+                    name="domain"
+                    value="{{ locale.domain ?? '' }}"
+                />
+            </div>
+            <div class="uk-form-help">
+                {{ errors.domain ?? '' }}
+            </div>
+        </div>
+
+        <div class="gap-smallest flex items-center">
+            {% if default %}
+                <input
+                    class="uk-checkbox"
+                    type="checkbox"
+                    id="default"
+                    name="default"
+                    checked
+                />
+            {% else %}
+                <input
+                    class="uk-checkbox"
+                    type="checkbox"
+                    id="default"
+                    name="default"
+                />
+            {% endif %}
+            <label class="uk-form-label" for="default">Default</label>
+        </div>
+    </form>
+{% endblock %}
