@@ -1,9 +1,5 @@
 {% extends 'base.twig' %}
 
-{% block back_link %}
-    {{ path('app_theme') }}
-{% endblock %}
-
 {% block title %}
     Change Theme
 {% endblock %}
@@ -14,7 +10,7 @@
         form="change-theme-form"
         type="submit"
     >
-        Submit
+        Save
     </button>
 {% endblock %}
 

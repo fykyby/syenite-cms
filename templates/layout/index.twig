@@ -1,0 +1,37 @@
+{% extends 'base.twig' %}
+
+{% block title %}
+    Layouts
+{% endblock %}
+
+{% block body %}
+    <table class="uk-table uk-table-divider uk-table-middle uk-table-justify">
+        <thead>
+            <tr>
+                <th class="uk-table-shrink">#</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i, layout in layouts %}
+                <tr>
+                    <td>{{ i + 1 }}</td>
+                    <td class="uk-table-link">
+                        <a
+                            href="{{
+                            path(
+                                'app_layout_edit',
+                                {
+                                    name: layout
+                                }
+                            )
+                            }}"
+                        >
+                            {{ layout }}
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

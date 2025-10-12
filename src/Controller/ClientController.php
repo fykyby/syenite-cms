@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\LayoutData;
 use App\Entity\Page;
-use App\Entity\Settings;
 use App\Service\Cms;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -28,8 +28,12 @@ final class ClientController extends AbstractController
             throw new NotFoundHttpException();
         }
 
-        $settings = $entityManager->getRepository(Settings::class)->find(1);
-        $layoutData = $settings->getLayoutData();
+        $layoutData = $entityManager
+            ->getRepository(LayoutData::class)
+            ->findOneBy([
+                'name' => $page->getLayoutName(),
+                'theme' => $cms->getThemeName(),
+            ]);
 
         $layoutPath = $page->getLayoutName()
             ? $cms->getLayoutTemplatePath($page->getLayoutName())
@@ -37,7 +41,7 @@ final class ClientController extends AbstractController
 
         return $this->render('client/index.twig', [
             'layoutPath' => $layoutPath,
-            'layout' => $layoutData,
+            'layout' => $layoutData->getData(),
             'page' => $page,
         ]);
     }

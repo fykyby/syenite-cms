@@ -1,7 +1,7 @@
 module.exports = {
     content: [
         "./assets/**/*.{js,ts}",
-        "./templates/**/*.{twig}",
+        "./templates/**/*.twig",
         "!./Themes/**/*",
     ],
     theme: {
