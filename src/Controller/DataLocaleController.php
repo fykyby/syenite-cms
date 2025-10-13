@@ -35,7 +35,6 @@ final class DataLocaleController extends AbstractController
         if ($request->isMethod('POST')) {
             $locale = new DataLocale();
             $locale->setName($request->get('name'));
-            $locale->setCode($request->get('code'));
             $locale->setDomain($request->get('domain'));
 
             $errors = $validation->formatErrors($validator->validate($locale));
@@ -97,7 +96,6 @@ final class DataLocaleController extends AbstractController
         $errors = null;
         if ($request->isMethod('POST')) {
             $locale->setName($request->get('name'));
-            $locale->setCode($request->get('code'));
             $locale->setDomain($request->get('domain'));
 
             $errors = $validation->formatErrors($validator->validate($locale));
@@ -133,7 +131,7 @@ final class DataLocaleController extends AbstractController
 
         return $this->render('data_locale/edit.twig', [
             'errors' => $errors,
-            'locale' => $locale,
+            'values' => $locale,
         ]);
     }
 

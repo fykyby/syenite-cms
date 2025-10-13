@@ -45,8 +45,8 @@ final class PageController extends AbstractController
             $page = new Page();
             $page->setPath($request->get('path'));
             $page->setType($request->get('type'));
+            $page->setMeta($request->get('meta'));
             $page->setData([]);
-            $page->setMeta([]);
 
             $errors = $validation->formatErrors($validator->validate($page));
 

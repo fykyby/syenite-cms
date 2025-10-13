@@ -5,69 +5,11 @@
 {% endblock %}
 
 {% block actions %}
-    <button class="uk-btn uk-btn-primary" form="new-page-form">Submit</button>
+    <button class="uk-btn uk-btn-primary" form="page-details-form">
+        Submit
+    </button>
 {% endblock %}
 
 {% block body %}
-    <form id="new-page-form" class="uk-form-stacked" method="post">
-        <div class="{{ errors.path ?? '' ? 'form-destructive' : '' }}">
-            <label class="uk-form-label" for="path">Path</label>
-            <div class="uk-form-controls">
-                <input
-                    class="uk-input"
-                    type="text"
-                    id="path"
-                    name="path"
-                    value="{{ values.path ?? '/' }}"
-                />
-            </div>
-            <div class="uk-form-help">
-                {{ errors.path ?? '' }}
-            </div>
-        </div>
-
-        <div class="{{ errors.type ?? '' ? 'form-destructive' : '' }}">
-            <label class="uk-form-label" for="type">Type</label>
-            <div class="uk-form-controls">
-                <select
-                    class="uk-select"
-                    id="type"
-                    name="type"
-                    x-model="field.value.url"
-                >
-                    {% if values.type is defined and values.type == 'default' %}
-                        <option value="default" selected>
-                            Default
-                        </option>
-                    {% else %}
-                        <option value="default">
-                            Default
-                        </option>
-                    {% endif %}
-                </select>
-            </div>
-            <div class="uk-form-help">
-                {{ errors.type ?? '' }}
-            </div>
-        </div>
-
-        <div class="{{ errors.layout ?? '' ? 'form-destructive' : '' }}">
-            <label class="uk-form-label" for="layout">Layout</label>
-            <div class="uk-form-controls">
-                <select class="uk-select" id="layout" name="layout">
-                    <option value="">
-                        -
-                    </option>
-                    {% for layout in layouts %}
-                        <option value="{{ layout }}">
-                            {{ layout }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="uk-form-help">
-                {{ errors.layout ?? '' }}
-            </div>
-        </div>
-    </form>
+    {% include 'page/_details_form.twig' %}
 {% endblock %}

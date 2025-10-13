@@ -20,11 +20,6 @@ class DataLocale
     #[Assert\NotBlank]
     private ?string $name = null;
 
-    #[ORM\Column(length: 5, unique: true)]
-    #[Assert\NotBlank]
-    #[Assert\Length(min: 2, max: 5)]
-    private ?string $code = null;
-
     #[ORM\Column(length: 255, nullable: true, unique: true)]
     #[Assert\Length(max: 255)]
     private ?string $domain = null;
@@ -62,18 +57,6 @@ class DataLocale
     public function setName(string $name): static
     {
         $this->name = $name;
-
-        return $this;
-    }
-
-    public function getCode(): ?string
-    {
-        return $this->code;
-    }
-
-    public function setCode(string $code): static
-    {
-        $this->code = $code;
 
         return $this;
     }

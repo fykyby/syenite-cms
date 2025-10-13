@@ -1,0 +1,43 @@
+<form id="locale-form" class="uk-form-stacked" method="post">
+    <div class="{{ errors.name ?? '' ? 'form-destructive' : '' }}">
+        <label class="uk-form-label" for="name">Name</label>
+        <div class="uk-form-controls">
+            <input
+                class="uk-input"
+                type="text"
+                id="name"
+                name="name"
+                value="{{ values.name ?? '' }}"
+            />
+        </div>
+        <div class="uk-form-help">
+            {{ errors.name ?? '' }}
+        </div>
+    </div>
+
+    <div class="{{ errors.domain ?? '' ? 'form-destructive' : '' }}">
+        <label class="uk-form-label" for="domain">Domain</label>
+        <div class="uk-form-controls">
+            <input
+                class="uk-input"
+                type="text"
+                id="domain"
+                name="domain"
+                value="{{ values.domain ?? '' }}"
+            />
+        </div>
+        <div class="uk-form-help">
+            {{ errors.domain ?? '' }}
+        </div>
+    </div>
+
+    <div class="gap-smallest flex items-center">
+        <input
+            class="uk-checkbox"
+            type="checkbox"
+            id="default"
+            name="default"
+        />
+        <label class="uk-form-label" for="default">Default</label>
+    </div>
+</form>
