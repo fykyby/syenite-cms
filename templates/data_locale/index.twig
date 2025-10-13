@@ -38,16 +38,25 @@
                             {{ locale.name }}
                         </a>
                     </td>
-                    <td>{{ locale.isDefault() ? 'True' : '' }}</td>
+                    <td>{{ locale.isDefault ? 'True' : '' }}</td>
                     <td class="py-0">
-                        <button
-                            class="uk-btn uk-btn-ghost uk-btn-icon uk-btn-sm"
-                            data-uk-toggle="target: #locale-delete-modal-{{
-                            locale.id
-                            }}"
-                        >
-                            <uk-icon icon="trash"></uk-icon>
-                        </button>
+                        {% if locale.isDefault %}
+                            <button
+                                class="uk-btn uk-btn-ghost uk-btn-icon uk-btn-sm"
+                                disabled
+                            >
+                                <uk-icon icon="trash"></uk-icon>
+                            </button>
+                        {% else %}
+                            <button
+                                class="uk-btn uk-btn-ghost uk-btn-icon uk-btn-sm"
+                                data-uk-toggle="target: #locale-delete-modal-{{
+                                locale.id
+                                }}"
+                            >
+                                <uk-icon icon="trash"></uk-icon>
+                            </button>
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}

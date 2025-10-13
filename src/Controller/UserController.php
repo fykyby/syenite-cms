@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\DataLocale;
 use App\Entity\Settings;
 use App\Entity\User;
 use App\Service\Cms;
@@ -63,8 +64,13 @@ final class UserController extends AbstractController
                 }
                 $settings->setCurrentTheme($themes[0]);
 
-                $entityManager->persist($user);
+                $defaultLocale = new DataLocale();
+                $defaultLocale->setName('English');
+                $defaultLocale->setIsDefault(true);
+
                 $entityManager->persist($settings);
+                $entityManager->persist($defaultLocale);
+                $entityManager->persist($user);
                 $entityManager->flush();
 
                 return $this->redirectToRoute('app_auth_login');

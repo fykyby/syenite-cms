@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -46,7 +47,7 @@ final class DataLocaleController extends AbstractController
                     $currentDefaultLocale = $entityManager
                         ->getRepository(DataLocale::class)
                         ->findOneBy([
-                            'is_default' => true,
+                            'isDefault' => true,
                         ]);
                     if ($currentDefaultLocale !== null) {
                         $currentDefaultLocale->setIsDefault(false);
@@ -107,14 +108,12 @@ final class DataLocaleController extends AbstractController
                     $currentDefaultLocale = $entityManager
                         ->getRepository(DataLocale::class)
                         ->findOneBy([
-                            'is_default' => true,
+                            'isDefault' => true,
                         ]);
                     if ($currentDefaultLocale !== null) {
                         $currentDefaultLocale->setIsDefault(false);
                     }
                     $locale->setIsDefault(true);
-                } else {
-                    $locale->setIsDefault(false);
                 }
 
                 $entityManager->flush();
@@ -149,6 +148,11 @@ final class DataLocaleController extends AbstractController
         $locale = $entityManager->getRepository(DataLocale::class)->find($id);
         if ($locale === null) {
             throw new NotFoundHttpException();
+        }
+
+        $count = $entityManager->getRepository(DataLocale::class)->count();
+        if ($locale->isDefault() || $count === 0) {
+            throw new BadRequestHttpException();
         }
 
         $entityManager->remove($locale);
