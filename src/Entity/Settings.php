@@ -18,22 +18,19 @@ class Settings
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Email]
-    private ?string $email_account_username = null;
+    private ?string $emailAccountUsername = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $email_account_password = null;
+    private ?string $emailAccountPassword = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $email_account_host = null;
+    private ?string $emailAccountHost = null;
 
     #[ORM\Column(nullable: true)]
-    private ?string $email_account_port = null;
+    private ?string $emailAccountPort = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $current_theme = null;
-
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?DataLocale $default_locale = null;
+    private ?string $currentTheme = null;
 
     public function getId(): ?int
     {
@@ -42,50 +39,50 @@ class Settings
 
     public function getEmailAccountUsername(): ?string
     {
-        return $this->email_account_username;
+        return $this->emailAccountUsername;
     }
 
     public function setEmailAccountUsername(
-        ?string $email_account_username,
+        ?string $emailAccountUsername,
     ): static {
-        $this->email_account_username = $email_account_username;
+        $this->emailAccountUsername = $emailAccountUsername;
 
         return $this;
     }
 
     public function getEmailAccountPassword(): ?string
     {
-        return $this->email_account_password;
+        return $this->emailAccountPassword;
     }
 
     public function setEmailAccountPassword(
-        ?string $email_account_password,
+        ?string $emailAccountPassword,
     ): static {
-        $this->email_account_password = $email_account_password;
+        $this->emailAccountPassword = $emailAccountPassword;
 
         return $this;
     }
 
     public function getEmailAccountHost(): ?string
     {
-        return $this->email_account_host;
+        return $this->emailAccountHost;
     }
 
-    public function setEmailAccountHost(?string $email_account_host): static
+    public function setEmailAccountHost(?string $emailAccountHost): static
     {
-        $this->email_account_host = $email_account_host;
+        $this->emailAccountHost = $emailAccountHost;
 
         return $this;
     }
 
     public function getEmailAccountPort(): ?string
     {
-        return $this->email_account_port;
+        return $this->emailAccountPort;
     }
 
-    public function setEmailAccountPort(?string $email_account_port): static
+    public function setEmailAccountPort(?string $emailAccountPort): static
     {
-        $this->email_account_port = $email_account_port;
+        $this->emailAccountPort = $emailAccountPort;
 
         return $this;
     }
@@ -102,24 +99,12 @@ class Settings
 
     public function getCurrentTheme(): ?string
     {
-        return $this->current_theme;
+        return $this->currentTheme;
     }
 
-    public function setCurrentTheme(string $current_theme): static
+    public function setCurrentTheme(string $currentTheme): static
     {
-        $this->current_theme = $current_theme;
-
-        return $this;
-    }
-
-    public function getDefaultLocale(): ?DataLocale
-    {
-        return $this->default_locale;
-    }
-
-    public function setDefaultLocale(?DataLocale $default_locale): static
-    {
-        $this->default_locale = $default_locale;
+        $this->currentTheme = $currentTheme;
 
         return $this;
     }

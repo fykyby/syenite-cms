@@ -10,7 +10,23 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PageRepository::class)]
-#[UniqueEntity('path')]
+#[
+    ORM\Table(
+        name: 'page',
+        uniqueConstraints: [
+            new ORM\UniqueConstraint(
+                name: 'unique_path_per_locale',
+                columns: ['path', 'locale'],
+            ),
+        ],
+    ),
+]
+#[
+    UniqueEntity(
+        fields: ['path', 'locale'],
+        message: 'This path already exists for this locale',
+    ),
+]
 class Page
 {
     #[ORM\Id]
@@ -23,8 +39,8 @@ class Page
     #[Assert\Length(min: 1, max: 512)]
     #[
         Assert\Regex(
-        pattern: '/^(\/([a-zA-Z0-9\-_]+|\{[a-zA-Z0-9_]+\})(\/([a-zA-Z0-9\-_]+|\{[a-zA-Z0-9_]+\}))*)|\/$/',
-    ),
+            pattern: '/^(\/([a-zA-Z0-9\-_]+|\{[a-zA-Z0-9_]+\})(\/([a-zA-Z0-9\-_]+|\{[a-zA-Z0-9_]+\}))*)|\/$/',
+        ),
     ]
     private ?string $path = null;
 
@@ -40,7 +56,11 @@ class Page
     private array $meta = [];
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $layout_name = null;
+    private ?string $layoutName = null;
+
+    #[ORM\ManyToOne(inversedBy: 'pages')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?DataLocale $locale = null;
 
     public function getId(): ?int
     {
@@ -103,12 +123,24 @@ class Page
 
     public function getLayoutName(): ?string
     {
-        return $this->layout_name;
+        return $this->layoutName;
     }
 
-    public function setLayoutName(?string $layout_name): static
+    public function setLayoutName(?string $layoutName): static
     {
-        $this->layout_name = $layout_name;
+        $this->layoutName = $layoutName;
+
+        return $this;
+    }
+
+    public function getLocale(): ?DataLocale
+    {
+        return $this->locale;
+    }
+
+    public function setLocale(?DataLocale $locale): static
+    {
+        $this->locale = $locale;
 
         return $this;
     }

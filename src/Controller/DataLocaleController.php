@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\DataLocale;
-use App\Entity\Settings;
 use App\Service\Validation;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,14 +17,10 @@ final class DataLocaleController extends AbstractController
     #[Route('/__admin/locale', name: 'app_locale')]
     public function index(EntityManagerInterface $entityManager): Response
     {
-        $settings = $entityManager->getRepository(Settings::class)->find(1);
-
         $locale = $entityManager->getRepository(DataLocale::class)->findAll();
-        $defaultLocaleId = $settings->getDefaultLocale()?->getId();
 
         return $this->render('data_locale/index.twig', [
             'locales' => $locale,
-            'defaultLocaleId' => $defaultLocaleId,
         ]);
     }
 
@@ -47,12 +42,21 @@ final class DataLocaleController extends AbstractController
 
             if ($errors === null) {
                 $entityManager->persist($locale);
+
                 if ($request->get('default')) {
-                    $settings = $entityManager
-                        ->getRepository(Settings::class)
-                        ->find(1);
-                    $settings->setDefaultLocale($locale);
+                    $currentDefaultLocale = $entityManager
+                        ->getRepository(DataLocale::class)
+                        ->findOneBy([
+                            'is_default' => true,
+                        ]);
+                    if ($currentDefaultLocale !== null) {
+                        $currentDefaultLocale->setIsDefault(false);
+                    }
+                    $locale->setIsDefault(true);
+                } else {
+                    $locale->setIsDefault(false);
                 }
+
                 $entityManager->flush();
 
                 $this->addFlash('success', 'Locale created');
@@ -90,10 +94,6 @@ final class DataLocaleController extends AbstractController
             throw new NotFoundHttpException();
         }
 
-        $settings = $entityManager->getRepository(Settings::class)->find(1);
-
-        $isDefault =
-            $settings->getDefaultLocale()?->getId() === $locale->getId();
         $errors = null;
         if ($request->isMethod('POST')) {
             $locale->setName($request->get('name'));
@@ -106,14 +106,22 @@ final class DataLocaleController extends AbstractController
                 $entityManager->persist($locale);
 
                 if ($request->get('default')) {
-                    $settings->setDefaultLocale($locale);
-                } elseif ($isDefault) {
-                    $settings->setDefaultLocale(null);
+                    $currentDefaultLocale = $entityManager
+                        ->getRepository(DataLocale::class)
+                        ->findOneBy([
+                            'is_default' => true,
+                        ]);
+                    if ($currentDefaultLocale !== null) {
+                        $currentDefaultLocale->setIsDefault(false);
+                    }
+                    $locale->setIsDefault(true);
+                } else {
+                    $locale->setIsDefault(false);
                 }
 
                 $entityManager->flush();
 
-                $this->addFlash('success', 'Locale created');
+                $this->addFlash('success', 'Locale saved');
 
                 return $this->redirectToRoute('app_locale_edit', [
                     'id' => $locale->getId(),
@@ -126,7 +134,30 @@ final class DataLocaleController extends AbstractController
         return $this->render('data_locale/edit.twig', [
             'errors' => $errors,
             'locale' => $locale,
-            'default' => $isDefault,
         ]);
+    }
+
+    #[
+        Route(
+            '/__admin/locale/{id}/delete',
+            name: 'app_locale_delete',
+            requirements: ['id' => '\d+'],
+        ),
+    ]
+    public function delete(
+        int $id,
+        EntityManagerInterface $entityManager,
+    ): Response {
+        $locale = $entityManager->getRepository(DataLocale::class)->find($id);
+        if ($locale === null) {
+            throw new NotFoundHttpException();
+        }
+
+        $entityManager->remove($locale);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Locale deleted');
+
+        return $this->redirectToRoute('app_locale');
     }
 }

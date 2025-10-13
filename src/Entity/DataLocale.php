@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\DataLocaleRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -26,6 +28,26 @@ class DataLocale
     #[ORM\Column(length: 255, nullable: true, unique: true)]
     #[Assert\Length(max: 255)]
     private ?string $domain = null;
+
+    #[ORM\Column]
+    private ?bool $isDefault = null;
+
+    /**
+     * @var Collection<int, Page>
+     */
+    #[
+        ORM\OneToMany(
+            targetEntity: Page::class,
+            mappedBy: 'locale',
+            orphanRemoval: true,
+        ),
+    ]
+    private Collection $pages;
+
+    public function __construct()
+    {
+        $this->pages = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -68,6 +90,48 @@ class DataLocale
         } else {
             $this->domain = $domain;
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Page>
+     */
+    public function getPages(): Collection
+    {
+        return $this->pages;
+    }
+
+    public function addPage(Page $page): static
+    {
+        if (!$this->pages->contains($page)) {
+            $this->pages->add($page);
+            $page->setLocale($this);
+        }
+
+        return $this;
+    }
+
+    public function removePage(Page $page): static
+    {
+        if ($this->pages->removeElement($page)) {
+            // set the owning side to null (unless already changed)
+            if ($page->getLocale() === $this) {
+                $page->setLocale(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function isDefault(): ?bool
+    {
+        return $this->isDefault;
+    }
+
+    public function setIsDefault(bool $isDefault): static
+    {
+        $this->isDefault = $isDefault;
 
         return $this;
     }
