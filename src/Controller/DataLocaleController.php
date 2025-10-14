@@ -44,14 +44,16 @@ final class DataLocaleController extends AbstractController
                 $entityManager->persist($locale);
 
                 if ($request->get('default')) {
-                    $currentDefaultLocale = $entityManager
+                    $oldDefaultLocale = $entityManager
                         ->getRepository(DataLocale::class)
                         ->findOneBy([
                             'isDefault' => true,
                         ]);
-                    if ($currentDefaultLocale !== null) {
-                        $currentDefaultLocale->setIsDefault(false);
+
+                    if ($oldDefaultLocale !== null) {
+                        $oldDefaultLocale->setIsDefault(false);
                     }
+
                     $locale->setIsDefault(true);
                 } else {
                     $locale->setIsDefault(false);
@@ -105,14 +107,16 @@ final class DataLocaleController extends AbstractController
                 $entityManager->persist($locale);
 
                 if ($request->get('default')) {
-                    $currentDefaultLocale = $entityManager
+                    $oldDefaultLocale = $entityManager
                         ->getRepository(DataLocale::class)
                         ->findOneBy([
                             'isDefault' => true,
                         ]);
-                    if ($currentDefaultLocale !== null) {
-                        $currentDefaultLocale->setIsDefault(false);
+
+                    if ($oldDefaultLocale !== null) {
+                        $oldDefaultLocale->setIsDefault(false);
                     }
+
                     $locale->setIsDefault(true);
                 }
 
@@ -134,6 +138,28 @@ final class DataLocaleController extends AbstractController
         ]);
     }
 
+    #[Route('/__admin/locale/set', name: 'app_locale_set')]
+    public function set(
+        Request $request,
+        EntityManagerInterface $entityManager,
+    ): Response {
+        $localeId = $request->get('locale');
+        $locale = $entityManager
+            ->getRepository(DataLocale::class)
+            ->find($localeId);
+        if ($locale === null) {
+            throw new NotFoundHttpException();
+        }
+
+        $request->getSession()->set('__locale', $localeId);
+
+        $redirection =
+            $request->headers->get('referer') ??
+            $this->generateUrl('app_dashboard');
+
+        return $this->redirect($redirection);
+    }
+
     #[
         Route(
             '/__admin/locale/{id}/delete',
@@ -144,6 +170,7 @@ final class DataLocaleController extends AbstractController
     public function delete(
         int $id,
         EntityManagerInterface $entityManager,
+        Request $request,
     ): Response {
         $locale = $entityManager->getRepository(DataLocale::class)->find($id);
         if ($locale === null) {
@@ -153,6 +180,17 @@ final class DataLocaleController extends AbstractController
         $count = $entityManager->getRepository(DataLocale::class)->count();
         if ($locale->isDefault() || $count === 0) {
             throw new BadRequestHttpException();
+        }
+
+        $session = $request->getSession();
+        if ($session->get('__locale') === $locale->getId()) {
+            $defaultLocale = $entityManager
+                ->getRepository(DataLocale::class)
+                ->findOneBy([
+                    'isDefault' => true,
+                ]);
+
+            $session->set('__locale', $defaultLocale->getId());
         }
 
         $entityManager->remove($locale);

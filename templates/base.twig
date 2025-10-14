@@ -90,6 +90,27 @@
                     </button>
                 </form>
 
+                <form
+                    action="{{ path('app_locale_set') }}"
+                    method="post"
+                    id="locale-select-form"
+                    @change="document.getElementById('locale-select-form').submit()"
+                >
+                    <select class="uk-select" name="locale">
+                        {% for locale in __locales() %}
+                            {% if app.session.get('__locale') == locale.id %}
+                                <option selected value="{{ locale.id }}">
+                                    {{ locale.name }}
+                                </option>
+                            {% else %}
+                                <option value="{{ locale.id }}">
+                                    {{ locale.name }}
+                                </option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </form>
+
                 <a
                     class="uk-btn uk-btn-default uk-btn-icon w-fit"
                     href="{{ path('app_settings') }}"

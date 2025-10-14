@@ -24,6 +24,11 @@ services:
     autowire: true
     public: true
 
+  App\Twig\AppExtension:
+    arguments:
+      $entityManager: "@doctrine.orm.default_entity_manager"
+    tags: ["twig.extension"]
+
   App\Service\ImageUploader:
     arguments:
       $targetDirectory: "%images_directory%"

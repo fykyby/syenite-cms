@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\DataLocale;
 use App\Entity\LayoutData;
 use App\Entity\Settings;
 use App\Service\Cms;
@@ -41,17 +42,22 @@ final class LayoutController extends AbstractController
         EntityManagerInterface $entityManager,
         Validation $validation,
     ): Response {
+        $locale = $request->getSession()->get('__locale');
         $layoutData = $entityManager
             ->getRepository(LayoutData::class)
             ->findOneBy([
                 'name' => $name,
                 'theme' => $cms->getThemeName(),
+                'locale' => $locale,
             ]);
 
         if ($layoutData === null) {
             $layoutData = new LayoutData();
             $layoutData->setName($name);
             $layoutData->setTheme($cms->getThemeName());
+            $layoutData->setLocale(
+                $entityManager->getRepository(DataLocale::class)->find($locale),
+            );
             $layoutData->setData([]);
             $entityManager->persist($layoutData);
         }

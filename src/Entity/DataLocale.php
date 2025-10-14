@@ -39,9 +39,16 @@ class DataLocale
     ]
     private Collection $pages;
 
+    /**
+     * @var Collection<int, LayoutData>
+     */
+    #[ORM\OneToMany(targetEntity: LayoutData::class, mappedBy: 'locale', orphanRemoval: true)]
+    private Collection $layouts;
+
     public function __construct()
     {
         $this->pages = new ArrayCollection();
+        $this->layouts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -115,6 +122,36 @@ class DataLocale
     public function setIsDefault(bool $isDefault): static
     {
         $this->isDefault = $isDefault;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, LayoutData>
+     */
+    public function getLayouts(): Collection
+    {
+        return $this->layouts;
+    }
+
+    public function addLayout(LayoutData $layout): static
+    {
+        if (!$this->layouts->contains($layout)) {
+            $this->layouts->add($layout);
+            $layout->setLocale($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLayout(LayoutData $layout): static
+    {
+        if ($this->layouts->removeElement($layout)) {
+            // set the owning side to null (unless already changed)
+            if ($layout->getLocale() === $this) {
+                $layout->setLocale(null);
+            }
+        }
 
         return $this;
     }

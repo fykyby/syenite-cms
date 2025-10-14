@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\DataLocale;
 use App\Entity\Media;
 use App\Entity\Page;
 use App\Service\Cms;
@@ -22,9 +23,14 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 final class PageController extends AbstractController
 {
     #[Route('/__admin/pages', name: 'app_pages')]
-    public function index(EntityManagerInterface $entityManager): Response
-    {
-        $pages = $entityManager->getRepository(Page::class)->findAll();
+    public function index(
+        EntityManagerInterface $entityManager,
+        Request $request,
+    ): Response {
+        $locale = $request->getSession()->get('__locale');
+        $pages = $entityManager->getRepository(Page::class)->findBy([
+            'locale' => $locale,
+        ]);
 
         return $this->render('page/index.twig', [
             'pages' => $pages,
@@ -39,13 +45,18 @@ final class PageController extends AbstractController
         Validation $validation,
         Cms $cms,
     ): Response {
+        $locale = $request->getSession()->get('__locale');
         $layouts = $cms->listLayouts();
+
         $errors = null;
         if ($request->isMethod('POST')) {
             $page = new Page();
             $page->setPath($request->get('path'));
             $page->setType($request->get('type'));
             $page->setMeta($request->get('meta'));
+            $page->setLocale(
+                $entityManager->getRepository(DataLocale::class)->find($locale),
+            );
             $page->setData([]);
 
             $errors = $validation->formatErrors($validator->validate($page));
@@ -96,9 +107,13 @@ final class PageController extends AbstractController
         SerializerInterface $serializer,
         DataTransformer $dataTransformer,
     ): Response {
-        $page = $entityManager->getRepository(Page::class)->find($id);
+        $locale = $request->getSession()->get('__locale');
+        $page = $entityManager->getRepository(Page::class)->findOneBy([
+            'id' => $id,
+            'locale' => $locale,
+        ]);
         if ($page === null) {
-            throw new NotFoundHttpException();
+            return $this->redirectToRoute('app_pages');
         }
 
         $blocks = [];

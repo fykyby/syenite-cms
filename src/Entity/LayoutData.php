@@ -22,6 +22,10 @@ class LayoutData
     #[ORM\Column(length: 255)]
     private ?string $theme = null;
 
+    #[ORM\ManyToOne(inversedBy: 'layouts')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?DataLocale $locale = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -59,6 +63,18 @@ class LayoutData
     public function setTheme(string $theme): static
     {
         $this->theme = $theme;
+
+        return $this;
+    }
+
+    public function getLocale(): ?DataLocale
+    {
+        return $this->locale;
+    }
+
+    public function setLocale(?DataLocale $locale): static
+    {
+        $this->locale = $locale;
 
         return $this;
     }

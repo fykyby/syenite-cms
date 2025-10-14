@@ -65,7 +65,7 @@ final class UserController extends AbstractController
                 $settings->setCurrentTheme($themes[0]);
 
                 $defaultLocale = new DataLocale();
-                $defaultLocale->setName('English');
+                $defaultLocale->setName('Default');
                 $defaultLocale->setIsDefault(true);
 
                 $entityManager->persist($settings);
