@@ -31,6 +31,11 @@ class Cms
         self::$themeName = $theme;
     }
 
+    public function getStaticDir(): string
+    {
+        return ROOT_DIR . "/Themes/{$this->getThemeName()}/Static";
+    }
+
     public function getLayoutsDir(): string
     {
         return ROOT_DIR . "/Themes/{$this->getThemeName()}/Layouts";

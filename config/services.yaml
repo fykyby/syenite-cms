@@ -34,7 +34,7 @@ services:
       $targetDirectory: "%images_directory%"
       $loader: "@liip_imagine.binary.loader.default"
 
-  App\Controller\ActionController:
+  App\Controller\ClientController:
     arguments:
       $argumentResolver: "@debug.argument_resolver.inner"
       $fullContainer: "@service_container"
