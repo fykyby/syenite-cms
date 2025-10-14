@@ -1,7 +1,8 @@
 <?php
-
 namespace App\Controller;
 
+use App\Entity\Page;
+use Exception;
 use App\Entity\DataLocale;
 use App\Service\Validation;
 use Doctrine\ORM\EntityManagerInterface;
@@ -11,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class DataLocaleController extends AbstractController
@@ -142,6 +144,7 @@ final class DataLocaleController extends AbstractController
     public function set(
         Request $request,
         EntityManagerInterface $entityManager,
+        RouterInterface $router,
     ): Response {
         $localeId = $request->get('locale');
         $locale = $entityManager
@@ -153,11 +156,41 @@ final class DataLocaleController extends AbstractController
 
         $request->getSession()->set('__locale', $localeId);
 
-        $redirection =
-            $request->headers->get('referer') ??
-            $this->generateUrl('app_dashboard');
+        $referer = $request->headers->get('referer');
+        if (!$referer) {
+            return $this->redirectToRoute('app_dashboard');
+        }
 
-        return $this->redirect($redirection);
+        $path = parse_url($referer, PHP_URL_PATH);
+        $parameters = $router->match($path);
+
+        if (
+            $parameters['_route'] === 'app_page' ||
+            $parameters['_route'] === 'app_page_edit'
+        ) {
+            $previousPage = $entityManager
+                ->getRepository(Page::class)
+                ->find($parameters['id']);
+            if (!$previousPage) {
+                return $this->redirectToRoute('app_pages');
+            }
+
+            $targetPage = $entityManager
+                ->getRepository(Page::class)
+                ->findOneBy([
+                    'locale' => $locale,
+                    'path' => $previousPage->getPath(),
+                ]);
+            if (!$targetPage) {
+                return $this->redirectToRoute('app_pages');
+            }
+
+            return $this->redirectToRoute($parameters['_route'], [
+                'id' => $targetPage->getId(),
+            ]);
+        }
+
+        return $this->redirect($referer);
     }
 
     #[

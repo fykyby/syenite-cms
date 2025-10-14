@@ -113,7 +113,7 @@ final class PageController extends AbstractController
             'locale' => $locale,
         ]);
         if ($page === null) {
-            return $this->redirectToRoute('app_pages');
+            throw new NotFoundHttpException();
         }
 
         $blocks = [];
@@ -202,7 +202,11 @@ final class PageController extends AbstractController
         ValidatorInterface $validator,
         Cms $cms,
     ): Response {
-        $page = $entityManager->getRepository(Page::class)->find($id);
+        $locale = $request->getSession()->get('__locale');
+        $page = $entityManager->getRepository(Page::class)->findOneBy([
+            'id' => $id,
+            'locale' => $locale,
+        ]);
         if ($page === null) {
             throw new NotFoundHttpException();
         }
