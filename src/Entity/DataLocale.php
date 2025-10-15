@@ -42,7 +42,13 @@ class DataLocale
     /**
      * @var Collection<int, LayoutData>
      */
-    #[ORM\OneToMany(targetEntity: LayoutData::class, mappedBy: 'locale', orphanRemoval: true)]
+    #[
+        ORM\OneToMany(
+            targetEntity: LayoutData::class,
+            mappedBy: 'locale',
+            orphanRemoval: true,
+        ),
+    ]
     private Collection $layouts;
 
     public function __construct()
