@@ -1,11 +1,11 @@
 module.exports = {
-    content: [
-        "./assets/**/*.{js,ts,css}",
-        "./templates/**/*.twig",
-        "!./Themes/**/*",
-    ],
-    theme: {
-        extend: {},
-    },
-    plugins: [],
+  content: [
+    "./assets/**/*.{js,ts,css}",
+    "./templates/**/*.twig",
+    "!./Themes/**/*",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
 };

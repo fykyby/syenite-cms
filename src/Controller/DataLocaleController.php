@@ -1,8 +1,10 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Page;
-use Exception;
 use App\Entity\DataLocale;
 use App\Service\Validation;
 use Doctrine\ORM\EntityManagerInterface;

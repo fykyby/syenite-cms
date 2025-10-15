@@ -19,9 +19,15 @@
             }
         },
         {
-            "files": ["*.css", "*.json", "*.yaml"],
+            "files": ["*.css", "*.yaml"],
             "options": {
                 "tabWidth": 2
+            }
+        },
+        {
+            "files": ["*.json", ".prettierrc"],
+            "options": {
+                "tabWidth": 4
             }
         }
     ]
