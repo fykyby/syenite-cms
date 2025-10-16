@@ -9,6 +9,13 @@
 {% endblock %}
 
 {% block actions %}
+    <a
+        class="uk-btn uk-btn-default"
+        href="{{ page.getLocale().getDomain() ?? '' }}{{ page.getPath() }}"
+        target="_blank"
+    >
+        View Page
+    </a>
     <button
         class="uk-btn uk-btn-default"
         data-uk-toggle="target: #page-add-block-modal"
@@ -81,7 +88,7 @@
     {# prettier-ignore #}
     <script>
         document.addEventListener('alpine:init', () => {
-            Alpine.data('body', () => ({ 
+            Alpine.data('body', () => ({
                 blocks: {{ blocks|json_encode|raw }},
                 media: JSON.parse({{ media|json_encode|raw }}),
                 somethingChanged: {{ (app.session.flashbag.peek('error')|length > 0) ? 'true' : 'false' }},
