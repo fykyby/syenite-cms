@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[
     ORM\UniqueConstraint(
         name: 'unique_path_per_locale',
-        columns: ['path', 'locale'],
+        columns: ['path', 'locale_id'],
     ),
 ]
 #[
