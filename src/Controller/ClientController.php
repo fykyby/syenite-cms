@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\DataLocale;
-use App\Entity\LayoutData;
 use App\Entity\Page;
 use App\Repository\DataLocaleRepository;
 use App\Repository\PageRepository;

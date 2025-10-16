@@ -48,7 +48,7 @@ class FileUploader
 
     public function delete(string $filename): void
     {
-        $filePath = $this->targetDirectory . '/' . $filename;
+        $filePath = "{$this->targetDirectory}/{$filename}";
 
         if ($this->filesystem->exists($filePath)) {
             $this->filesystem->remove($filePath);

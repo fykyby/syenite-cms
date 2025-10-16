@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Entity\Settings;
 use App\Service\Cms;
+use App\Service\SettingsManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,13 +21,13 @@ final class ThemeController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         CacheInterface $cache,
+        SettingsManager $settingsManager,
     ): Response {
         $themes = $cms->listThemes();
         $currentTheme = $cms->getThemeName();
 
         $error = null;
         if ($request->isMethod('POST')) {
-            $settings = $entityManager->getRepository(Settings::class)->find(1);
             $targetTheme = $request->request->get('theme');
 
             if (!in_array($targetTheme, $themes)) {
@@ -35,7 +35,8 @@ final class ThemeController extends AbstractController
 
                 $this->addFlash('error', 'Validation error(s) occurred');
             } else {
-                $settings->setCurrentTheme($targetTheme);
+                $settingsManager->setValue('current_theme', $targetTheme);
+
                 $entityManager->flush();
                 $cache->delete('app.settings.theme');
 

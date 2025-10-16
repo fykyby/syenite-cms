@@ -52,7 +52,6 @@ final class MediaController extends AbstractController
         foreach ($files as $file) {
             $media = new Media();
             $isImage = str_starts_with($file->getClientMimeType(), 'image/');
-
             try {
                 if ($isImage) {
                     $filename = $imageUploader->upload($file);

@@ -4,25 +4,27 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Entity\Settings;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Yaml\Yaml;
-use Symfony\Contracts\Cache\CacheInterface;
 
 class Cms
 {
     private static string $themeName;
 
-    public function __construct(
-        CacheInterface $cache,
-        EntityManagerInterface $entityManager,
-    ) {
-        self::$themeName = $cache->get('app.settings.theme', function () use (
-            $entityManager,
-        ) {
-            $settings = $entityManager->getRepository(Settings::class)->find(1);
-            return $settings->getCurrentTheme();
-        });
+    public function __construct(SettingsManager $settingsManager)
+    {
+        $settings = $settingsManager->get();
+
+        $themeName = $settings['current_theme'] ?? null;
+        if (!$themeName) {
+            $themes = $this->listThemes();
+            if (count($themes) === 0) {
+                throw new \Exception('No themes found');
+            }
+
+            $themeName = $themes[0];
+        }
+
+        self::$themeName = $themeName;
     }
 
     public function getThemeName(): string

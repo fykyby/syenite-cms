@@ -6,9 +6,9 @@ namespace App\Controller;
 
 use App\Entity\DataLocale;
 use App\Entity\LayoutData;
-use App\Entity\Settings;
 use App\Entity\User;
 use App\Service\Cms;
+use App\Service\SettingsManager;
 use App\Service\Validation;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -29,6 +29,7 @@ final class UserController extends AbstractController
         ValidatorInterface $validator,
         Validation $validation,
         Cms $cms,
+        SettingsManager $settingsManager,
     ): Response {
         $userCount = $entityManager->getRepository(User::class)->count();
         if ($userCount > 0) {
@@ -57,15 +58,6 @@ final class UserController extends AbstractController
                         $request->get('password'),
                     ),
                 );
-
-                $settings = new Settings();
-                $entityManager->persist($settings);
-
-                $themes = $cms->listThemes();
-                if (count($themes) === 0) {
-                    throw new \Exception('No themes found');
-                }
-                $settings->setCurrentTheme($themes[0]);
 
                 $defaultLocale = new DataLocale();
                 $defaultLocale->setName('Default');

@@ -32,7 +32,7 @@
         >
             <div
                 class="{{
-                errors.emailAccountUsername ?? ''
+                errors.email_account_username ?? ''
                     ? 'form-destructive'
                     : ''
                 }}"
@@ -46,17 +46,17 @@
                         type="text"
                         id="email_account_username"
                         name="email_account_username"
-                        value="{{ values.getEmailAccountUsername() ?? '' }}"
+                        value="{{ values.email_account_username ?? '' }}"
                     />
                 </div>
                 <div class="uk-form-help">
-                    {{ errors.emailAccountUsername ?? '' }}
+                    {{ errors.email_account_username ?? '' }}
                 </div>
             </div>
 
             <div
                 class="{{
-                errors.emailAccountPassword ?? ''
+                errors.email_account_password ?? ''
                     ? 'form-destructive'
                     : ''
                 }}"
@@ -70,17 +70,17 @@
                         type="password"
                         id="email_account_password"
                         name="email_account_password"
-                        value="{{ values.getEmailAccountPassword() ?? '' }}"
+                        value="{{ values.email_account_password ?? '' }}"
                     />
                 </div>
                 <div class="uk-form-help">
-                    {{ errors.emailAccountPassword ?? '' }}
+                    {{ errors.email_account_password ?? '' }}
                 </div>
             </div>
 
             <div
                 class="{{
-                errors.emailAccountHost ?? ''
+                errors.email_account_host ?? ''
                     ? 'form-destructive'
                     : ''
                 }}"
@@ -94,17 +94,17 @@
                         type="text"
                         id="email_account_host"
                         name="email_account_host"
-                        value="{{ values.getEmailAccountHost() ?? '' }}"
+                        value="{{ values.email_account_host ?? '' }}"
                     />
                 </div>
                 <div class="uk-form-help">
-                    {{ errors.emailAccountHost ?? '' }}
+                    {{ errors.email_account_host ?? '' }}
                 </div>
             </div>
 
             <div
                 class="{{
-                errors.emailAccountPort ?? ''
+                errors.email_account_port ?? ''
                     ? 'form-destructive'
                     : ''
                 }}"
@@ -118,11 +118,11 @@
                         type="number"
                         id="email_account_port"
                         name="email_account_port"
-                        value="{{ values.getEmailAccountPort() ?? '' }}"
+                        value="{{ values.email_account_port ?? '' }}"
                     />
                 </div>
                 <div class="uk-form-help">
-                    {{ errors.emailAccountPort ?? '' }}
+                    {{ errors.email_account_port ?? '' }}
                 </div>
             </div>
         </form>

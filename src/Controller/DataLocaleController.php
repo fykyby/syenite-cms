@@ -19,7 +19,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Contracts\Cache\CacheInterface;
 
 final class DataLocaleController extends AbstractController
 {
@@ -110,7 +109,7 @@ final class DataLocaleController extends AbstractController
         Validation $validation,
         ValidatorInterface $validator,
         EntityManagerInterface $entityManager,
-        CacheInterface $cache,
+        CacheItemPoolInterface $localeCache,
     ): Response {
         $localeReposiotory = $entityManager->getRepository(DataLocale::class);
         $locale = $localeReposiotory->find($id);
@@ -141,7 +140,7 @@ final class DataLocaleController extends AbstractController
                 }
 
                 $entityManager->flush();
-                $cache->delete("app.locale.{$locale->getDomain()}");
+                $localeCache->clear();
 
                 $this->addFlash('success', 'Locale saved');
 
@@ -223,7 +222,7 @@ final class DataLocaleController extends AbstractController
         int $id,
         EntityManagerInterface $entityManager,
         Request $request,
-        CacheInterface $cache,
+        CacheItemPoolInterface $localeCache,
     ): Response {
         $localeRepository = $entityManager->getRepository(DataLocale::class);
         $locale = $localeRepository->find($id);
@@ -247,7 +246,7 @@ final class DataLocaleController extends AbstractController
         }
 
         $entityManager->flush();
-        $cache->delete("app.locale.{$locale->getDomain()}");
+        $localeCache->clear();
 
         $this->addFlash('success', 'Locale deleted');
 
