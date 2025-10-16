@@ -9,6 +9,7 @@ use App\Entity\Page;
 use App\Repository\DataLocaleRepository;
 use App\Repository\PageRepository;
 use App\Service\Cms;
+use App\Service\MailerService;
 use App\Service\Validation;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -83,11 +84,11 @@ final class ClientController extends AbstractController
     public function action(
         string $name,
         string $method,
-        Cms $cms,
         Request $request,
         EntityManagerInterface $entityManager,
+        Cms $cms,
+        MailerService $mailer,
         Validation $validation,
-        SerializerInterface $serializer,
     ): Response {
         $serviceId = sprintf(
             'Themes\\%s\\Actions\\%sActionController',

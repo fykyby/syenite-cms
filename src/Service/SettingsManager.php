@@ -48,6 +48,7 @@ class SettingsManager
         return $this->settings;
     }
 
+    /** Should only be used with modified array received from get() method */
     public function set(array $settings): void
     {
         $this->settings = $settings;

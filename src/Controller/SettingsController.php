@@ -27,7 +27,7 @@ final class SettingsController extends AbstractController
             $settings = array_merge($settings, $request->request->all());
 
             $errors = $validation->validate($data, [
-                'email_account_username' => 'email',
+                'email_account.username' => 'email',
             ]);
 
             if ($errors === null) {
