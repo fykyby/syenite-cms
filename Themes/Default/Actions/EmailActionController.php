@@ -32,7 +32,7 @@ final class EmailActionController extends AbstractController
         }
 
         $subject = "Contact - {$request->getHost()} - {$data['email']}";
-        $mailer->sendClientEmail($subject, $data);
+        $mailer->sendClientEmail(null, $subject, $data);
 
         return $this->json([
             'errors' => null,

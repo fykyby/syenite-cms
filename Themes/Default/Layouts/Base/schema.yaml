@@ -1,5 +1,9 @@
 name: Base
 fields:
+  - key: lang
+    type: input
+    rules:
+
   - key: header
     type: fieldset
     fields:

@@ -16,8 +16,11 @@ class MailerService
         private Environment $twig,
     ) {}
 
-    public function sendClientEmail(string $subject, array $data): void
-    {
+    public function sendClientEmail(
+        ?string $receipient,
+        string $subject,
+        array $data,
+    ): void {
         $account = $this->settingsManager->getValue('email_account');
 
         $html = $this->twig->render('client/_email.twig', [
@@ -31,7 +34,7 @@ class MailerService
             $data['email'] = '';
         }
         $email->from($account['username']);
-        $email->to($account['username']);
+        $email->to($receipient ?? $account['username']);
         $email->subject($subject);
         $email->html($html);
 
