@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Themes\Default\Actions;
 
 use App\Service\MailerService;
-use App\Service\SettingsManager;
 use App\Service\Validation;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
