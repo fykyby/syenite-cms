@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\DataLocale;
+use App\Entity\LayoutData;
 use App\Entity\Settings;
 use App\Entity\User;
 use App\Service\Cms;
@@ -40,6 +41,7 @@ final class UserController extends AbstractController
             $user->setEmail($request->get('email'));
             $user->setPassword($request->get('password'));
             $user->setRoles(['ROLE_SUPER_ADMIN']);
+            $entityManager->persist($user);
 
             $errors = $validation->formatErrors($validator->validate($user));
             if (
@@ -57,6 +59,7 @@ final class UserController extends AbstractController
                 );
 
                 $settings = new Settings();
+                $entityManager->persist($settings);
 
                 $themes = $cms->listThemes();
                 if (count($themes) === 0) {
@@ -67,10 +70,17 @@ final class UserController extends AbstractController
                 $defaultLocale = new DataLocale();
                 $defaultLocale->setName('Default');
                 $defaultLocale->setIsDefault(true);
-
-                $entityManager->persist($settings);
                 $entityManager->persist($defaultLocale);
-                $entityManager->persist($user);
+
+                foreach ($cms->listLayouts() as $layoutName) {
+                    $layoutData = new LayoutData();
+                    $layoutData->setName($layoutName);
+                    $layoutData->setTheme($cms->getThemeName());
+                    $layoutData->setLocale($defaultLocale);
+                    $layoutData->setData([]);
+                    $entityManager->persist($layoutData);
+                }
+
                 $entityManager->flush();
 
                 return $this->redirectToRoute('app_auth_login');

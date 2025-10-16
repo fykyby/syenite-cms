@@ -9,7 +9,6 @@ use App\Entity\LayoutData;
 use App\Entity\Media;
 use App\Entity\Page;
 use App\Service\Cms;
-use App\Service\DataLocaleService;
 use App\Service\DataTransformer;
 use App\Service\Validation;
 use Doctrine\ORM\EntityManagerInterface;

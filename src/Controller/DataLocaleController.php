@@ -6,6 +6,8 @@ namespace App\Controller;
 
 use App\Entity\Page;
 use App\Entity\DataLocale;
+use App\Entity\LayoutData;
+use App\Service\Cms;
 use App\Service\Validation;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Cache\CacheItemPoolInterface;
@@ -38,6 +40,7 @@ final class DataLocaleController extends AbstractController
         ValidatorInterface $validator,
         EntityManagerInterface $entityManager,
         CacheItemPoolInterface $localeCache,
+        Cms $cms,
     ): Response {
         $errors = null;
         if ($request->isMethod('POST')) {
@@ -64,6 +67,15 @@ final class DataLocaleController extends AbstractController
                     $locale->setIsDefault(true);
                 } else {
                     $locale->setIsDefault(false);
+                }
+
+                foreach ($cms->listLayouts() as $layoutName) {
+                    $layoutData = new LayoutData();
+                    $layoutData->setName($layoutName);
+                    $layoutData->setTheme($cms->getThemeName());
+                    $layoutData->setLocale($locale);
+                    $layoutData->setData([]);
+                    $entityManager->persist($layoutData);
                 }
 
                 $entityManager->flush();
@@ -220,20 +232,20 @@ final class DataLocaleController extends AbstractController
         }
 
         $count = $localeRepository->count();
-        if ($locale->isDefault() || $count === 0) {
+        if ($locale->isDefault() || $count === 1) {
             throw new BadRequestHttpException();
         }
 
+        $entityManager->remove($locale);
+
         $session = $request->getSession();
-        if ($session->get('__locale') === $locale->getId()) {
+        if (intval($session->get('__locale')) === $locale->getId()) {
             $defaultLocale = $localeRepository->findOneBy([
                 'isDefault' => true,
             ]);
-
             $session->set('__locale', $defaultLocale->getId());
         }
 
-        $entityManager->remove($locale);
         $entityManager->flush();
         $cache->delete("app.locale.{$locale->getDomain()}");
 
