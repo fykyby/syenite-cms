@@ -8,6 +8,7 @@ use App\Entity\DataLocale;
 use App\Entity\LayoutData;
 use App\Entity\Page;
 use App\Repository\DataLocaleRepository;
+use App\Repository\PageRepository;
 use App\Service\Cms;
 use App\Service\Validation;
 use Doctrine\ORM\EntityManagerInterface;
@@ -51,32 +52,24 @@ final class ClientController extends AbstractController
             throw new NotFoundHttpException('No locale found');
         }
 
-        $page = $entityManager->getRepository(Page::class)->findOneBy([
-            'path' => $path,
-            'locale' => $locale,
-        ]);
+        /** @var PageRepository $pageRepository */
+        $pageRepository = $entityManager->getRepository(Page::class);
+        $page = $pageRepository->findOneByPathAndLocaleWithLayoutData(
+            $path,
+            $locale,
+        );
         if ($page === null) {
             throw new NotFoundHttpException();
         }
 
-        $layoutData = null;
-        if ($page->getLayoutName()) {
-            $layoutData = $entityManager
-                ->getRepository(LayoutData::class)
-                ->findOneBy([
-                    'name' => $page->getLayoutName(),
-                    'theme' => $cms->getThemeName(),
-                    'locale' => $locale,
-                ]);
-        }
-
-        $layoutPath = $page->getLayoutName()
-            ? $cms->getLayoutTemplatePath($page->getLayoutName())
+        $layoutName = $page->getLayoutData()->getName();
+        $layoutPath = $layoutName
+            ? $cms->getLayoutTemplatePath($layoutName)
             : null;
 
         return $this->render('client/index.twig', [
             'layoutPath' => $layoutPath,
-            'layout' => $layoutData?->getData(),
+            'layout' => $page->getLayoutData()->getData(),
             'page' => $page,
         ]);
     }

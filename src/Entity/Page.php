@@ -51,12 +51,12 @@ class Page
     #[ORM\Column]
     private array $meta = [];
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $layoutName = null;
-
     #[ORM\ManyToOne(inversedBy: 'pages')]
     #[ORM\JoinColumn(nullable: false)]
     private ?DataLocale $locale = null;
+
+    #[ORM\ManyToOne]
+    private ?LayoutData $layoutData = null;
 
     public function getId(): ?int
     {
@@ -117,18 +117,6 @@ class Page
         return $this;
     }
 
-    public function getLayoutName(): ?string
-    {
-        return $this->layoutName;
-    }
-
-    public function setLayoutName(?string $layoutName): static
-    {
-        $this->layoutName = $layoutName;
-
-        return $this;
-    }
-
     public function getLocale(): ?DataLocale
     {
         return $this->locale;
@@ -137,6 +125,18 @@ class Page
     public function setLocale(?DataLocale $locale): static
     {
         $this->locale = $locale;
+
+        return $this;
+    }
+
+    public function getLayoutData(): ?LayoutData
+    {
+        return $this->layoutData;
+    }
+
+    public function setLayoutData(?LayoutData $layoutData): static
+    {
+        $this->layoutData = $layoutData;
 
         return $this;
     }

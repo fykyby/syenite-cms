@@ -50,7 +50,10 @@
                 <select class="uk-select" id="layout" name="layout">
                     <option value=""></option>
                     {% for layout in layouts %}
-                        {% if page is defined and page.layoutName == layout %}
+                        {% if
+                            page is defined
+                                and page.getLayoutData() is not null
+                                and page.getLayoutData().getName() == layout %}
                             <option value="{{ layout }}" selected>
                                 {{ layout }}
                             </option>

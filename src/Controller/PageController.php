@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\DataLocale;
+use App\Entity\LayoutData;
 use App\Entity\Media;
 use App\Entity\Page;
 use App\Service\Cms;
@@ -63,9 +64,16 @@ final class PageController extends AbstractController
 
             $newLayoutName = $request->get('layout');
             if ($newLayoutName === '') {
-                $page->setLayoutName(null);
+                $page->setLayoutData(null);
             } elseif (in_array($newLayoutName, $layouts)) {
-                $page->setLayoutName($newLayoutName);
+                $layout = $entityManager
+                    ->getRepository(LayoutData::class)
+                    ->findOneBy([
+                        'locale' => $locale,
+                        'name' => $newLayoutName,
+                    ]);
+
+                $page->setLayoutData($layout);
             } else {
                 $errors['layout'] = 'Invalid layout';
             }
@@ -222,9 +230,16 @@ final class PageController extends AbstractController
 
             $newLayoutName = $request->get('layout');
             if ($newLayoutName === '') {
-                $page->setLayoutName(null);
+                $page->setLayoutData(null);
             } elseif (in_array($newLayoutName, $layouts)) {
-                $page->setLayoutName($newLayoutName);
+                $layout = $entityManager
+                    ->getRepository(LayoutData::class)
+                    ->findOneBy([
+                        'locale' => $locale,
+                        'name' => $newLayoutName,
+                    ]);
+
+                $page->setLayoutData($layout);
             } else {
                 $errors['layout'] = 'Invalid layout';
             }
