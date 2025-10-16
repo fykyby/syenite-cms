@@ -18,28 +18,15 @@ class DataLocaleRepository extends ServiceEntityRepository
         parent::__construct($registry, DataLocale::class);
     }
 
-    //    /**
-    //     * @return DataLocale[] Returns an array of DataLocale objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('d')
-    //            ->andWhere('d.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('d.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?DataLocale
-    //    {
-    //        return $this->createQueryBuilder('d')
-    //            ->andWhere('d.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function findByDomainOrDefault(string $domain): ?DataLocale
+    {
+        return $this->createQueryBuilder('l')
+            ->where('l.domain = :domain')
+            ->orWhere('l.isDefault = true')
+            ->orderBy('l.domain', 'DESC') // Prioritize exact domain match
+            ->setParameter('domain', $domain)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

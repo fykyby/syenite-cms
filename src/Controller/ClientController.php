@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Entity\DataLocale;
 use App\Entity\LayoutData;
 use App\Entity\Page;
+use App\Repository\DataLocaleRepository;
 use App\Service\Cms;
 use App\Service\Validation;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,6 +21,7 @@ use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolverInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Cache\CacheInterface;
 
 final class ClientController extends AbstractController
 {
@@ -33,20 +35,22 @@ final class ClientController extends AbstractController
         EntityManagerInterface $entityManager,
         Cms $cms,
         Request $request,
+        CacheInterface $cache,
     ): Response {
         $requestDomain = $request->getHost();
-        $locale = $entityManager->getRepository(DataLocale::class)->findOneBy([
-            'domain' => $requestDomain,
-        ]);
+        $path = "/{$path}";
+
+        /** @var DataLocaleRepository $localeRepository */
+        $localeRepository = $entityManager->getRepository(DataLocale::class);
+        $locale = $cache->get(
+            "app.locale.{$requestDomain}",
+            fn() => $localeRepository->findByDomainOrDefault($requestDomain),
+        );
+
         if ($locale === null) {
-            $locale = $entityManager
-                ->getRepository(DataLocale::class)
-                ->findOneBy([
-                    'isDefault' => true,
-                ]);
+            throw new NotFoundHttpException('No locale found');
         }
 
-        $path = "/{$path}";
         $page = $entityManager->getRepository(Page::class)->findOneBy([
             'path' => $path,
             'locale' => $locale,
@@ -55,13 +59,16 @@ final class ClientController extends AbstractController
             throw new NotFoundHttpException();
         }
 
-        $layoutData = $entityManager
-            ->getRepository(LayoutData::class)
-            ->findOneBy([
-                'name' => $page->getLayoutName(),
-                'theme' => $cms->getThemeName(),
-                'locale' => $locale,
-            ]);
+        $layoutData = null;
+        if ($page->getLayoutName()) {
+            $layoutData = $entityManager
+                ->getRepository(LayoutData::class)
+                ->findOneBy([
+                    'name' => $page->getLayoutName(),
+                    'theme' => $cms->getThemeName(),
+                    'locale' => $locale,
+                ]);
+        }
 
         $layoutPath = $page->getLayoutName()
             ? $cms->getLayoutTemplatePath($page->getLayoutName())

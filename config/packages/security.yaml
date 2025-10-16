@@ -28,6 +28,9 @@ security:
       logout:
         path: app_auth_logout
         target: app_auth_login
+    main:
+      pattern: ^/
+      lazy: true
 
       # activate different ways to authenticate
       # https://symfony.com/doc/current/security.html#the-firewall
@@ -44,6 +47,7 @@ security:
     - { path: ^/__admin/auth/signup, roles: PUBLIC_ACCESS }
     - { path: ^/__admin/auth/login, roles: PUBLIC_ACCESS }
     - { path: ^/__admin, roles: ROLE_ADMIN }
+    - { path: ^/, roles: PUBLIC_ACCESS }
 
 when@test:
   security:

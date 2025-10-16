@@ -10,15 +10,11 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PageRepository::class)]
+#[ORM\Table(name: 'page')]
 #[
-    ORM\Table(
-        name: 'page',
-        uniqueConstraints: [
-            new ORM\UniqueConstraint(
-                name: 'unique_path_per_locale',
-                columns: ['path', 'locale'],
-            ),
-        ],
+    ORM\UniqueConstraint(
+        name: 'unique_path_per_locale',
+        columns: ['path', 'locale'],
     ),
 ]
 #[

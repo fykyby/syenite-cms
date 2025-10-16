@@ -8,6 +8,7 @@ use App\Entity\Page;
 use App\Entity\DataLocale;
 use App\Service\Validation;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,6 +17,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Contracts\Cache\CacheInterface;
 
 final class DataLocaleController extends AbstractController
 {
@@ -35,6 +37,7 @@ final class DataLocaleController extends AbstractController
         Validation $validation,
         ValidatorInterface $validator,
         EntityManagerInterface $entityManager,
+        CacheItemPoolInterface $localeCache,
     ): Response {
         $errors = null;
         if ($request->isMethod('POST')) {
@@ -64,6 +67,7 @@ final class DataLocaleController extends AbstractController
                 }
 
                 $entityManager->flush();
+                $localeCache->clear();
 
                 $this->addFlash('success', 'Locale created');
 
@@ -94,8 +98,10 @@ final class DataLocaleController extends AbstractController
         Validation $validation,
         ValidatorInterface $validator,
         EntityManagerInterface $entityManager,
+        CacheInterface $cache,
     ): Response {
-        $locale = $entityManager->getRepository(DataLocale::class)->find($id);
+        $localeReposiotory = $entityManager->getRepository(DataLocale::class);
+        $locale = $localeReposiotory->find($id);
         if ($locale === null) {
             throw new NotFoundHttpException();
         }
@@ -111,11 +117,9 @@ final class DataLocaleController extends AbstractController
                 $entityManager->persist($locale);
 
                 if ($request->get('default')) {
-                    $oldDefaultLocale = $entityManager
-                        ->getRepository(DataLocale::class)
-                        ->findOneBy([
-                            'isDefault' => true,
-                        ]);
+                    $oldDefaultLocale = $localeReposiotory->findOneBy([
+                        'isDefault' => true,
+                    ]);
 
                     if ($oldDefaultLocale !== null) {
                         $oldDefaultLocale->setIsDefault(false);
@@ -125,6 +129,7 @@ final class DataLocaleController extends AbstractController
                 }
 
                 $entityManager->flush();
+                $cache->delete("app.locale.{$locale->getDomain()}");
 
                 $this->addFlash('success', 'Locale saved');
 
@@ -206,30 +211,31 @@ final class DataLocaleController extends AbstractController
         int $id,
         EntityManagerInterface $entityManager,
         Request $request,
+        CacheInterface $cache,
     ): Response {
-        $locale = $entityManager->getRepository(DataLocale::class)->find($id);
+        $localeRepository = $entityManager->getRepository(DataLocale::class);
+        $locale = $localeRepository->find($id);
         if ($locale === null) {
             throw new NotFoundHttpException();
         }
 
-        $count = $entityManager->getRepository(DataLocale::class)->count();
+        $count = $localeRepository->count();
         if ($locale->isDefault() || $count === 0) {
             throw new BadRequestHttpException();
         }
 
         $session = $request->getSession();
         if ($session->get('__locale') === $locale->getId()) {
-            $defaultLocale = $entityManager
-                ->getRepository(DataLocale::class)
-                ->findOneBy([
-                    'isDefault' => true,
-                ]);
+            $defaultLocale = $localeRepository->findOneBy([
+                'isDefault' => true,
+            ]);
 
             $session->set('__locale', $defaultLocale->getId());
         }
 
         $entityManager->remove($locale);
         $entityManager->flush();
+        $cache->delete("app.locale.{$locale->getDomain()}");
 
         $this->addFlash('success', 'Locale deleted');
 

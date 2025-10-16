@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Cache\CacheInterface;
 
 final class ThemeController extends AbstractController
 {
@@ -19,6 +20,7 @@ final class ThemeController extends AbstractController
         Cms $cms,
         Request $request,
         EntityManagerInterface $entityManager,
+        CacheInterface $cache,
     ): Response {
         $themes = $cms->listThemes();
         $currentTheme = $cms->getThemeName();
@@ -35,10 +37,11 @@ final class ThemeController extends AbstractController
             } else {
                 $settings->setCurrentTheme($targetTheme);
                 $entityManager->flush();
+                $cache->delete('app.settings.theme');
 
                 $this->addFlash('success', 'Theme changed');
 
-                return $this->redirectToRoute('app_theme');
+                return $this->redirectToRoute('app_theme_edit');
             }
         }
 
