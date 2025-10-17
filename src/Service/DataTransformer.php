@@ -69,7 +69,7 @@ class DataTransformer
 
         foreach ($fields as $field) {
             $key = $field['key'];
-            $fullKey = $prefix === '' ? $key : $prefix . '.' . $key;
+            $fullKey = $prefix === '' ? $key : "{$prefix}.{$key}";
 
             if ($field['type'] === 'array' && isset($field['fields'])) {
                 $validationData[$key] = [];
@@ -79,7 +79,7 @@ class DataTransformer
                         $nestedResult = self::buildValidationDataAndRules(
                             $field['fields'],
                             $item,
-                            $fullKey . '.' . $index,
+                            "{$fullKey}.{$index}",
                         );
 
                         $validationData[$key][] = $nestedResult['data'];
@@ -112,7 +112,7 @@ class DataTransformer
                 ];
 
                 if (!empty($field['rules'])) {
-                    $validationRules[$fullKey . '.url'] = $field['rules'];
+                    $validationRules["{$fullKey}.url"] = $field['rules'];
                 }
             } else {
                 $validationData[$key] = $data[$key] ?? null;

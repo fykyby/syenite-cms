@@ -131,7 +131,7 @@ final class MediaController extends AbstractController
     private function generateFileVariants(string $filename): array
     {
         return [
-            'default' => '/media/uploads/' . $filename,
+            'default' => "/media/uploads/{$filename}",
         ];
     }
 

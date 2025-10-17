@@ -83,11 +83,9 @@ class DataLocale
 
     public function setDomain(string $domain): static
     {
-        if ($domain === '') {
-            $this->domain = null;
-        } else {
-            $this->domain = $domain;
-        }
+        $this->domain === ''
+            ? ($this->domain = null)
+            : ($this->domain = $domain);
 
         return $this;
     }

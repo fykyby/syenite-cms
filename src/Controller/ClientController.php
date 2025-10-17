@@ -91,12 +91,7 @@ final class ClientController extends AbstractController
         MailerService $mailer,
         Validation $validation,
     ): Response {
-        $serviceId = sprintf(
-            'Themes\\%s\\Actions\\%sActionController',
-            $cms->getThemeName(),
-            $name,
-        );
-
+        $serviceId = "Themes\\{$cms->getThemeName()}\\Actions\\{$name}ActionController";
         if (!$this->fullContainer->has($serviceId)) {
             throw $this->createNotFoundException(
                 "Action service not found: $serviceId",

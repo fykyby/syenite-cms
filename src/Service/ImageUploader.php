@@ -55,7 +55,7 @@ class ImageUploader
         );
         $newFilename = $safeFilename . '-' . uniqid() . '.webp';
 
-        $fullPath = $this->targetDirectory . '/' . $newFilename;
+        $fullPath = "{$this->targetDirectory}/{$newFilename}";
 
         if (!is_dir($this->targetDirectory)) {
             mkdir($this->targetDirectory, 0777, true);
@@ -78,7 +78,7 @@ class ImageUploader
 
     public function delete(string $filename): void
     {
-        $filePath = $this->targetDirectory . '/' . $filename;
+        $filePath = "{$this->targetDirectory}/{$filename}";
 
         if ($this->filesystem->exists($filePath)) {
             $this->filesystem->remove($filePath);
