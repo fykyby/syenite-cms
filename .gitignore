@@ -19,3 +19,6 @@
 /public/media/cache/
 ###< liip/imagine-bundle ###
 /public/media/uploads/
+
+/public/media/tmp/*
+!/public/media/tmp/.gitignore
