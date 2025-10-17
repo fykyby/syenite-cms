@@ -35,7 +35,10 @@ final class ThemeController extends AbstractController
 
                 $this->addFlash('error', 'Validation error(s) occurred');
             } else {
-                $settingsManager->setValue('current_theme', $targetTheme);
+                $settingsManager->setValue(
+                    SettingsManager::$currentThemeKey,
+                    $targetTheme,
+                );
 
                 $entityManager->flush();
                 $cache->delete('app.settings.theme');

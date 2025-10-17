@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Service;
 
 use Exception;
-use Symfony\Component\Yaml\Yaml;
 
 class SettingsManager
 {
+    public static string $currentThemeKey = 'currentTheme';
+    public static string $emailAccountKey = 'emailAccount';
+
     private array $settings;
 
     public function __construct()
@@ -20,7 +22,8 @@ class SettingsManager
     {
         $settings = [];
         try {
-            $settings = Yaml::parseFile(ROOT_DIR . $_ENV['CMS_SETTINGS_PATH']);
+            $raw = file_get_contents(ROOT_DIR . $_ENV['CMS_SETTINGS_PATH']);
+            $settings = json_decode($raw, true);
         } catch (Exception) {
         }
         return $settings ?? [];
@@ -28,8 +31,8 @@ class SettingsManager
 
     private function write(): void
     {
-        $yaml = Yaml::dump($this->settings);
-        file_put_contents(ROOT_DIR . $_ENV['CMS_SETTINGS_PATH'], $yaml);
+        $json = json_encode($this->settings);
+        file_put_contents(ROOT_DIR . $_ENV['CMS_SETTINGS_PATH'], $json);
     }
 
     public function setValue(string $key, mixed $value): void
@@ -40,7 +43,7 @@ class SettingsManager
 
     public function getValue(string $key): mixed
     {
-        return $this->settings[$key];
+        return $this->settings[$key] ?? null;
     }
 
     public function get(): array

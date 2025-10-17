@@ -1,34 +1,34 @@
 {
-    "plugins": [
-        "@prettier/plugin-php",
-        "@zackad/prettier-plugin-twig",
-        "prettier-plugin-tailwindcss",
-        "@ttskch/prettier-plugin-tailwindcss-anywhere"
-    ],
-    "overrides": [
-        {
-            "files": ["*.php"],
-            "options": {
-                "singleQuote": true
-            }
-        },
-        {
-            "files": ["*.twig"],
-            "options": {
-                "tabWidth": 4
-            }
-        },
-        {
-            "files": ["*.css", "*.yaml"],
-            "options": {
-                "tabWidth": 2
-            }
-        },
-        {
-            "files": ["*.json", ".prettierrc"],
-            "options": {
-                "tabWidth": 4
-            }
-        }
-    ]
+  "plugins": [
+    "@prettier/plugin-php",
+    "@zackad/prettier-plugin-twig",
+    "prettier-plugin-tailwindcss",
+    "@ttskch/prettier-plugin-tailwindcss-anywhere"
+  ],
+  "overrides": [
+    {
+      "files": ["*.php"],
+      "options": {
+        "singleQuote": true
+      }
+    },
+    {
+      "files": ["*.twig"],
+      "options": {
+        "tabWidth": 4
+      }
+    },
+    {
+      "files": ["*.css", "*.yaml"],
+      "options": {
+        "tabWidth": 2
+      }
+    },
+    {
+      "files": ["*.json", ".prettierrc"],
+      "options": {
+        "tabWidth": 2
+      }
+    }
+  ]
 }

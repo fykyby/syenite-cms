@@ -62,14 +62,14 @@ final class ClientController extends AbstractController
             throw new NotFoundHttpException();
         }
 
-        $layoutName = $page->getLayoutData()->getName();
+        $layoutName = $page->getLayoutData()?->getName() ?? null;
         $layoutPath = $layoutName
             ? $cms->getLayoutTemplatePath($layoutName)
             : null;
 
         return $this->render('client/index.twig', [
             'layoutPath' => $layoutPath,
-            'layout' => $page->getLayoutData()->getData(),
+            'layout' => $page->getLayoutData()?->getData() ?? [],
             'page' => $page,
         ]);
     }

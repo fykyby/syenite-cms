@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use Symfony\Component\Yaml\Yaml;
-
 class Cms
 {
     private static string $themeName;
@@ -14,7 +12,7 @@ class Cms
     {
         $settings = $settingsManager->get();
 
-        $themeName = $settings['current_theme'] ?? null;
+        $themeName = $settings[SettingsManager::$currentThemeKey] ?? null;
         if (!$themeName) {
             $themes = $this->listThemes();
             if (count($themes) === 0) {
@@ -62,9 +60,10 @@ class Cms
     public function getBlockSchema(string $blockName): ?array
     {
         try {
-            $block = Yaml::parseFile(
-                "{$this->getBlocksDir()}/{$blockName}/schema.yaml",
+            $raw = file_get_contents(
+                "{$this->getBlocksDir()}/{$blockName}/schema.json",
             );
+            $block = json_decode($raw, true);
             return $block;
         } catch (\Exception) {
             return null;
@@ -86,9 +85,10 @@ class Cms
     public function getLayoutSchema(string $layoutName): ?array
     {
         try {
-            $layout = Yaml::parseFile(
-                "{$this->getLayoutsDir()}/{$layoutName}/schema.yaml",
+            $raw = file_get_contents(
+                "{$this->getLayoutsDir()}/{$layoutName}/schema.json",
             );
+            $layout = json_decode($raw, true);
             return $layout;
         } catch (\Exception) {
             return null;

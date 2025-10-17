@@ -19,19 +19,19 @@ final class SettingsController extends AbstractController
         Validation $validation,
         SettingsManager $settingsManager,
     ): Response {
-        $settings = $settingsManager->get();
+        $emailAccount = $settingsManager->getValue('emailAccount');
 
         $errors = null;
         if ($request->isMethod('POST')) {
             $data = $request->request->all();
-            $settings = array_merge($settings, $request->request->all());
+            $emailAccount = $request->request->all()['email_account'];
 
             $errors = $validation->validate($data, [
                 'email_account.username' => 'email',
             ]);
 
             if ($errors === null) {
-                $settingsManager->set($settings);
+                $settingsManager->setValue('emailAccount', $emailAccount);
 
                 $this->addFlash('success', 'Settings saved');
 
@@ -42,7 +42,7 @@ final class SettingsController extends AbstractController
         }
 
         return $this->render('settings/index.twig', [
-            'values' => $settings,
+            'values' => $emailAccount,
             'errors' => $errors,
         ]);
     }
