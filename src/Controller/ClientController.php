@@ -74,6 +74,7 @@ final class ClientController extends AbstractController
         ]);
     }
 
+    // Keep the unused arguments to make them available in ActionControllers
     #[
         Route(
             '/__actions/{name}/{method}',
