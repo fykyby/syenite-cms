@@ -52,7 +52,6 @@ final class PageController extends AbstractController
         if ($request->isMethod('POST')) {
             $page = new Page();
             $page->setPath($request->get('path'));
-            $page->setType($request->get('type'));
             $page->setMeta($request->get('meta'));
             $page->setPublished(false);
             $page->setLocale(
@@ -223,7 +222,6 @@ final class PageController extends AbstractController
         $errors = null;
         if ($request->isMethod('POST')) {
             $page->setPath($request->get('path'));
-            $page->setType($request->get('type'));
             $page->setMeta($request->get('meta'));
 
             $errors = $validation->formatErrors($validator->validate($page));

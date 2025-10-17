@@ -40,11 +40,6 @@ class Page
     ]
     private ?string $path = null;
 
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
-    #[Assert\Choice(options: ['default'])]
-    private ?string $type = null;
-
     #[ORM\Column]
     private array $data = [];
 
@@ -71,21 +66,9 @@ class Page
         return $this->path;
     }
 
-    public function getType(): ?string
-    {
-        return $this->type;
-    }
-
     public function setPath(string $path): static
     {
         $this->path = $path;
-
-        return $this;
-    }
-
-    public function setType(string $type): static
-    {
-        $this->type = $type;
 
         return $this;
     }
