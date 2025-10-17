@@ -22,6 +22,10 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class DataLocaleController extends AbstractController
 {
+    public function __construct(
+        private CacheItemPoolInterface $localeCachePool,
+    ) {}
+
     #[Route('/__admin/locale', name: 'app_locale')]
     public function index(EntityManagerInterface $entityManager): Response
     {
@@ -109,7 +113,6 @@ final class DataLocaleController extends AbstractController
         Validation $validation,
         ValidatorInterface $validator,
         EntityManagerInterface $entityManager,
-        CacheItemPoolInterface $localeCache,
     ): Response {
         $localeReposiotory = $entityManager->getRepository(DataLocale::class);
         $locale = $localeReposiotory->find($id);
@@ -140,7 +143,7 @@ final class DataLocaleController extends AbstractController
                 }
 
                 $entityManager->flush();
-                $localeCache->clear();
+                $this->localeCachePool->clear();
 
                 $this->addFlash('success', 'Locale saved');
 

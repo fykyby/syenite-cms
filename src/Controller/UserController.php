@@ -8,9 +8,9 @@ use App\Entity\DataLocale;
 use App\Entity\LayoutData;
 use App\Entity\User;
 use App\Service\Cms;
-use App\Service\SettingsManager;
 use App\Service\Validation;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,6 +21,10 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class UserController extends AbstractController
 {
+    public function __construct(
+        private CacheItemPoolInterface $localeCachePool,
+    ) {}
+
     #[Route('/__admin/auth/signup', name: 'app_auth_signup')]
     public function signup(
         Request $request,
@@ -29,7 +33,6 @@ final class UserController extends AbstractController
         ValidatorInterface $validator,
         Validation $validation,
         Cms $cms,
-        SettingsManager $settingsManager,
     ): Response {
         $userCount = $entityManager->getRepository(User::class)->count();
         if ($userCount > 0) {
@@ -74,6 +77,7 @@ final class UserController extends AbstractController
                 }
 
                 $entityManager->flush();
+                $this->localeCachePool->clear();
 
                 return $this->redirectToRoute('app_auth_login');
             }

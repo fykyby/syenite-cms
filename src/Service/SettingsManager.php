@@ -23,6 +23,10 @@ class SettingsManager
         $settings = [];
         try {
             $raw = file_get_contents(ROOT_DIR . $_ENV['CMS_SETTINGS_PATH']);
+            if (!$raw) {
+                $raw = '';
+            }
+
             $settings = json_decode($raw, true);
         } catch (Exception) {
         }
