@@ -36,7 +36,7 @@ services:
 
   App\Controller\ClientController:
     arguments:
-      $argumentResolver: "@debug.argument_resolver.inner"
+      $argumentResolver: "@argument_resolver"
       $fullContainer: "@service_container"
   # add more service definitions when explicit configuration is needed
   # please note that last definitions always *replace* previous ones
