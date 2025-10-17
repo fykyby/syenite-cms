@@ -27,6 +27,7 @@ class PageRepository extends ServiceEntityRepository
             ->leftJoin('p.layoutData', 'l')
             ->addSelect('l')
             ->where('p.path = :path')
+            ->andWhere('p.published = true')
             ->andWhere('p.locale = :locale')
             ->setParameter('path', $path)
             ->setParameter('locale', $locale)

@@ -58,6 +58,9 @@ class Page
     #[ORM\ManyToOne]
     private ?LayoutData $layoutData = null;
 
+    #[ORM\Column]
+    private ?bool $published = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -137,6 +140,18 @@ class Page
     public function setLayoutData(?LayoutData $layoutData): static
     {
         $this->layoutData = $layoutData;
+
+        return $this;
+    }
+
+    public function isPublished(): ?bool
+    {
+        return $this->published;
+    }
+
+    public function setPublished(bool $published): static
+    {
+        $this->published = $published;
 
         return $this;
     }

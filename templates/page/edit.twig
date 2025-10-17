@@ -35,6 +35,23 @@
     >
         Edit Details
     </a>
+    <form
+        action="{{
+        path(
+            'app_page_publish',
+            {
+                id: page.id
+            }
+        )
+        }}"
+        method="post"
+    >
+        {% if page.isPublished() %}
+            <button class="uk-btn uk-btn-default">Unpublish</button>
+        {% else %}
+            <button class="uk-btn uk-btn-default">Publish</button>
+        {% endif %}
+    </form>
     <button class="uk-btn uk-btn-primary" form="page-edit-form">Save</button>
 {% endblock %}
 

@@ -54,6 +54,7 @@ final class PageController extends AbstractController
             $page->setPath($request->get('path'));
             $page->setType($request->get('type'));
             $page->setMeta($request->get('meta'));
+            $page->setPublished(false);
             $page->setLocale(
                 $entityManager->getRepository(DataLocale::class)->find($locale),
             );
@@ -260,6 +261,36 @@ final class PageController extends AbstractController
             'page' => $page,
             'layouts' => $layouts,
             'errors' => $errors,
+        ]);
+    }
+
+    #[
+        Route(
+            '__admin/pages/{id}/publish',
+            name: 'app_page_publish',
+            requirements: ['id' => '\d+'],
+        ),
+    ]
+    public function togglePublish(
+        int $id,
+        EntityManagerInterface $entityManager,
+    ): Response {
+        $page = $entityManager->getRepository(Page::class)->find($id);
+        if ($page === null) {
+            throw new NotFoundHttpException();
+        }
+
+        $page->setPublished(!$page->isPublished());
+        $entityManager->flush();
+
+        if ($page->isPublished()) {
+            $this->addFlash('success', 'Page published');
+        } else {
+            $this->addFlash('success', 'Page unpublished');
+        }
+
+        return $this->redirectToRoute('app_page', [
+            'id' => $page->getId(),
         ]);
     }
 
