@@ -10,15 +10,14 @@ use App\Repository\DataLocaleRepository;
 use App\Repository\PageRepository;
 use App\Service\Cms;
 use App\Service\MailerService;
+use App\Service\SitemapManager;
 use App\Service\Validation;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolverInterface;
 use Symfony\Component\Routing\Attribute\Route;
@@ -49,7 +48,7 @@ final class ClientController extends AbstractController
         );
 
         if ($locale === null) {
-            throw new NotFoundHttpException('No locale found');
+            throw $this->createNotFoundException();
         }
 
         /** @var PageRepository $pageRepository */
@@ -59,7 +58,7 @@ final class ClientController extends AbstractController
             $locale,
         );
         if ($page === null) {
-            throw new NotFoundHttpException();
+            throw $this->createNotFoundException();
         }
 
         $layoutName = $page->getLayoutData()?->getName() ?? null;
@@ -115,18 +114,46 @@ final class ClientController extends AbstractController
             requirements: ['path' => '.+'],
         ),
     ]
-    public function static(string $path, Cms $cms): BinaryFileResponse
-    {
+    public function static(
+        string $path,
+        Cms $cms,
+        Request $request,
+    ): BinaryFileResponse {
         $staticRoot = $cms->getStaticDir();
-        $filePath = "{$staticRoot}/{$path}";
 
+        $filePath = "{$staticRoot}/{$path}";
         if (!file_exists($filePath)) {
             throw $this->createNotFoundException();
         }
 
         $response = new BinaryFileResponse($filePath);
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE);
+        $response->setAutoEtag();
+        $response->isNotModified($request);
 
         return $response;
+    }
+
+    #[Route('/sitemap.xml', name: 'client_sitemap')]
+    public function sitemap(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        CacheInterface $cache,
+        SitemapManager $sitemapManager,
+    ): Response {
+        $requestDomain = $request->getHost();
+
+        /** @var DataLocaleRepository $localeRepository */
+        $localeRepository = $entityManager->getRepository(DataLocale::class);
+        $locale = $cache->get(
+            "app.locale.{$requestDomain}",
+            fn() => $localeRepository->findByDomainOrDefault($requestDomain),
+        );
+
+        if ($locale === null) {
+            throw $this->createNotFoundException();
+        }
+
+        return $this->redirect($sitemapManager->getWebPath($locale->getId()));
     }
 }

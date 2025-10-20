@@ -10,12 +10,12 @@ use App\Entity\Media;
 use App\Entity\Page;
 use App\Service\Cms;
 use App\Service\DataTransformer;
+use App\Service\SitemapManager;
 use App\Service\Validation;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -120,7 +120,7 @@ final class PageController extends AbstractController
             'locale' => $locale,
         ]);
         if ($page === null) {
-            throw new NotFoundHttpException();
+            throw $this->createNotFoundException();
         }
 
         $blocks = [];
@@ -158,6 +158,7 @@ final class PageController extends AbstractController
 
             $page->setData($pageData);
             if (!$hasErrors) {
+                $page->setUpdatedAt();
                 $entityManager->flush();
 
                 $this->addFlash('success', 'Page saved');
@@ -215,7 +216,7 @@ final class PageController extends AbstractController
             'locale' => $locale,
         ]);
         if ($page === null) {
-            throw new NotFoundHttpException();
+            throw $this->createNotFoundException();
         }
 
         $layouts = $cms->listLayouts();
@@ -243,6 +244,7 @@ final class PageController extends AbstractController
             }
 
             if ($errors === null) {
+                $page->setUpdatedAt();
                 $entityManager->flush();
 
                 $this->addFlash('success', 'Page saved');
@@ -267,6 +269,7 @@ final class PageController extends AbstractController
             '__admin/pages/{id}/publish',
             name: 'app_page_publish',
             requirements: ['id' => '\d+'],
+            methods: ['POST'],
         ),
     ]
     public function togglePublish(
@@ -275,7 +278,7 @@ final class PageController extends AbstractController
     ): Response {
         $page = $entityManager->getRepository(Page::class)->find($id);
         if ($page === null) {
-            throw new NotFoundHttpException();
+            throw $this->createNotFoundException();
         }
 
         $page->setPublished(!$page->isPublished());
@@ -294,9 +297,48 @@ final class PageController extends AbstractController
 
     #[
         Route(
+            '/__admin/pages/sitemap',
+            name: 'app_pages_sitemap',
+            methods: ['POST'],
+        ),
+    ]
+    public function generateSitemap(
+        Request $request,
+        SitemapManager $sitemapManager,
+    ): Response {
+        $locale = $request->getSession()->get('__locale');
+        $sitemapManager->generate($locale);
+
+        $this->addFlash('success', "Sitemap generated for locale: {$locale}");
+
+        return $this->redirectToRoute('app_pages');
+    }
+
+    #[
+        Route(
+            '/__admin/pages/sitemap/delete',
+            name: 'app_pages_sitemap_delete',
+            methods: ['POST'],
+        ),
+    ]
+    public function deleteSitemap(
+        Request $request,
+        SitemapManager $sitemapManager,
+    ): Response {
+        $locale = $request->getSession()->get('__locale');
+        $sitemapManager->delete($locale);
+
+        $this->addFlash('success', "Sitemap deleted for locale: {$locale}");
+
+        return $this->redirectToRoute('app_pages');
+    }
+
+    #[
+        Route(
             '/__admin/pages/{id}/delete',
             name: 'app_page_delete',
             requirements: ['id' => '\d+'],
+            methods: ['POST'],
         ),
     ]
     public function delete(
@@ -305,7 +347,7 @@ final class PageController extends AbstractController
     ): Response {
         $page = $entityManager->getRepository(Page::class)->find($id);
         if ($page === null) {
-            throw new NotFoundHttpException();
+            throw $this->createNotFoundException();
         }
 
         $entityManager->remove($page);
@@ -321,7 +363,7 @@ final class PageController extends AbstractController
     {
         $block = $cms->getBlockSchema($name);
         if ($block === null) {
-            throw new NotFoundHttpException();
+            throw $this->createNotFoundException();
         }
 
         return $this->json($block);

@@ -12,12 +12,18 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class MediaController extends AbstractController
 {
+    public function __construct()
+    {
+        if (!is_dir(ROOT_DIR . '/public/media/uploads')) {
+            mkdir(ROOT_DIR . '/public/media/uploads', 0777, true);
+        }
+    }
+
     #[Route('/__admin/media', name: 'app_media')]
     public function index(EntityManagerInterface $entityManager): Response
     {
@@ -111,7 +117,7 @@ final class MediaController extends AbstractController
     ): Response {
         $media = $entityManager->getRepository(Media::class)->find($id);
         if ($media === null) {
-            throw new NotFoundHttpException();
+            throw $this->createNotFoundException();
         }
 
         $entityManager->remove($media);

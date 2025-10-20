@@ -8,6 +8,7 @@ use App\Entity\Page;
 use App\Entity\DataLocale;
 use App\Entity\LayoutData;
 use App\Service\Cms;
+use App\Service\SitemapManager;
 use App\Service\Validation;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Cache\CacheItemPoolInterface;
@@ -15,7 +16,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -42,7 +42,6 @@ final class DataLocaleController extends AbstractController
         Validation $validation,
         ValidatorInterface $validator,
         EntityManagerInterface $entityManager,
-        CacheItemPoolInterface $localeCache,
         Cms $cms,
     ): Response {
         $errors = null;
@@ -82,7 +81,7 @@ final class DataLocaleController extends AbstractController
                 }
 
                 $entityManager->flush();
-                $localeCache->clear();
+                $this->localeCachePool->clear();
 
                 $this->addFlash('success', 'Locale created');
 
@@ -117,7 +116,7 @@ final class DataLocaleController extends AbstractController
         $localeReposiotory = $entityManager->getRepository(DataLocale::class);
         $locale = $localeReposiotory->find($id);
         if ($locale === null) {
-            throw new NotFoundHttpException();
+            throw $this->createNotFoundException();
         }
 
         $errors = null;
@@ -172,7 +171,7 @@ final class DataLocaleController extends AbstractController
             ->getRepository(DataLocale::class)
             ->find($localeId);
         if ($locale === null) {
-            throw new NotFoundHttpException();
+            throw $this->createNotFoundException();
         }
 
         $request->getSession()->set('__locale', $localeId);
@@ -226,11 +225,12 @@ final class DataLocaleController extends AbstractController
         EntityManagerInterface $entityManager,
         Request $request,
         CacheItemPoolInterface $localeCache,
+        SitemapManager $sitemapManager,
     ): Response {
         $localeRepository = $entityManager->getRepository(DataLocale::class);
         $locale = $localeRepository->find($id);
         if ($locale === null) {
-            throw new NotFoundHttpException();
+            throw $this->createNotFoundException();
         }
 
         $count = $localeRepository->count();
@@ -239,6 +239,7 @@ final class DataLocaleController extends AbstractController
         }
 
         $entityManager->remove($locale);
+        $sitemapManager->delete($locale->getId());
 
         $session = $request->getSession();
         if (intval($session->get('__locale')) === $locale->getId()) {

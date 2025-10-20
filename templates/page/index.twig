@@ -5,6 +5,13 @@
 {% endblock %}
 
 {% block actions %}
+    <button
+        class="uk-btn uk-btn-default"
+        data-uk-toggle="target: #pages-sitemap-modal"
+    >
+        Sitemap
+    </button>
+
     <a class="uk-btn uk-btn-primary" href="{{ path('app_pages_new') }}">
         New Page
     </a>
@@ -104,4 +111,48 @@
             </div>
         </div>
     {% endfor %}
+
+    <div id="pages-sitemap-modal" data-uk-modal>
+        <div class="uk-modal-dialog uk-margin-auto-vertical">
+            <button
+                class="uk-modal-close absolute right-4 top-4"
+                type="button"
+                data-uk-close
+            >
+
+            </button>
+            <div class="uk-modal-header">
+                <h2 class="uk-modal-title">
+                    Sitemap for locale: {{ app.session.get('__locale') }}
+                </h2>
+            </div>
+
+            <div class="uk-modal-footer gap-small flex justify-end">
+                <span class="grow"></span>
+
+                <button
+                    class="uk-modal-close uk-btn uk-btn-default"
+                    type="button"
+                >
+                    Cancel
+                </button>
+
+                <form
+                    class="inline w-fit"
+                    method="post"
+                    action="{{ path('app_pages_sitemap_delete') }}"
+                >
+                    <button class="uk-btn uk-btn-default">Delete</button>
+                </form>
+
+                <form
+                    class="inline w-fit"
+                    method="post"
+                    action="{{ path('app_pages_sitemap') }}"
+                >
+                    <button class="uk-btn uk-btn-primary">Generate</button>
+                </form>
+            </div>
+        </div>
+    </div>
 {% endblock %}

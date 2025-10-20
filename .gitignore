@@ -14,11 +14,7 @@
 /assets/vendor/
 ###< symfony/asset-mapper ###
 
-/node_modules
-###> liip/imagine-bundle ###
-/public/media/cache/
-###< liip/imagine-bundle ###
-/public/media/uploads/
+/node_modules/
+/public/media/
 
-/public/media/tmp/*
-!/public/media/tmp/.gitignore
+/public/sitemap/
