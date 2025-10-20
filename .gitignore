@@ -11,6 +11,7 @@
 
 ###> symfony/asset-mapper ###
 /public/assets/
+/public/favicon.ico
 /assets/vendor/
 ###< symfony/asset-mapper ###
 

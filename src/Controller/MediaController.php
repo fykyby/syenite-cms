@@ -14,6 +14,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 final class MediaController extends AbstractController
 {
@@ -132,6 +134,55 @@ final class MediaController extends AbstractController
         $this->addFlash('success', 'Media deleted');
 
         return $this->redirectToRoute('app_media');
+    }
+
+    #[Route('__admin/media/favicon', name: 'app_media_favicon')]
+    public function favicon(Request $request): Response
+    {
+        if ($request->isMethod('POST')) {
+            $file = $request->files->get('favicon', []);
+            if (empty($file)) {
+                $this->addFlash('error', 'A file is required');
+
+                return $this->render('media/favicon.twig');
+            }
+
+            $isImage = str_starts_with($file->getClientMimeType(), 'image/');
+            if (!$isImage) {
+                $this->addFlash('error', 'The file must be an image');
+
+                return $this->render('media/favicon.twig');
+            }
+
+            $manager = new ImageManager(new Driver());
+            $image = $manager->read($file->getPathname());
+            $image->toWebp();
+            $image->resize(height: 48, width: 48);
+            $image->save(ROOT_DIR . '/public/favicon.ico');
+
+            $this->addFlash('success', 'Favicon updated');
+        }
+
+        return $this->render('media/favicon.twig');
+    }
+
+    #[
+        Route(
+            '__admin/media/favicon/delete',
+            name: 'app_media_favicon_delete',
+            methods: ['POST'],
+        ),
+    ]
+    public function deleteFavicon(Request $request): Response
+    {
+        $path = ROOT_DIR . '/public/favicon.ico';
+        if (file_exists($path)) {
+            unlink($path);
+        }
+
+        $this->addFlash('success', 'Favicon deleted');
+
+        return $this->redirectToRoute('app_media_favicon');
     }
 
     private function generateFileVariants(string $filename): array

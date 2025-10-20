@@ -1,0 +1,230 @@
+{% extends 'base.twig' %}
+
+{% block back_link %}
+    {{ path('app_media') }}
+{% endblock %}
+
+{% block title %}
+    Favicon
+{% endblock %}
+
+{% block actions %}
+    <!-- <form action="{{ path('app_media_favicon_delete') }}" method="post"> -->
+    <button
+        class="uk-btn uk-btn-default"
+        data-uk-toggle="target: #favicon-delete-modal"
+    >
+        Delete
+    </button>
+    <!-- </form> -->
+    <button
+        class="uk-btn uk-btn-primary"
+        form="favicon-upload-form"
+        type="submit"
+    >
+        Submit
+    </button>
+{% endblock %}
+
+{% block body %}
+    <form
+        class="uk-form-stacked"
+        id="favicon-upload-form"
+        method="post"
+        enctype="multipart/form-data"
+        @submit.prevent="submit"
+    >
+        <div
+            id="upload-area"
+            class="uk-rounded p-medium hover:bg-muted flex cursor-pointer flex-col items-center border text-center transition-colors"
+            @click="$refs.fileInput.click()"
+            @dragover.prevent="isDragOver = true"
+            @dragleave.prevent="isDragOver = false"
+            @drop.prevent="handleDrop($event)"
+            :class="isDragOver ? 'bg-muted' : ''"
+        >
+            <input
+                class="hidden"
+                type="file"
+                id="file-input"
+                name="favicon"
+                x-ref="fileInput"
+                accept="image/*"
+                @change="handleFiles($event.target.files)"
+            />
+            <div class="mb-small">
+                <uk-icon icon="upload"></uk-icon>
+            </div>
+            <p class="text-lg">
+                Drop file here
+            </p>
+            <p class="text-sm">
+                or click to browse
+            </p>
+        </div>
+
+        <div class="gap-medium flex justify-end">
+            <div x-show="files.length > 0" class="w-full">
+                <label class="uk-form-label">Selected File</label>
+                <div
+                    class="uk-rounded p-small flex items-center justify-between border"
+                >
+                    <div class="gap-medium flex items-center">
+                        <img
+                            :src="files[0]?.preview"
+                            alt="Preview"
+                            class="h-12 w-12"
+                            x-show="files[0]?.preview"
+                        />
+                        <div>
+                            <div class="truncate" x-text="files[0]?.name"></div>
+                            <div
+                                class="text-muted-foreground text-sm"
+                                x-text="formatFileSize(files[0]?.size)"
+                            ></div>
+                        </div>
+                    </div>
+                    <button
+                        class="uk-btn uk-btn-default uk-btn-icon"
+                        type="button"
+                        @click="deleteFile(0)"
+                    >
+                        <uk-icon icon="trash"></uk-icon>
+                    </button>
+                </div>
+            </div>
+
+            <div class="w-fit shrink-0">
+                <label class="uk-form-label">Current Favicon</label>
+                <div
+                    class="uk-rounded p-medium gap-medium flex items-center border"
+                >
+                    <img
+                        src="/favicon.ico"
+                        alt="Current favicon"
+                        class="h-16 w-16"
+                        onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2264%22 height=%2264%22%3E%3Crect fill=%22%23ddd%22 width=%2264%22 height=%2264%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%23999%22%3ENo Icon%3C/text%3E%3C/svg%3E'"
+                    />
+                </div>
+            </div>
+        </div>
+    </form>
+{% endblock %}
+
+{% block modals %}
+    <div id="favicon-delete-modal" data-uk-modal>
+        <div class="uk-modal-dialog uk-margin-auto-vertical">
+            <button
+                class="uk-modal-close absolute right-4 top-4"
+                type="button"
+                data-uk-close
+            >
+
+            </button>
+            <div class="uk-modal-header">
+                <h2 class="uk-modal-title">Are you sure?</h2>
+            </div>
+            <div class="uk-modal-body">
+                <p>
+                    This action will delete current favicon.
+                </p>
+            </div>
+            <div class="uk-modal-footer gap-small flex justify-end">
+                <span class="grow"></span>
+
+                <button
+                    class="uk-modal-close uk-btn uk-btn-default"
+                    type="button"
+                >
+                    Cancel
+                </button>
+
+                <form
+                    class="inline w-fit"
+                    method="post"
+                    action="{{ path('app_media_favicon_delete') }}"
+                >
+                    <button class="uk-btn uk-btn-destructive">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {# prettier-ignore #}
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('body', () => ({
+                files: [],
+                isDragOver: false,
+
+                handleFiles(fileList) {
+                    Array.from(fileList).forEach(file => {
+                        file.id = `${file.name}-${file.size}-${Date.now()}-${Math.random()}`;
+                        this.files.push(file);
+                    });
+                    this.$refs.fileInput.value = '';
+                },
+
+                handleDrop(event) {
+                    this.isDragOver = false;
+                    const files = event.dataTransfer.files;
+                    this.handleFiles(files);
+                },
+
+                deleteFile(index) {
+                    this.files.splice(index, 1);
+                    this.$refs.fileInput.value = '';
+                },
+
+                clearAll() {
+                    this.files = [];
+                    this.$refs.fileInput.value = '';
+                },
+
+                formatFileSize(bytes) {
+                    if (bytes === 0) return '0 Bytes';
+                    const k = 1024;
+                    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                    const i = Math.floor(Math.log(bytes) / Math.log(k));
+                    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+                },
+
+                async submit() {
+                    // Create a temporary fake form to persist flash message from response
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '{{ path('app_media_favicon') }}';
+                    form.enctype = 'multipart/form-data';
+                    form.style.visibility = 'hidden';
+
+                    this.files.forEach((file, index) => {
+                        const input = document.createElement('input');
+                        input.type = 'file';
+                        input.name = `favicon`;
+                        input.files = this.createFileList(file);
+                        form.appendChild(input);
+                    });
+
+                    document.querySelector('main').appendChild(form);
+                    form.submit();
+                },
+
+                createFileList(file) {
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    return dataTransfer.files;
+                },
+            }));
+        });
+
+        document.addEventListener('dragover', function(e) {
+            e.preventDefault();
+        });
+
+        document.addEventListener('drop', function(e) {
+            e.preventDefault();
+        });
+    </script>
+{% endblock %}
