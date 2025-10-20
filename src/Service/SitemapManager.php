@@ -56,6 +56,7 @@ class SitemapManager
     {
         return $this->entityManager->getRepository(Page::class)->findBy([
             'locale' => $locale,
+            'published' => true,
         ]);
     }
 

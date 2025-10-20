@@ -19,7 +19,7 @@
     </head>
     <body class="flex h-full overflow-hidden" x-data="body">
         <aside
-            class="p-small gap-small bg-sidebar-background sticky top-0 flex h-full w-64 shrink-0 flex-col border-r shadow"
+            class="p-small gap-small bg-sidebar-background sticky top-0 flex h-full w-56 shrink-0 flex-col border-r shadow"
         >
             <nav class="space-y-smallest grow">
                 <a
@@ -125,7 +125,7 @@
 
         <div class="grow overflow-auto">
             <header
-                class="p-small gap-small bg-background sticky top-0 z-40 box-content flex h-10 items-center border-b shadow"
+                class="p-small gap-small bg-background sticky top-0 z-40 box-content flex h-10 items-center overflow-x-auto border-b shadow"
             >
                 <div class="gap-small flex grow items-center">
                     {% if block('back_link') ?? '' %}
@@ -139,7 +139,7 @@
                             ></uk-icon>
                         </a>
                     {% endif %}
-                    <h1>{{ block('title') ?? '' }}</h1>
+                    <h1 class="truncate">{{ block('title') ?? '' }}</h1>
                 </div>
                 <div class="gap-small flex">
                     {{ block('actions') ?? '' }}
