@@ -1,0 +1,35 @@
+{
+  "name": "NewFields",
+  "fields": [
+    {
+      "key": "my_date",
+      "type": "date",
+      "rules": "required"
+    },
+    {
+      "key": "time",
+      "type": "time",
+      "rules": "required"
+    },
+    {
+      "key": "select",
+      "type": "select",
+      "rules": "required",
+      "options": [
+        {
+          "value": "option1",
+          "label": "Option 1"
+        },
+        {
+          "value": "option2",
+          "label": "Option 2"
+        }
+      ]
+    },
+    {
+      "key": "checkbox",
+      "type": "checkbox",
+      "rules": ""
+    }
+  ]
+}

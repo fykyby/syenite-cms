@@ -50,6 +50,9 @@ class DataTransformer
                     'type' => $data[$key]['type'] ?? null,
                 ];
                 $field['error'] = $errors[$key] ?? null;
+            } elseif ($field['type'] === 'checkbox') {
+                $field['value'] = array_key_exists($key, $data) ? true : false;
+                $field['error'] = $errors[$key] ?? null;
             } else {
                 $field['value'] = $data[$key] ?? null;
                 $field['error'] = $errors[$key] ?? null;

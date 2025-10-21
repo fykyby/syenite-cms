@@ -23,7 +23,7 @@
             class="p-small gap-small bg-sidebar-background sticky top-0 flex h-full w-56 shrink-0 flex-col border-r shadow"
         >
             <nav class="space-y-smallest grow">
-                <!-- <a
+                <!--   <a
                     class="uk-btn uk-btn-ghost w-full justify-start font-normal"
                     href="{{ path('app_dashboard') }}"
                 >
@@ -31,7 +31,7 @@
                         <uk-icon icon="chart-column"></uk-icon>
                     </div>
                     <span>Dashboard</span>
-                </a> -->
+                </a>   -->
                 <a
                     class="uk-btn uk-btn-ghost w-full justify-start font-normal"
                     href="{{ path('app_pages') }}"
@@ -202,3 +202,12 @@
         </div>
     </body>
 </html>
+
+{% block javascripts %}
+    {# prettier-ignore #}
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('body', () => ({}));
+        })
+    </script>
+{% endblock %}

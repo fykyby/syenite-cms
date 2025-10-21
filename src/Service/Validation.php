@@ -59,7 +59,7 @@ class Validation
                 'array' => 'Value must be an array',
                 'same' => 'Value must match :field',
                 'regex' => 'Value format is invalid',
-                'date' => 'Value is not a valid date in format :format',
+                'date' => 'Value is not a valid date',
                 'accepted' => 'Value must be accepted',
                 'present' => 'Value field must be present',
                 'different' => 'Value must be different from :field',

@@ -1,0 +1,17 @@
+<div
+    :class="field.error ? 'form-destructive' : ''"
+    x-init="field.value === null ? field.value = false : null"
+>
+    <label class="uk-form-label capitalize" :for="key">
+        <input
+            class="uk-checkbox mr-smallest"
+            type="checkbox"
+            :id="key"
+            :name="key"
+            :checked="field.value"
+            @change="field.value = $event.target.checked"
+        />
+        <span x-text="field.key"></span>
+    </label>
+    <div class="uk-form-help" x-text="field.error"></div>
+</div>

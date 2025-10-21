@@ -63,7 +63,7 @@ final class UserController extends AbstractController
                 );
 
                 $defaultLocale = new DataLocale();
-                $defaultLocale->setName('Default');
+                $defaultLocale->setName('English');
                 $defaultLocale->setIsDefault(true);
                 $entityManager->persist($defaultLocale);
 

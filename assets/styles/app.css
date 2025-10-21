@@ -95,6 +95,9 @@
     & > .uk-form-help {
       @apply text-destructive;
     }
+    select {
+      @apply border-destructive!;
+    }
   }
 
   fieldset .form-destructive {

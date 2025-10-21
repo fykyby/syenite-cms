@@ -10,6 +10,18 @@
     <template x-if="field.type === 'media'">
         {% include 'page/_fields/_media.twig' %}
     </template>
+    <template x-if="field.type === 'date'">
+        {% include 'page/_fields/_date.twig' %}
+    </template>
+    <template x-if="field.type === 'time'">
+        {% include 'page/_fields/_time.twig' %}
+    </template>
+    <template x-if="field.type === 'select'">
+        {% include 'page/_fields/_select.twig' %}
+    </template>
+    <template x-if="field.type === 'checkbox'">
+        {% include 'page/_fields/_checkbox.twig' %}
+    </template>
     <template x-if="field.type === 'fieldset'">
         {% if depth < 6 %}
             {% include 'page/_fields/_fieldset.twig' with {
