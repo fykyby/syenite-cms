@@ -1,5 +1,5 @@
 {
-  "name": "syenite-cms",
+  "name": "kreator",
   "version": "1.0.0",
   "packageManager": "pnpm@10.15.0",
   "devDependencies": {
