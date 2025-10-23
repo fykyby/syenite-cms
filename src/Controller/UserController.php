@@ -8,6 +8,7 @@ use App\Entity\DataLocale;
 use App\Entity\LayoutData;
 use App\Entity\User;
 use App\Service\Cms;
+use App\Service\PasswordResetService;
 use App\Service\Validation;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Cache\CacheItemPoolInterface;
@@ -112,5 +113,117 @@ final class UserController extends AbstractController
     public function logout(): Response
     {
         return $this->render('user/login.twig', []);
+    }
+
+    #[Route('/__admin/auth/password-reset', name: 'app_auth_password_reset')]
+    public function passwordReset(
+        Request $request,
+        Validation $validation,
+        EntityManagerInterface $entityManager,
+        PasswordResetService $passwordResetService,
+    ): Response {
+        $userCount = $entityManager->getRepository(User::class)->count();
+        if ($userCount === 0) {
+            return $this->redirectToRoute('app_auth_signup');
+        }
+
+        $errors = [];
+        if ($request->isMethod('POST')) {
+            $email = $request->request->get('email');
+            $errors = $validation->validate(
+                ['email' => $email],
+                ['email' => 'required|email'],
+            );
+
+            if (empty($errors)) {
+                $user = $entityManager->getRepository(User::class)->findOneBy([
+                    'email' => $email,
+                ]);
+
+                if ($user === null) {
+                    throw $this->createNotFoundException();
+                }
+
+                $passwordResetService->sendResetEmail($user);
+                return $this->render('user/password_reset_success.twig', []);
+            }
+        }
+
+        return $this->render('user/password_reset.twig', [
+            'errors' => $errors,
+            'values' => $request->request->all(),
+        ]);
+    }
+
+    #[
+        Route(
+            '/__admin/auth/password-reset/{signature}',
+            name: 'app_auth_password_reset_target',
+        ),
+    ]
+    public function passwordResetTarget(
+        string $signature,
+        EntityManagerInterface $entityManager,
+        Validation $validation,
+        Request $request,
+        PasswordResetService $passwordResetService,
+        UserPasswordHasherInterface $passwordHasher,
+    ): Response {
+        $userCount = $entityManager->getRepository(User::class)->count();
+        if ($userCount === 0) {
+            return $this->redirectToRoute('app_auth_signup');
+        }
+
+        $userId = $request->query->get('userId');
+        $expires = $request->query->get('expires');
+        $expectedSignature = $passwordResetService->getSignature(
+            $userId,
+            $expires,
+        );
+
+        if (!hash_equals($expectedSignature, $signature)) {
+            throw $this->createAccessDeniedException();
+        }
+
+        if ($expires < time()) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $errors = null;
+        if ($request->isMethod('POST')) {
+            $errors = $validation->validate(
+                ['password' => $request->get('password')],
+                ['password' => 'required|min:6|max:128'],
+            );
+
+            if (
+                $request->get('password') !== $request->get('passwordconfirm')
+            ) {
+                $errors['passwordconfirm'] = 'Passwords do not match';
+            }
+
+            $user = $entityManager->getRepository(User::class)->find($userId);
+            if ($user === null) {
+                throw $this->createNotFoundException();
+            }
+
+            if ($errors === null) {
+                $user->setPassword(
+                    $passwordHasher->hashPassword(
+                        $user,
+                        $request->get('password'),
+                    ),
+                );
+
+                $entityManager->flush();
+
+                return $this->redirectToRoute('app_auth_login');
+            }
+        }
+
+        return $this->render('user/password_reset_target.twig', [
+            'errors' => $errors,
+            'values' => $request->request->all(),
+        ]);
     }
 }
