@@ -160,21 +160,19 @@ final class DataLocaleController extends AbstractController
         ]);
     }
 
-    #[Route('/__admin/locale/set', name: 'app_locale_set')]
-    public function set(
+    #[Route('/__admin/locale/{id}/select', name: 'app_locale_change')]
+    public function change(
+        int $id,
         Request $request,
         EntityManagerInterface $entityManager,
         RouterInterface $router,
     ): Response {
-        $localeId = $request->get('locale');
-        $locale = $entityManager
-            ->getRepository(DataLocale::class)
-            ->find($localeId);
+        $locale = $entityManager->getRepository(DataLocale::class)->find($id);
         if ($locale === null) {
             throw $this->createNotFoundException();
         }
 
-        $request->getSession()->set('__locale', $localeId);
+        $request->getSession()->set('__locale', $id);
 
         $referer = $request->headers->get('referer');
         if (!$referer) {

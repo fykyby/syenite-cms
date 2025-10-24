@@ -127,6 +127,7 @@ final class UserController extends AbstractController
             return $this->redirectToRoute('app_auth_signup');
         }
 
+        $values = $request->request->all();
         $errors = [];
         if ($request->isMethod('POST')) {
             $email = $request->request->get('email');
@@ -147,11 +148,13 @@ final class UserController extends AbstractController
                 $passwordResetService->sendResetEmail($user);
                 return $this->render('user/password_reset_success.twig', []);
             }
+        } elseif ($this->getUser()) {
+            $values['email'] = $this->getUser()->getUserIdentifier();
         }
 
         return $this->render('user/password_reset.twig', [
             'errors' => $errors,
-            'values' => $request->request->all(),
+            'values' => $values,
         ]);
     }
 

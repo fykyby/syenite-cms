@@ -9,13 +9,6 @@
 {% endblock %}
 
 {% block actions %}
-    <a
-        class="uk-btn uk-btn-default"
-        href="{{ page.getLocale().getDomain() ?? '' }}{{ page.getPath() }}"
-        target="_blank"
-    >
-        View Page
-    </a>
     <button
         class="uk-btn uk-btn-default"
         data-uk-toggle="target: #page-add-block-modal"
@@ -34,6 +27,13 @@
         }}"
     >
         Edit Details
+    </a>
+    <a
+        class="uk-btn uk-btn-default"
+        href="{{ page.getLocale().getDomain() ?? '' }}{{ page.getPath() }}"
+        target="_blank"
+    >
+        View Page
     </a>
     <form
         action="{{

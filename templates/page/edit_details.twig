@@ -16,6 +16,12 @@
 {% endblock %}
 
 {% block actions %}
+    <button
+        class="uk-btn uk-btn-default"
+        data-uk-toggle="target: #page-delete-modal"
+    >
+        Delete
+    </button>
     <a
         class="uk-btn uk-btn-default"
         href="{{ page.getLocale().getDomain() ?? '' }}{{ page.getPath() }}"
@@ -28,4 +34,51 @@
 
 {% block body %}
     {% include 'page/_details_form.twig' %}
+{% endblock %}
+
+{% block modals %}
+    <div id="page-delete-modal" data-uk-modal>
+        <div class="uk-modal-dialog uk-margin-auto-vertical">
+            <button
+                class="uk-modal-close absolute right-4 top-4"
+                type="button"
+                data-uk-close
+            >
+
+            </button>
+            <div class="uk-modal-header">
+                <h2 class="uk-modal-title">Are you sure?</h2>
+            </div>
+            <div class="uk-modal-body">
+                <p>
+                    This action will delete page '{{ page.path }}'.
+                </p>
+            </div>
+            <div class="uk-modal-footer gap-small flex justify-end">
+                <span class="grow"></span>
+
+                <button
+                    class="uk-modal-close uk-btn uk-btn-default"
+                    type="button"
+                >
+                    Cancel
+                </button>
+
+                <form
+                    class="inline w-fit"
+                    method="post"
+                    action="{{
+                    path(
+                        'app_page_delete',
+                        {
+                            id: page.id
+                        }
+                    )
+                    }}"
+                >
+                    <button class="uk-btn uk-btn-destructive">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
 {% endblock %}

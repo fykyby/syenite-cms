@@ -12,8 +12,9 @@
             href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>"
         />
         <meta name="color-scheme" content="dark" />
-        {{ block('stylesheets') ?? '' }}
+
         {{ block('javascripts') ?? '' }}
+
         {% block importmap %}
             {{ importmap('app') }}
         {% endblock %}
@@ -23,15 +24,6 @@
             class="p-small gap-small bg-sidebar-background sticky top-0 flex h-full w-56 shrink-0 flex-col border-r shadow"
         >
             <nav class="space-y-smallest grow">
-                <!--             <a
-                    class="uk-btn uk-btn-ghost w-full justify-start font-normal"
-                    href="{{ path('app_dashboard') }}"
-                >
-                    <div class="size-4">
-                        <uk-icon icon="chart-column"></uk-icon>
-                    </div>
-                    <span>Dashboard</span>
-                </a>             -->
                 <a
                     class="uk-btn uk-btn-ghost w-full justify-start font-normal"
                     href="{{ path('app_pages') }}"
@@ -68,59 +60,92 @@
                     </div>
                     <span>Locale</span>
                 </a>
-                <a
-                    class="uk-btn uk-btn-ghost w-full justify-start font-normal"
-                    href="{{ path('app_theme_edit') }}"
-                >
-                    <div class="size-4">
-                        <uk-icon icon="palette"></uk-icon>
-                    </div>
-                    <span>Theme</span>
-                </a>
             </nav>
 
-            <div class="gap-small flex justify-between">
-                <form
-                    class="mx-0 w-fit"
-                    method="post"
-                    action="{{ path('app_auth_logout') }}"
-                >
-                    <button class="uk-btn uk-btn-default uk-btn-icon">
-                        <div class="size-4">
-                            <uk-icon icon="log-out"></uk-icon>
-                        </div>
-                    </button>
-                </form>
-
-                <form
-                    action="{{ path('app_locale_set') }}"
-                    method="post"
-                    id="locale-select-form"
-                    @change="document.getElementById('locale-select-form').submit()"
-                >
-                    <select class="uk-select" name="locale">
+            <div class="gap-small flex flex-col">
+                <div>
+                    <button
+                        class="uk-btn uk-btn-default w-full truncate"
+                        type="button"
+                    >
                         {% for locale in __locales() %}
                             {% if app.session.get('__locale') == locale.id %}
-                                <option selected value="{{ locale.id }}">
-                                    {{ locale.name }}
-                                </option>
-                            {% else %}
-                                <option value="{{ locale.id }}">
-                                    {{ locale.name }}
-                                </option>
+                                {{ locale.name }}
                             {% endif %}
                         {% endfor %}
-                    </select>
-                </form>
-
-                <a
-                    class="uk-btn uk-btn-default uk-btn-icon w-fit"
-                    href="{{ path('app_settings') }}"
-                >
-                    <div class="size-4">
-                        <uk-icon icon="settings"></uk-icon>
+                    </button>
+                    <div
+                        class="uk-drop uk-dropdown w-full"
+                        data-uk-dropdown="mode: click; pos: top-left"
+                    >
+                        <ul class="uk-nav uk-dropdown-nav">
+                            <li class="uk-nav-header">Locale</li>
+                            {% for locale in __locales() %}
+                                <li>
+                                    <a
+                                        href="{{
+                                        path(
+                                            'app_locale_change',
+                                            {
+                                                id: locale.id
+                                            }
+                                        )
+                                        }}"
+                                    >
+                                        {{ locale.name }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
                     </div>
-                </a>
+                </div>
+
+                <div>
+                    <button
+                        class="uk-btn uk-btn-default w-full truncate"
+                        type="button"
+                    >
+                        {{ app.user.email }}
+                    </button>
+                    <div
+                        class="uk-drop uk-dropdown w-full"
+                        data-uk-dropdown="mode: click; pos: top-left"
+                    >
+                        <ul class="uk-nav uk-dropdown-nav">
+                            <li class="uk-nav-header">Settings</li>
+                            <li>
+                                <a href="{{ path('app_settings_theme') }}">
+                                    Change Theme
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href="{{
+                                    path(
+                                        'app_settings_email_account'
+                                    )
+                                    }}"
+                                >
+                                    Email Account
+                                </a>
+                            </li>
+
+                            <li class="uk-nav-divider"></li>
+
+                            <li class="uk-nav-header">Account</li>
+                            <li>
+                                <a href="{{ path('app_auth_password_reset') }}">
+                                    Change Password
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ path('app_auth_logout') }}">
+                                    Log Out
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </aside>
 

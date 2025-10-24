@@ -15,7 +15,11 @@
   }
 
   * {
-    @apply border-border duration-150!;
+    @apply border-border!;
+  }
+
+  *:not(.uk-dropdown):not(.uk-drop):not([data-uk-dropdown]) {
+    @apply duration-150!;
   }
 
   .uk-card,
@@ -35,7 +39,6 @@
   }
 
   html {
-    zoom: 120%;
     @apply bg-background text-foreground;
   }
 
@@ -96,6 +99,9 @@
       @apply text-destructive;
     }
     select {
+      @apply border-destructive!;
+    }
+    .uk-input-fake {
       @apply border-destructive!;
     }
   }
