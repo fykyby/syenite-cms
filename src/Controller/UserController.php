@@ -135,15 +135,15 @@ final class UserController extends AbstractController
                 ['email' => 'required|email'],
             );
 
+            $user = $entityManager->getRepository(User::class)->findOneBy([
+                'email' => $email,
+            ]);
+
+            if ($user === null) {
+                $errors['email'] = 'User not found';
+            }
+
             if (empty($errors)) {
-                $user = $entityManager->getRepository(User::class)->findOneBy([
-                    'email' => $email,
-                ]);
-
-                if ($user === null) {
-                    throw $this->createNotFoundException();
-                }
-
                 $passwordResetService->sendResetEmail($user);
                 return $this->render('user/password_reset_success.twig', []);
             }

@@ -6,6 +6,7 @@ namespace App\Service;
 
 use Twig\Environment;
 use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mime\Email;
 
@@ -14,6 +15,7 @@ class MailerService
     public function __construct(
         private SettingsManager $settingsManager,
         private Environment $twig,
+        private MailerInterface $mailer,
     ) {}
 
     public function sendClientEmail(
@@ -40,12 +42,26 @@ class MailerService
 
         $username = urlencode($account['username']);
         $password = urlencode($account['password']);
-        $host = urlencode($account['host']);
-        $port = urlencode($account['port']);
 
-        $dsn = "smtp://{$username}:{$password}@{$host}:{$port}";
+        $dsn = "smtp://{$username}:{$password}@{$account['host']}:{$account['port']}";
         $transport = Transport::fromDsn($dsn);
         $mailer = new Mailer($transport);
         $mailer->send($email);
+    }
+
+    public function sendPasswordResetEmail(string $email, string $url): void
+    {
+        $sender = explode(
+            ':',
+            str_replace('smtp://', '', $_ENV['MAILER_DSN']),
+        )[0];
+
+        $email = (new Email())
+            ->from($sender)
+            ->to($email)
+            ->subject('CMS Password Reset')
+            ->text($url);
+
+        $this->mailer->send($email);
     }
 }
