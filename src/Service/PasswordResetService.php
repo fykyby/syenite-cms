@@ -19,7 +19,7 @@ class PasswordResetService
 
     public function sendResetEmail(User $user): void
     {
-        $expires = time() + 6;
+        $expires = time() + 600;
         $signature = $this->getSignature($user->getId(), $expires);
 
         $path = $this->urlGenerator->generate(

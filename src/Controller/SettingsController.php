@@ -42,7 +42,7 @@ final class SettingsController extends AbstractController
 
                 $this->addFlash('success', 'Settings saved');
 
-                return $this->redirectToRoute('app_settings');
+                return $this->redirectToRoute('app_settings_email_account');
             } else {
                 $this->addFlash('error', 'Validation error(s) occurred');
             }
@@ -84,7 +84,7 @@ final class SettingsController extends AbstractController
 
                 $this->addFlash('success', 'Theme changed');
 
-                return $this->redirectToRoute('app_theme_edit');
+                return $this->redirectToRoute('app_settings_theme');
             }
         }
 

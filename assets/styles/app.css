@@ -114,3 +114,7 @@
     }
   }
 }
+
+.uk-btn-outline:hover {
+    @apply bg-accent text-accent-foreground;
+}

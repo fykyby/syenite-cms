@@ -275,6 +275,7 @@ final class PageController extends AbstractController
     public function togglePublish(
         int $id,
         EntityManagerInterface $entityManager,
+        Request $request,
     ): Response {
         $page = $entityManager->getRepository(Page::class)->find($id);
         if ($page === null) {
@@ -290,9 +291,9 @@ final class PageController extends AbstractController
             $this->addFlash('success', 'Page unpublished');
         }
 
-        return $this->redirectToRoute('app_page', [
-            'id' => $page->getId(),
-        ]);
+        $referer = $request->headers->get('referer');
+
+        return $this->redirect($referer);
     }
 
     #[

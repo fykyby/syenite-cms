@@ -18,7 +18,7 @@
 {% endblock %}
 
 {% block body %}
-    <table class="uk-table uk-table-divider uk-table-middle uk-table-justify">
+    <table class="uk-table uk-table-divider uk-table-middle">
         <thead>
             <tr>
                 <th class="uk-table-shrink">ID</th>
@@ -47,14 +47,76 @@
                     </td>
                     <td>{{ page.isPublished() ? 'Published' : 'Draft' }}</td>
                     <td class="py-0">
-                        <button
-                            class="uk-btn uk-btn-ghost uk-btn-icon uk-btn-sm"
-                            data-uk-toggle="target: #page-delete-modal-{{
-                            page.id
-                            }}"
-                        >
-                            <uk-icon icon="trash"></uk-icon>
-                        </button>
+                        <span class="gap-smallest flex">
+                            {% if page.isPublished %}
+                                <a
+                                    class="uk-btn uk-btn-outline uk-btn-icon uk-btn-sm w-fit"
+                                    href="{{
+                                    page.getLocale().getDomain()
+                                        ?? ''
+                                    }}{{ page.getPath() }}"
+                                    target="_blank"
+                                >
+                                    <uk-icon icon="external-link"></uk-icon>
+                                </a>
+                            {% else %}
+                                <a
+                                    class="uk-btn uk-btn-outline uk-btn-icon uk-btn-sm pointer-events-none w-fit opacity-0"
+                                >
+                                    <uk-icon icon="external-link"></uk-icon>
+                                </a>
+                            {% endif %}
+
+                            <form
+                                class="w-fit"
+                                action="{{
+                                path(
+                                    'app_page_publish',
+                                    {
+                                        id: page.id
+                                    }
+                                )
+                                }}"
+                                method="post"
+                            >
+                                {% if page.isPublished() %}
+                                    <button
+                                        class="uk-btn uk-btn-outline uk-btn-icon uk-btn-sm w-fit"
+                                    >
+                                        <uk-icon icon="eye-off"></uk-icon>
+                                    </button>
+                                {% else %}
+                                    <button
+                                        class="uk-btn uk-btn-outline uk-btn-icon uk-btn-sm w-fit"
+                                    >
+                                        <uk-icon icon="eye"></uk-icon>
+                                    </button>
+                                {% endif %}
+                            </form>
+
+                            <a
+                                class="uk-btn uk-btn-outline uk-btn-icon uk-btn-sm w-fit"
+                                href="{{
+                                path(
+                                    'app_page_edit',
+                                    {
+                                        id: page.id
+                                    }
+                                )
+                                }}"
+                            >
+                                <uk-icon icon="pencil"></uk-icon>
+                            </a>
+
+                            <button
+                                class="uk-btn uk-btn-outline uk-btn-icon uk-btn-sm"
+                                data-uk-toggle="target: #page-delete-modal-{{
+                                page.id
+                                }}"
+                            >
+                                <uk-icon icon="trash"></uk-icon>
+                            </button>
+                        </span>
                     </td>
                 </tr>
             {% endfor %}
