@@ -17,7 +17,10 @@ class AppExtension extends AbstractExtension
 
     public function getFunctions(): array
     {
-        return [new TwigFunction('__locales', [$this, 'listLocales'])];
+        return [
+            new TwigFunction('__locales', [$this, 'listLocales']),
+            new TwigFunction('env', [$this, 'env']),
+        ];
     }
 
     public function listLocales(): array
@@ -25,5 +28,10 @@ class AppExtension extends AbstractExtension
         return $this->entityManager
             ->getRepository(DataLocale::class)
             ->findAll();
+    }
+
+    public function env(string $key): ?string
+    {
+        return $_ENV[$key];
     }
 }

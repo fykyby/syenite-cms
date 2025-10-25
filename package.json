@@ -1,6 +1,4 @@
 {
-  "name": "kreator",
-  "version": "1.0.0",
   "packageManager": "pnpm@10.15.0",
   "devDependencies": {
     "@prettier/plugin-php": "^0.24.0",

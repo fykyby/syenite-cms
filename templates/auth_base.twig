@@ -5,7 +5,7 @@
         <meta name="robots" content="noindex, nofollow" />
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         <title>
-            {{ block('title') ?? '' }} - kreator
+            {{ block('title') ?? '' }} - {{ env('APP_NAME') }}
         </title>
         <link
             rel="icon"
@@ -19,8 +19,8 @@
         {% endblock %}
     </head>
     <body>
-        <header class="p-medium text-center text-3xl">
-            <a href="{{ path('app_dashboard') }}">kreator</a>
+        <header class="p-medium text-center text-3xl font-bold my-medium">
+            <a href="{{ path('app_dashboard') }}">{{ env('APP_NAME') }}</a>
         </header>
         <main class="p-medium gap-medium mx-auto flex max-w-xl flex-col">
             {{ block('body') ?? '' }}

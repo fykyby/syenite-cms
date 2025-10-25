@@ -72,7 +72,7 @@ class MailerService
         $email = (new Email())
             ->from($config['username'])
             ->to($email)
-            ->subject('CMS Password Reset')
+            ->subject($_ENV['APP_NAME'] . ' Password Reset')
             ->text($url);
 
         $mailer = $this->getMailer();
