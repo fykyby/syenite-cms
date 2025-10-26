@@ -100,12 +100,81 @@ final class PageController extends AbstractController
 
     #[
         Route(
+            '/__admin/pages/{id}/edit',
+            name: 'app_page_edit',
+            requirements: ['id' => '\d+'],
+        ),
+    ]
+    public function edit(
+        int $id,
+        EntityManagerInterface $entityManager,
+        Request $request,
+        Validation $validation,
+        ValidatorInterface $validator,
+        Cms $cms,
+    ): Response {
+        $locale = $request->getSession()->get('__locale');
+        $page = $entityManager->getRepository(Page::class)->findOneBy([
+            'id' => $id,
+            'locale' => $locale,
+        ]);
+        if ($page === null) {
+            throw $this->createNotFoundException();
+        }
+
+        $layouts = $cms->listLayouts();
+        $errors = null;
+        if ($request->isMethod('POST')) {
+            $page->setPath($request->get('path'));
+            $page->setMeta($request->get('meta'));
+
+            $errors = $validation->formatErrors($validator->validate($page));
+
+            $newLayoutName = $request->get('layout');
+            if ($newLayoutName === '') {
+                $page->setLayoutData(null);
+            } elseif (in_array($newLayoutName, $layouts)) {
+                $layout = $entityManager
+                    ->getRepository(LayoutData::class)
+                    ->findOneBy([
+                        'locale' => $locale,
+                        'name' => $newLayoutName,
+                    ]);
+
+                $page->setLayoutData($layout);
+            } else {
+                $errors['layout'] = 'Invalid layout';
+            }
+
+            if ($errors === null) {
+                $page->setUpdatedAt();
+                $entityManager->flush();
+
+                $this->addFlash('success', 'Page saved');
+
+                return $this->redirectToRoute('app_page_edit', [
+                    'id' => $page->getId(),
+                ]);
+            } else {
+                $this->addFlash('error', 'Validation error(s) occurred');
+            }
+        }
+
+        return $this->render('page/edit_details.twig', [
+            'page' => $page,
+            'layouts' => $layouts,
+            'errors' => $errors,
+        ]);
+    }
+
+    #[
+        Route(
             '/__admin/pages/{id}',
             name: 'app_page',
             requirements: ['id' => '\d+'],
         ),
     ]
-    public function edit(
+    public function editBlocks(
         int $id,
         EntityManagerInterface $entityManager,
         Request $request,
@@ -192,75 +261,6 @@ final class PageController extends AbstractController
             'page' => $page,
             'blocks' => $blocks,
             'media' => $mediaJson,
-        ]);
-    }
-
-    #[
-        Route(
-            '/__admin/pages/{id}/edit',
-            name: 'app_page_edit',
-            requirements: ['id' => '\d+'],
-        ),
-    ]
-    public function editDetails(
-        int $id,
-        EntityManagerInterface $entityManager,
-        Request $request,
-        Validation $validation,
-        ValidatorInterface $validator,
-        Cms $cms,
-    ): Response {
-        $locale = $request->getSession()->get('__locale');
-        $page = $entityManager->getRepository(Page::class)->findOneBy([
-            'id' => $id,
-            'locale' => $locale,
-        ]);
-        if ($page === null) {
-            throw $this->createNotFoundException();
-        }
-
-        $layouts = $cms->listLayouts();
-        $errors = null;
-        if ($request->isMethod('POST')) {
-            $page->setPath($request->get('path'));
-            $page->setMeta($request->get('meta'));
-
-            $errors = $validation->formatErrors($validator->validate($page));
-
-            $newLayoutName = $request->get('layout');
-            if ($newLayoutName === '') {
-                $page->setLayoutData(null);
-            } elseif (in_array($newLayoutName, $layouts)) {
-                $layout = $entityManager
-                    ->getRepository(LayoutData::class)
-                    ->findOneBy([
-                        'locale' => $locale,
-                        'name' => $newLayoutName,
-                    ]);
-
-                $page->setLayoutData($layout);
-            } else {
-                $errors['layout'] = 'Invalid layout';
-            }
-
-            if ($errors === null) {
-                $page->setUpdatedAt();
-                $entityManager->flush();
-
-                $this->addFlash('success', 'Page saved');
-
-                return $this->redirectToRoute('app_page_edit', [
-                    'id' => $page->getId(),
-                ]);
-            } else {
-                $this->addFlash('error', 'Validation error(s) occurred');
-            }
-        }
-
-        return $this->render('page/edit_details.twig', [
-            'page' => $page,
-            'layouts' => $layouts,
-            'errors' => $errors,
         ]);
     }
 
