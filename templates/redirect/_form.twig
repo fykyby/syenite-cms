@@ -1,0 +1,33 @@
+<form id="redirect-form" class="uk-form-stacked grid grid-cols-2" method="post">
+    <div class="{{ errors.fromPath ?? '' ? 'form-destructive' : '' }}">
+        <label class="uk-form-label" for="fromPath">From</label>
+        <div class="uk-form-controls">
+            <input
+                class="uk-input"
+                type="text"
+                id="fromPath"
+                name="fromPath"
+                value="{{ values.fromPath ?? '' }}"
+            />
+        </div>
+        <div class="uk-form-help">
+            {{ errors.fromPath ?? '' }}
+        </div>
+    </div>
+
+    <div class="{{ errors.toPath ?? '' ? 'form-destructive' : '' }}">
+        <label class="uk-form-label" for="toPath">To</label>
+        <div class="uk-form-controls">
+            <input
+                class="uk-input"
+                type="text"
+                id="toPath"
+                name="toPath"
+                value="{{ values.toPath ?? '' }}"
+            />
+        </div>
+        <div class="uk-form-help">
+            {{ errors.toPath ?? '' }}
+        </div>
+    </div>
+</form>

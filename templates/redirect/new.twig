@@ -1,0 +1,17 @@
+{% extends 'base.twig' %}
+
+{% block back_link %}
+    {{ path('app_redirects') }}
+{% endblock %}
+
+{% block title %}
+    New Redirect
+{% endblock %}
+
+{% block actions %}
+    <button class="uk-btn uk-btn-primary" form="redirect-form">Submit</button>
+{% endblock %}
+
+{% block body %}
+    {% include 'redirect/_form.twig' %}
+{% endblock %}

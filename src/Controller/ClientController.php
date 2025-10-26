@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Entity\DataLocale;
 use App\Entity\Page;
+use App\Entity\Redirect;
 use App\Repository\DataLocaleRepository;
 use App\Repository\PageRepository;
 use App\Service\Cms;
@@ -46,9 +47,22 @@ final class ClientController extends AbstractController
             "app.locale.{$requestDomain}",
             fn() => $localeRepository->findByDomainOrDefault($requestDomain),
         );
-
         if ($locale === null) {
             throw $this->createNotFoundException();
+        }
+
+        $redirect = $cache->get(
+            "app.redirect.{$locale->getId()}.{$path}",
+            fn() => $entityManager->getRepository(Redirect::class)->findOneBy([
+                'fromPath' => $path,
+                'locale' => $locale,
+            ]),
+        );
+        if ($redirect !== null) {
+            return $this->redirect(
+                $redirect->getToPath(),
+                Response::HTTP_MOVED_PERMANENTLY,
+            );
         }
 
         /** @var PageRepository $pageRepository */

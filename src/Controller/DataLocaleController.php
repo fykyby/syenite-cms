@@ -222,7 +222,6 @@ final class DataLocaleController extends AbstractController
         int $id,
         EntityManagerInterface $entityManager,
         Request $request,
-        CacheItemPoolInterface $localeCache,
         SitemapManager $sitemapManager,
     ): Response {
         $localeRepository = $entityManager->getRepository(DataLocale::class);
@@ -248,7 +247,7 @@ final class DataLocaleController extends AbstractController
         }
 
         $entityManager->flush();
-        $localeCache->clear();
+        $this->localeCachePool->clear();
 
         $this->addFlash('success', 'Locale deleted');
 

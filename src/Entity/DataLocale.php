@@ -53,10 +53,17 @@ class DataLocale
     ]
     private Collection $layouts;
 
+    /**
+     * @var Collection<int, Redirect>
+     */
+    #[ORM\OneToMany(targetEntity: Redirect::class, mappedBy: 'locale', orphanRemoval: true)]
+    private Collection $redirects;
+
     public function __construct()
     {
         $this->pages = new ArrayCollection();
         $this->layouts = new ArrayCollection();
+        $this->redirects = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -154,6 +161,36 @@ class DataLocale
             // set the owning side to null (unless already changed)
             if ($layout->getLocale() === $this) {
                 $layout->setLocale(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Redirect>
+     */
+    public function getRedirects(): Collection
+    {
+        return $this->redirects;
+    }
+
+    public function addRedirect(Redirect $redirect): static
+    {
+        if (!$this->redirects->contains($redirect)) {
+            $this->redirects->add($redirect);
+            $redirect->setLocale($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRedirect(Redirect $redirect): static
+    {
+        if ($this->redirects->removeElement($redirect)) {
+            // set the owning side to null (unless already changed)
+            if ($redirect->getLocale() === $this) {
+                $redirect->setLocale(null);
             }
         }
 

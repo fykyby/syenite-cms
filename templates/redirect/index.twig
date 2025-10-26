@@ -1,0 +1,111 @@
+{% extends 'base.twig' %}
+
+{% block title %}
+    Redirects
+{% endblock %}
+
+{% block actions %}
+    <a class="uk-btn uk-btn-primary" href="{{ path('app_redirect_new') }}">
+        New Redirect
+    </a>
+{% endblock %}
+
+{% block body %}
+    <table class="uk-table uk-table-divider uk-table-middle uk-table-justify">
+        <thead>
+            <tr>
+                <th class="uk-table-shrink">ID</th>
+                <th>From</th>
+                <th>To</th>
+                <th class="uk-table-shrink">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for redirect in redirects %}
+                <tr>
+                    <td>{{ redirect.id }}</td>
+                    <td>{{ redirect.fromPath }}</td>
+                    <td>{{ redirect.toPath }}</td>
+                    <td>
+                        <div class="gap-smallest flex">
+                            <a
+                                class="uk-btn uk-btn-outline uk-btn-icon uk-btn-sm w-fit"
+                                href="{{
+                                path(
+                                    'app_redirect_edit',
+                                    {
+                                        id: redirect.id
+                                    }
+                                )
+                                }}"
+                            >
+                                <uk-icon icon="pencil"></uk-icon>
+                            </a>
+                            <button
+                                class="uk-btn uk-btn-outline uk-btn-icon uk-btn-sm"
+                                data-uk-toggle="target: #redirect-delete-modal-{{
+                                redirect.id
+                                }}"
+                            >
+                                <uk-icon icon="trash"></uk-icon>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block modals %}
+    {% for redirect in redirects %}
+        <div id="redirect-delete-modal-{{ redirect.id }}" data-uk-modal>
+            <div class="uk-modal-dialog uk-margin-auto-vertical">
+                <button
+                    class="uk-modal-close absolute right-4 top-4"
+                    type="button"
+                    data-uk-close
+                >
+
+                </button>
+                <div class="uk-modal-header">
+                    <h2 class="uk-modal-title">Are you sure?</h2>
+                </div>
+                <div class="uk-modal-body">
+                    <p>
+                        This action will delete redirect from '{{
+                            redirect.fromPath
+                        }}' to '{{ redirect.toPath }}'.
+                    </p>
+                </div>
+                <div class="uk-modal-footer gap-small flex justify-end">
+                    <span class="grow"></span>
+
+                    <button
+                        class="uk-modal-close uk-btn uk-btn-default"
+                        type="button"
+                    >
+                        Cancel
+                    </button>
+
+                    <form
+                        class="inline w-fit"
+                        method="post"
+                        action="{{
+                        path(
+                            'app_redirect_delete',
+                            {
+                                id: redirect.id
+                            }
+                        )
+                        }}"
+                    >
+                        <button class="uk-btn uk-btn-destructive">
+                            Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}
