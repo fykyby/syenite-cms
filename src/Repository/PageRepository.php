@@ -19,6 +19,16 @@ class PageRepository extends ServiceEntityRepository
         parent::__construct($registry, Page::class);
     }
 
+    public function listPagesOfLocale(int $localeId): array
+    {
+        return $this->createQueryBuilder('p')
+            ->select('p.id, p.path, p.published, p.updatedAt')
+            ->where('p.locale = :localeId')
+            ->setParameter('localeId', $localeId)
+            ->getQuery()
+            ->getArrayResult();
+    }
+
     public function findOneByPathAndLocaleWithLayoutData(
         string $path,
         DataLocale $locale,

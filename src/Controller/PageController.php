@@ -8,6 +8,7 @@ use App\Entity\DataLocale;
 use App\Entity\LayoutData;
 use App\Entity\Media;
 use App\Entity\Page;
+use App\Repository\PageRepository;
 use App\Service\Cms;
 use App\Service\DataTransformer;
 use App\Service\SitemapManager;
@@ -28,9 +29,10 @@ final class PageController extends AbstractController
         Request $request,
     ): Response {
         $locale = $request->getSession()->get('__locale');
-        $pages = $entityManager->getRepository(Page::class)->findBy([
-            'locale' => $locale,
-        ]);
+
+        /** @var PageRepository */
+        $repository = $entityManager->getRepository(Page::class);
+        $pages = $repository->listPagesOfLocale($locale);
 
         return $this->render('page/index.twig', [
             'pages' => $pages,
@@ -211,6 +213,7 @@ final class PageController extends AbstractController
             );
             $hasErrors = $values['hasErrors'];
             $blocks = $values['blocks'];
+            $pageData = $values['pageData'];
 
             $page->setData($pageData);
 
@@ -227,7 +230,7 @@ final class PageController extends AbstractController
                 $entityManager->flush();
 
                 $this->addFlash('success', 'Page saved');
-                // return $this->redirectToRoute('app_page', ['id' => $id]);
+                return $this->redirectToRoute('app_page', ['id' => $id]);
             }
         } elseif (empty($blocks)) {
             foreach ($page->getData() as $data) {
@@ -241,6 +244,7 @@ final class PageController extends AbstractController
                     $data,
                     [],
                 );
+
                 $blocks[] = $block;
             }
         }
@@ -427,6 +431,7 @@ final class PageController extends AbstractController
         return [
             'hasErrors' => $hasErrors,
             'blocks' => $blocks,
+            'pageData' => $pageData,
         ];
     }
 }

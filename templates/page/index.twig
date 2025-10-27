@@ -24,13 +24,13 @@
                 <th class="uk-table-shrink">ID</th>
                 <th>Path</th>
                 <th class="uk-table-shrink">Status</th>
-                <th class="uk-table-shrink">Actions</th>
+                <th class="uk-table-shrink text-right">Actions</th>
             </tr>
         </thead>
         <tbody>
             {% for page in pages %}
                 <tr>
-                    <td>{{ page.getId() }}</td>
+                    <td>{{ page.id }}</td>
                     <td class="uk-table-link">
                         <a
                             href="{{
@@ -42,19 +42,18 @@
                             )
                             }}"
                         >
-                            {{ page.getPath() }}
+                            {{ page.path }}
                         </a>
                     </td>
-                    <td>{{ page.isPublished() ? 'Published' : 'Draft' }}</td>
+                    <td>{{ page.published ? 'Published' : 'Draft' }}</td>
                     <td class="py-0">
                         <span class="gap-smallest flex">
-                            {% if page.isPublished %}
+                            {% if page.published %}
                                 <a
                                     class="uk-btn uk-btn-outline uk-btn-icon uk-btn-sm w-fit"
-                                    href="{{
-                                    page.getLocale().getDomain()
-                                        ?? ''
-                                    }}{{ page.getPath() }}"
+                                    href="{{ page.getLocale().domain ?? '' }}{{
+                                    page.path
+                                    }}"
                                     target="_blank"
                                 >
                                     <uk-icon icon="external-link"></uk-icon>
@@ -79,7 +78,7 @@
                                 }}"
                                 method="post"
                             >
-                                {% if page.isPublished() %}
+                                {% if page.published %}
                                     <button
                                         class="uk-btn uk-btn-outline uk-btn-icon uk-btn-sm w-fit"
                                     >
