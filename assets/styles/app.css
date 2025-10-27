@@ -31,11 +31,14 @@
     @apply border-border!;
   }
 
-  .uk-btn:disabled,
   .uk-input:disabled,
   .uk-textarea:disabled,
   .uk-select:disabled {
     @apply opacity-50! cursor-not-allowed! bg-[var(--uk-disabled-color)]!;
+  }
+
+  .uk-btn:disabled {
+    @apply opacity-50! cursor-not-allowed!;
   }
 
   html {
@@ -116,5 +119,5 @@
 }
 
 .uk-btn-outline:hover {
-    @apply bg-accent text-accent-foreground;
+  @apply bg-accent text-accent-foreground;
 }

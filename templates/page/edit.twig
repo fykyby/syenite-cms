@@ -47,12 +47,22 @@
         method="post"
     >
         {% if page.isPublished() %}
-            <button class="uk-btn uk-btn-default">Unpublish</button>
+            <button class="uk-btn uk-btn-default" :disabled="somethingChanged">
+                Unpublish
+            </button>
         {% else %}
-            <button class="uk-btn uk-btn-default">Publish</button>
+            <button class="uk-btn uk-btn-default" :disabled="somethingChanged">
+                Publish
+            </button>
         {% endif %}
     </form>
-    <button class="uk-btn uk-btn-primary" form="page-edit-form">Save</button>
+    <button
+        class="uk-btn uk-btn-primary"
+        form="page-edit-form"
+        :disabled="!somethingChanged"
+    >
+        Save
+    </button>
 {% endblock %}
 
 {% block body %}
@@ -108,7 +118,7 @@
             Alpine.data('body', () => ({
                 blocks: {{ blocks|json_encode|raw }},
                 media: JSON.parse({{ media|json_encode|raw }}),
-                somethingChanged: {{ (app.session.flashbag.peek('error')|length > 0) ? 'true' : 'false' }},
+                somethingChanged: false,
 
                 init() {
                     this.$watch('blocks', () => {

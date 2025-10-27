@@ -192,51 +192,44 @@ final class PageController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        $blocks = [];
-        $hasErrors = false;
+        $session = $request->getSession();
+        $validatedBlocksData = $session->get('validatedBlocksData');
+
+        $blocks = $validatedBlocksData['blocks'] ?? [];
+        $hasErrors = $validatedBlocksData['hasErrors'] ?? false;
+
+        $session->remove('validatedBlocksData');
+
         if ($request->isMethod('POST')) {
             $pageData = $request->request->all()['blocks'] ?? [];
 
-            foreach ($pageData as $key => $data) {
-                $block = $cms->getBlockSchema($data['_name']);
-
-                $pageData[$key]['_path'] = $cms->getBlockTemplatePath(
-                    $data['_name'],
-                );
-
-                $built = $dataTransformer->buildValidationDataAndRules(
-                    $block['fields'],
-                    $data,
-                );
-
-                $validationData = $built['data'];
-                $validationRules = $built['rules'];
-
-                $blockErrors =
-                    $validation->validate($validationData, $validationRules) ??
-                    [];
-                $hasErrors = $hasErrors || !empty($blockErrors);
-
-                $block['fields'] = $dataTransformer->attachValuesAndErrors(
-                    $block['fields'],
-                    $data,
-                    $blockErrors,
-                );
-                $blocks[] = $block;
-            }
+            $values = $this->validateBlocks(
+                $pageData,
+                $cms,
+                $dataTransformer,
+                $validation,
+            );
+            $hasErrors = $values['hasErrors'];
+            $blocks = $values['blocks'];
 
             $page->setData($pageData);
-            if (!$hasErrors) {
+
+            if ($hasErrors && $page->isPublished()) {
+                $this->addFlash('error', 'Validation error(s) occurred');
+            } elseif ($hasErrors && !$page->isPublished()) {
                 $page->setUpdatedAt();
                 $entityManager->flush();
 
                 $this->addFlash('success', 'Page saved');
-
-                return $this->redirectToRoute('app_page', ['id' => $id]);
-            } else {
                 $this->addFlash('error', 'Validation error(s) occurred');
+            } elseif (!$hasErrors) {
+                $page->setUpdatedAt();
+                $entityManager->flush();
+
+                $this->addFlash('success', 'Page saved');
+                // return $this->redirectToRoute('app_page', ['id' => $id]);
             }
-        } else {
+        } elseif (empty($blocks)) {
             foreach ($page->getData() as $data) {
                 $block = $cms->getBlockSchema($data['_name']);
                 if ($block === null) {
@@ -276,20 +269,45 @@ final class PageController extends AbstractController
         int $id,
         EntityManagerInterface $entityManager,
         Request $request,
+        Cms $cms,
+        DataTransformer $dataTransformer,
+        Validation $validation,
     ): Response {
         $page = $entityManager->getRepository(Page::class)->find($id);
         if ($page === null) {
             throw $this->createNotFoundException();
         }
 
-        $page->setPublished(!$page->isPublished());
-        $entityManager->flush();
-
         if ($page->isPublished()) {
-            $this->addFlash('success', 'Page published');
-        } else {
+            $page->setPublished(false);
+
             $this->addFlash('success', 'Page unpublished');
+        } else {
+            $values = $this->validateBlocks(
+                $page->getData(),
+                $cms,
+                $dataTransformer,
+                $validation,
+            );
+
+            if ($values['hasErrors']) {
+                $this->addFlash('error', 'Validation error(s) occurred');
+
+                $request->getSession()->set('validatedBlocksData', [
+                    'blocks' => $values['blocks'],
+                    'hasErrors' => $values['hasErrors'],
+                ]);
+
+                return $this->redirectToRoute('app_page', ['id' => $id]);
+            } else {
+                $page->setPublished(true);
+                $page->setUpdatedAt();
+
+                $this->addFlash('success', 'Page published');
+            }
         }
+
+        $entityManager->flush();
 
         $referer = $request->headers->get('referer');
 
@@ -368,5 +386,47 @@ final class PageController extends AbstractController
         }
 
         return $this->json($block);
+    }
+
+    private function validateBlocks(
+        array $pageData,
+        Cms $cms,
+        DataTransformer $dataTransformer,
+        Validation $validation,
+    ): array {
+        $hasErrors = false;
+        $blocks = [];
+
+        foreach ($pageData as $key => $data) {
+            $block = $cms->getBlockSchema($data['_name']);
+
+            $pageData[$key]['_path'] = $cms->getBlockTemplatePath(
+                $data['_name'],
+            );
+
+            $built = $dataTransformer->buildValidationDataAndRules(
+                $block['fields'],
+                $data,
+            );
+
+            $validationData = $built['data'];
+            $validationRules = $built['rules'];
+
+            $blockErrors =
+                $validation->validate($validationData, $validationRules) ?? [];
+            $hasErrors = $hasErrors || !empty($blockErrors);
+
+            $block['fields'] = $dataTransformer->attachValuesAndErrors(
+                $block['fields'],
+                $data,
+                $blockErrors,
+            );
+            $blocks[] = $block;
+        }
+
+        return [
+            'hasErrors' => $hasErrors,
+            'blocks' => $blocks,
+        ];
     }
 }
