@@ -36,28 +36,21 @@ final class ClientController extends AbstractController
         EntityManagerInterface $entityManager,
         Cms $cms,
         Request $request,
-        CacheInterface $cache,
     ): Response {
         $requestDomain = $request->getHost();
         $path = "/{$path}";
 
         /** @var DataLocaleRepository $localeRepository */
         $localeRepository = $entityManager->getRepository(DataLocale::class);
-        $locale = $cache->get(
-            "app.locale.{$requestDomain}",
-            fn() => $localeRepository->findByDomainOrDefault($requestDomain),
-        );
+        $locale = $localeRepository->findByDomainOrDefault($requestDomain);
         if ($locale === null) {
             throw $this->createNotFoundException();
         }
 
-        $redirect = $cache->get(
-            "app.redirect.{$locale->getId()}.{$path}",
-            fn() => $entityManager->getRepository(Redirect::class)->findOneBy([
-                'fromPath' => $path,
-                'locale' => $locale,
-            ]),
-        );
+        $redirect = $entityManager->getRepository(Redirect::class)->findOneBy([
+            'fromPath' => $path,
+            'locale' => $locale,
+        ]);
         if ($redirect !== null) {
             return $this->redirect(
                 $redirect->getToPath(),
@@ -152,18 +145,13 @@ final class ClientController extends AbstractController
     public function sitemap(
         Request $request,
         EntityManagerInterface $entityManager,
-        CacheInterface $cache,
         SitemapManager $sitemapManager,
     ): Response {
         $requestDomain = $request->getHost();
 
         /** @var DataLocaleRepository $localeRepository */
         $localeRepository = $entityManager->getRepository(DataLocale::class);
-        $locale = $cache->get(
-            "app.locale.{$requestDomain}",
-            fn() => $localeRepository->findByDomainOrDefault($requestDomain),
-        );
-
+        $locale = $localeRepository->findByDomainOrDefault($requestDomain);
         if ($locale === null) {
             throw $this->createNotFoundException();
         }

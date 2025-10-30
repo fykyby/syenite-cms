@@ -30,7 +30,9 @@
     </a>
     <a
         class="uk-btn uk-btn-default"
-        href="{{ page.getLocale().getDomain() ?? '' }}{{ page.getPath() }}"
+        href="http://{{ page.getLocale().getDomain() ?? '' }}{{
+        page.getPath()
+        }}"
         target="_blank"
     >
         View Page

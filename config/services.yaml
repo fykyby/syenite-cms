@@ -39,13 +39,5 @@ services:
       $argumentResolver: "@argument_resolver"
       $fullContainer: "@service_container"
 
-  App\Controller\DataLocaleController:
-    arguments:
-      $localeCachePool: "@cache.locale"
-
-  App\Controller\UserController:
-    arguments:
-      $localeCachePool: "@cache.locale"
-
   # add more service definitions when explicit configuration is needed
   # please note that last definitions always *replace* previous ones

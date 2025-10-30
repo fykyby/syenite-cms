@@ -65,7 +65,7 @@
         <div>
             <button class="uk-btn uk-btn-default w-full truncate" type="button">
                 {% for locale in __locales %}
-                    {% if app.session.get('__locale') == locale.id %}
+                    {% if app.session.get('__localeId') == locale.id %}
                         {{ locale.name }}
                     {% endif %}
                 {% endfor %}

@@ -15,19 +15,17 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class RedirectController extends AbstractController
 {
-    public function __construct(
-        private CacheItemPoolInterface $redirectCachePool,
-    ) {}
-
     #[Route('/__admin/redirects', name: 'app_redirects')]
     public function index(
         EntityManagerInterface $entityManager,
         Request $request,
     ): Response {
-        $locale = $request->getSession()->get('__locale');
+        $localeId = $request
+            ->getSession()
+            ->get(DataLocaleController::SESSION_LOCALE_ID_KEY);
         $redirects = $entityManager
             ->getRepository(Redirect::class)
-            ->findBy(['locale' => $locale]);
+            ->findBy(['locale' => $localeId]);
 
         return $this->render('redirect/index.twig', [
             'redirects' => $redirects,
@@ -47,9 +45,13 @@ final class RedirectController extends AbstractController
             $redirect->setFromPath($request->request->get('fromPath'));
             $redirect->setToPath($request->request->get('toPath'));
 
-            $locale = $request->getSession()->get('__locale');
+            $localeId = $request
+                ->getSession()
+                ->get(DataLocaleController::SESSION_LOCALE_ID_KEY);
             $redirect->setLocale(
-                $entityManager->getRepository(DataLocale::class)->find($locale),
+                $entityManager
+                    ->getRepository(DataLocale::class)
+                    ->find($localeId),
             );
 
             $errors = $validation->formatErrors(
@@ -59,7 +61,6 @@ final class RedirectController extends AbstractController
             if ($errors === null) {
                 $entityManager->persist($redirect);
                 $entityManager->flush();
-                $this->redirectCachePool->clear();
 
                 $this->addFlash('success', 'Redirect created');
 
@@ -106,7 +107,6 @@ final class RedirectController extends AbstractController
             if ($errors === null) {
                 $entityManager->persist($redirect);
                 $entityManager->flush();
-                $this->redirectCachePool->clear();
 
                 $this->addFlash('success', 'Redirect saved');
 
@@ -140,7 +140,6 @@ final class RedirectController extends AbstractController
 
         $entityManager->remove($redirect);
         $entityManager->flush();
-        $this->redirectCachePool->clear();
 
         $this->addFlash('success', 'Redirect deleted');
 

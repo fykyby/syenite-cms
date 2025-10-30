@@ -42,13 +42,15 @@ final class LayoutController extends AbstractController
         EntityManagerInterface $entityManager,
         Validation $validation,
     ): Response {
-        $locale = $request->getSession()->get('__locale');
+        $localeId = $request
+            ->getSession()
+            ->get(DataLocaleController::SESSION_LOCALE_ID_KEY);
         $layoutData = $entityManager
             ->getRepository(LayoutData::class)
             ->findOneBy([
                 'name' => $name,
                 'theme' => $cms->getThemeName(),
-                'locale' => $locale,
+                'locale' => $localeId,
             ]);
 
         if ($layoutData === null) {
@@ -56,7 +58,9 @@ final class LayoutController extends AbstractController
             $layoutData->setName($name);
             $layoutData->setTheme($cms->getThemeName());
             $layoutData->setLocale(
-                $entityManager->getRepository(DataLocale::class)->find($locale),
+                $entityManager
+                    ->getRepository(DataLocale::class)
+                    ->find($localeId),
             );
             $layoutData->setData([]);
             $entityManager->persist($layoutData);

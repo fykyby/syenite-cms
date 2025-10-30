@@ -22,9 +22,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class DataLocaleController extends AbstractController
 {
-    public function __construct(
-        private CacheItemPoolInterface $localeCachePool,
-    ) {}
+    public const string SESSION_LOCALE_ID_KEY = '__localeId';
 
     #[Route('/__admin/locale', name: 'app_locale')]
     public function index(EntityManagerInterface $entityManager): Response
@@ -81,7 +79,6 @@ final class DataLocaleController extends AbstractController
                 }
 
                 $entityManager->flush();
-                $this->localeCachePool->clear();
 
                 $this->addFlash('success', 'Locale created');
 
@@ -142,7 +139,6 @@ final class DataLocaleController extends AbstractController
                 }
 
                 $entityManager->flush();
-                $this->localeCachePool->clear();
 
                 $this->addFlash('success', 'Locale saved');
 
@@ -172,7 +168,7 @@ final class DataLocaleController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        $request->getSession()->set('__locale', $id);
+        $request->getSession()->set(self::SESSION_LOCALE_ID_KEY, $id);
 
         $referer = $request->headers->get('referer');
         if (!$referer) {
@@ -239,15 +235,17 @@ final class DataLocaleController extends AbstractController
         $sitemapManager->delete($locale->getId());
 
         $session = $request->getSession();
-        if (intval($session->get('__locale')) === $locale->getId()) {
+        if (
+            intval($session->get(self::SESSION_LOCALE_ID_KEY)) ===
+            $locale->getId()
+        ) {
             $defaultLocale = $localeRepository->findOneBy([
                 'isDefault' => true,
             ]);
-            $session->set('__locale', $defaultLocale->getId());
+            $session->set(self::SESSION_LOCALE_ID_KEY, $defaultLocale->getId());
         }
 
         $entityManager->flush();
-        $this->localeCachePool->clear();
 
         $this->addFlash('success', 'Locale deleted');
 

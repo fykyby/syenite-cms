@@ -23,16 +23,20 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class PageController extends AbstractController
 {
+    private const string SESSION_VALIDATED_BLOCKS_KEY = 'sessionValidatedBlocksData';
+
     #[Route('/__admin/pages', name: 'app_pages')]
     public function index(
         EntityManagerInterface $entityManager,
         Request $request,
     ): Response {
-        $locale = $request->getSession()->get('__locale');
+        $localeId = $request
+            ->getSession()
+            ->get(DataLocaleController::SESSION_LOCALE_ID_KEY);
 
         /** @var PageRepository */
         $repository = $entityManager->getRepository(Page::class);
-        $pages = $repository->listPagesOfLocale($locale);
+        $pages = $repository->listPagesOfLocale($localeId);
 
         return $this->render('page/index.twig', [
             'pages' => $pages,
@@ -47,7 +51,9 @@ final class PageController extends AbstractController
         Validation $validation,
         Cms $cms,
     ): Response {
-        $locale = $request->getSession()->get('__locale');
+        $localeId = $request
+            ->getSession()
+            ->get(DataLocaleController::SESSION_LOCALE_ID_KEY);
         $layouts = $cms->listLayouts();
 
         $errors = null;
@@ -57,7 +63,9 @@ final class PageController extends AbstractController
             $page->setMeta($request->get('meta'));
             $page->setPublished(false);
             $page->setLocale(
-                $entityManager->getRepository(DataLocale::class)->find($locale),
+                $entityManager
+                    ->getRepository(DataLocale::class)
+                    ->find($localeId),
             );
             $page->setData([]);
 
@@ -70,7 +78,7 @@ final class PageController extends AbstractController
                 $layout = $entityManager
                     ->getRepository(LayoutData::class)
                     ->findOneBy([
-                        'locale' => $locale,
+                        'locale' => $localeId,
                         'name' => $newLayoutName,
                     ]);
 
@@ -115,10 +123,12 @@ final class PageController extends AbstractController
         ValidatorInterface $validator,
         Cms $cms,
     ): Response {
-        $locale = $request->getSession()->get('__locale');
+        $localeId = $request
+            ->getSession()
+            ->get(DataLocaleController::SESSION_LOCALE_ID_KEY);
         $page = $entityManager->getRepository(Page::class)->findOneBy([
             'id' => $id,
-            'locale' => $locale,
+            'locale' => $localeId,
         ]);
         if ($page === null) {
             throw $this->createNotFoundException();
@@ -139,7 +149,7 @@ final class PageController extends AbstractController
                 $layout = $entityManager
                     ->getRepository(LayoutData::class)
                     ->findOneBy([
-                        'locale' => $locale,
+                        'locale' => $localeId,
                         'name' => $newLayoutName,
                     ]);
 
@@ -185,22 +195,26 @@ final class PageController extends AbstractController
         SerializerInterface $serializer,
         DataTransformer $dataTransformer,
     ): Response {
-        $locale = $request->getSession()->get('__locale');
+        $localeId = $request
+            ->getSession()
+            ->get(DataLocaleController::SESSION_LOCALE_ID_KEY);
         $page = $entityManager->getRepository(Page::class)->findOneBy([
             'id' => $id,
-            'locale' => $locale,
+            'locale' => $localeId,
         ]);
         if ($page === null) {
             throw $this->createNotFoundException();
         }
 
         $session = $request->getSession();
-        $validatedBlocksData = $session->get('validatedBlocksData');
+        $validatedBlocksData = $session->get(
+            self::SESSION_VALIDATED_BLOCKS_KEY,
+        );
 
         $blocks = $validatedBlocksData['blocks'] ?? [];
         $hasErrors = $validatedBlocksData['hasErrors'] ?? false;
 
-        $session->remove('validatedBlocksData');
+        $session->remove(self::SESSION_VALIDATED_BLOCKS_KEY);
 
         if ($request->isMethod('POST')) {
             $pageData = $request->request->all()['blocks'] ?? [];
@@ -297,10 +311,12 @@ final class PageController extends AbstractController
             if ($values['hasErrors']) {
                 $this->addFlash('error', 'Validation error(s) occurred');
 
-                $request->getSession()->set('validatedBlocksData', [
-                    'blocks' => $values['blocks'],
-                    'hasErrors' => $values['hasErrors'],
-                ]);
+                $request
+                    ->getSession()
+                    ->set(self::SESSION_VALIDATED_BLOCKS_KEY, [
+                        'blocks' => $values['blocks'],
+                        'hasErrors' => $values['hasErrors'],
+                    ]);
 
                 return $this->redirectToRoute('app_page', ['id' => $id]);
             } else {

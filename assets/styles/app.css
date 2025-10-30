@@ -34,7 +34,7 @@
   .uk-input:disabled,
   .uk-textarea:disabled,
   .uk-select:disabled {
-    @apply opacity-50! cursor-not-allowed! bg-[var(--uk-disabled-color)]!;
+    @apply opacity-50! cursor-not-allowed! bg-(--uk-disabled-color)!;
   }
 
   .uk-btn:disabled {
@@ -83,7 +83,7 @@
   }
 
   ul.uk-tab > li.uk-active {
-    @apply border-[var(--uk-tab-active-border-color)]!;
+    @apply border-(--uk-tab-active-border-color)!;
   }
 
   select.uk-select,
