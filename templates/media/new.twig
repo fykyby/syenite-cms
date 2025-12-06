@@ -103,7 +103,15 @@
                     <li
                         class="uk-rounded p-small gap-small flex items-center justify-between border"
                     >
-                        <div class="overflow-hidden">
+                        <template x-if="file.preview">
+                            <img
+                                :src="file.preview"
+                                alt="Preview"
+                                class="h-16 w-16 rounded object-cover"
+                            />
+                        </template>
+
+                        <div class="w-full overflow-hidden">
                             <div class="truncate" x-text="file.name"></div>
                             <div class="text-sm">
                                 <template x-if="file.size > uploadMaxFilesize">
@@ -157,6 +165,11 @@
                 handleFiles(fileList) {
                     Array.from(fileList).forEach(file => {
                         file.id = `${file.name}-${file.size}-${Date.now()}-${Math.random()}`;
+
+                        if (file.type.startsWith('image/')) {
+                            file.preview = URL.createObjectURL(file);
+                        }
+
                         this.files.push(file);
                     });
                     this.$refs.fileInput.value = '';
@@ -166,6 +179,7 @@
                     this.isDragOver = false;
                     const files = event.dataTransfer.files;
                     this.handleFiles(files);
+                    console.log(this.files);
                 },
 
                 deleteFile(index) {
