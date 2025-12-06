@@ -34,11 +34,12 @@
   .uk-input:disabled,
   .uk-textarea:disabled,
   .uk-select:disabled {
-    @apply opacity-50! cursor-not-allowed! bg-(--uk-disabled-color)!;
+    @apply opacity-50! bg-(--uk-disabled-color)! pointer-events-none;
   }
 
-  .uk-btn:disabled {
-    @apply opacity-50! cursor-not-allowed!;
+  .uk-btn:disabled,
+  a.disabled {
+    @apply opacity-50! pointer-events-none;
   }
 
   html {

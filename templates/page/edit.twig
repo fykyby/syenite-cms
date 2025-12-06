@@ -28,16 +28,18 @@
     >
         Edit Details
     </a>
-    <a
-        class="uk-btn uk-btn-default"
-        href="{{ page.getLocale().getDomain() ? 'http://' : '' }}{{
-        page.getLocale().getDomain()
-            ?? ''
-        }}{{ page.getPath() }}"
-        target="_blank"
-    >
-        View Page
-    </a>
+    {% if page.isPublished() %}
+        <a
+            class="uk-btn uk-btn-default"
+            href="{{ page.getLocale().getDomain() ? 'http://' : '' }}{{
+            page.getLocale().getDomain()
+                ?? ''
+            }}{{ page.getPath() }}"
+            target="_blank"
+        >
+            Visit Page
+        </a>
+    {% endif %}
     <form
         action="{{
         path(

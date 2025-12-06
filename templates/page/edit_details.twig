@@ -22,16 +22,18 @@
     >
         Delete
     </button>
-    <a
-        class="uk-btn uk-btn-default"
-        href="{{ page.getLocale().getDomain() ? 'http://' : '' }}{{
-        page.getLocale().getDomain()
-            ?? ''
-        }}{{ page.getPath() }}"
-        target="_blank"
-    >
-        View Page
-    </a>
+    {% if page.isPublished() %}
+        <a
+            class="uk-btn uk-btn-default"
+            href="{{ page.getLocale().getDomain() ? 'http://' : '' }}{{
+            page.getLocale().getDomain()
+                ?? ''
+            }}{{ page.getPath() }}"
+            target="_blank"
+        >
+            Visit Page
+        </a>
+    {% endif %}
     <button class="uk-btn uk-btn-primary" form="page-details-form">Save</button>
 {% endblock %}
 
