@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\EventListener;
 
+use App\Controller\DataLocaleController;
 use App\Entity\DataLocale;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
@@ -25,6 +26,9 @@ final class LoginListener
         $event
             ->getRequest()
             ->getSession()
-            ->set('__locale', $defaultLocale->getId());
+            ->set(
+                DataLocaleController::SESSION_LOCALE_ID_KEY,
+                $defaultLocale->getId(),
+            );
     }
 }
