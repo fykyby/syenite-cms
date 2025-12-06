@@ -22,6 +22,7 @@
         class="uk-btn uk-btn-primary"
         form="media-upload-form"
         type="submit"
+        :disabled="!canSubmit()"
     >
         Submit
     </button>
@@ -68,8 +69,30 @@
         </div>
 
         <div x-show="files.length > 0">
-            <label class="uk-form-label flex items-center">
-                Selected Files (<span x-text="files.length"></span>)
+            <label class="uk-form-label gap-smallest flex items-center">
+                <span class="mr-smallest">
+                    Selected Files (<span x-text="files.length"></span>)
+                </span>
+
+                <template x-if="totalSize() > postMaxSize">
+                    <span
+                        class="text-destructive"
+                        x-text="formatBytes(totalSize())"
+                    >
+
+                    </span>
+                </template>
+                <template x-if="totalSize() <= postMaxSize">
+                    <span x-text="formatBytes(totalSize())"></span>
+                </template>
+
+                <span class="text-muted-foreground">/</span>
+                <span
+                    class="text-muted-foreground"
+                    x-text="formatBytes(postMaxSize)"
+                >
+
+                </span>
             </label>
 
             <ul class="gap-small grid grid-cols-3">
@@ -78,14 +101,33 @@
                     :key="file.id || (file.name + file.size + index)"
                 >
                     <li
-                        class="uk-rounded p-small flex items-center justify-between border"
+                        class="uk-rounded p-small gap-small flex items-center justify-between border"
                     >
                         <div class="overflow-hidden">
                             <div class="truncate" x-text="file.name"></div>
-                            <div
-                                class="text-muted-foreground text-sm"
-                                x-text="formatFileSize(file.size)"
-                            ></div>
+                            <div class="text-sm">
+                                <template x-if="file.size > uploadMaxFilesize">
+                                    <span
+                                        class="text-destructive"
+                                        x-text="formatBytes(file.size)"
+                                    >
+
+                                    </span>
+                                </template>
+                                <template x-if="file.size <= uploadMaxFilesize">
+                                    <span x-text="formatBytes(file.size)">
+
+                                    </span>
+                                </template>
+
+                                <span class="text-muted-foreground">/</span>
+                                <span
+                                    class="text-muted-foreground"
+                                    x-text="formatBytes(uploadMaxFilesize)"
+                                >
+
+                                </span>
+                            </div>
                         </div>
 
                         <button
@@ -109,6 +151,8 @@
             Alpine.data('body', () => ({
                 files: [],
                 isDragOver: false,
+                uploadMaxFilesize: {{ upload_max_filesize() }},
+                postMaxSize: {{ post_max_size() }},
 
                 handleFiles(fileList) {
                     Array.from(fileList).forEach(file => {
@@ -134,7 +178,23 @@
                     this.$refs.fileInput.value = '';
                 },
 
-                formatFileSize(bytes) {
+                totalSize() {
+                    return this.files.reduce((sum, file) => sum + file.size, 0);
+                },
+
+                hasInvalidFiles() {
+                    return this.files.some(file => file.size > this.uploadMaxFilesize);
+                },
+
+                exceedsPostMaxSize() {
+                    return this.totalSize > this.postMaxSize;
+                },
+
+                canSubmit() {
+                    return !this.hasInvalidFiles() && !this.exceedsPostMaxSize();
+                },
+
+                formatBytes(bytes) {
                     if (bytes === 0) return '0 Bytes';
                     const k = 1024;
                     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
@@ -143,6 +203,10 @@
                 },
 
                 async submit() {
+                    if (!this.canSubmit()) {
+                        return;
+                    }
+
                     // Create a temporary fake form to persist flash message from response
                     const form = document.createElement('form');
                     form.method = 'POST';
