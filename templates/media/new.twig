@@ -80,7 +80,7 @@
                     <li
                         class="uk-rounded p-small flex items-center justify-between border"
                     >
-                        <div>
+                        <div class="overflow-hidden">
                             <div class="truncate" x-text="file.name"></div>
                             <div
                                 class="text-muted-foreground text-sm"
@@ -106,10 +106,10 @@
     {# prettier-ignore #}
     <script>
         document.addEventListener('alpine:init', () => {
-            Alpine.data('body', () => ({ 
+            Alpine.data('body', () => ({
                 files: [],
                 isDragOver: false,
-                
+
                 handleFiles(fileList) {
                     Array.from(fileList).forEach(file => {
                         file.id = `${file.name}-${file.size}-${Date.now()}-${Math.random()}`;
@@ -117,7 +117,7 @@
                     });
                     this.$refs.fileInput.value = '';
                 },
-                
+
                 handleDrop(event) {
                     this.isDragOver = false;
                     const files = event.dataTransfer.files;
@@ -128,12 +128,12 @@
                     this.files.splice(index, 1);
                     this.$refs.fileInput.value = '';
                 },
-                
+
                 clearAll() {
                     this.files = [];
                     this.$refs.fileInput.value = '';
                 },
-                
+
                 formatFileSize(bytes) {
                     if (bytes === 0) return '0 Bytes';
                     const k = 1024;
@@ -154,7 +154,7 @@
                         const input = document.createElement('input');
                         input.type = 'file';
                         input.name = `media[]`;
-                        input.files = this.createFileList(file); 
+                        input.files = this.createFileList(file);
                         form.appendChild(input);
                     });
 
@@ -173,7 +173,7 @@
         document.addEventListener('dragover', function(e) {
             e.preventDefault();
         });
-        
+
         document.addEventListener('drop', function(e) {
             e.preventDefault();
         });
