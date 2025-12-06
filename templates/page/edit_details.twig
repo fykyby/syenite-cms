@@ -24,7 +24,10 @@
     </button>
     <a
         class="uk-btn uk-btn-default"
-        href="{{ page.getLocale().getDomain() ?? '' }}{{ page.getPath() }}"
+        href="{{ page.getLocale().getDomain() ? 'http://' : '' }}{{
+        page.getLocale().getDomain()
+            ?? ''
+        }}{{ page.getPath() }}"
         target="_blank"
     >
         View Page
