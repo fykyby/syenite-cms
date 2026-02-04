@@ -39,7 +39,12 @@
         <legend
             class="uk-btn-default uk-btn-xs uk-btn bg-card text-card-foreground border-border mr-auto place-self-start"
         >
-            <span class="capitalize" x-text="field.key"></span>
+            <span
+                class="capitalize"
+                x-text="field.rules.includes('required') ? field.key + '*' : field.key"
+            >
+
+            </span>
         </legend>
 
         <div>

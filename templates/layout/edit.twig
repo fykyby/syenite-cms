@@ -26,8 +26,9 @@
     {# prettier-ignore #}
     <script>
         document.addEventListener('alpine:init', () => {
-            Alpine.data('body', () => ({ 
+            Alpine.data('body', () => ({
                 data: {{ data|json_encode|raw }},
+                media: JSON.parse({{ media|json_encode|raw }}),
 
                 switchIndexes(arr, i, j) {
                     const temp = arr[i];

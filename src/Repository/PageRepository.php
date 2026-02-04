@@ -25,6 +25,7 @@ class PageRepository extends ServiceEntityRepository
             ->select('p.id, p.path, p.published, p.updatedAt')
             ->where('p.locale = :localeId')
             ->setParameter('localeId', $localeId)
+            ->orderBy('p.path', 'ASC')
             ->getQuery()
             ->getArrayResult();
     }

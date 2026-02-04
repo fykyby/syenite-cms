@@ -20,7 +20,7 @@
         {% for media in media %}
             <li class="uk-card group relative flex flex-col overflow-hidden">
                 <div
-                    class="right-small top-small absolute opacity-0 group-hover:opacity-100"
+                    class="right-small top-small gap-small absolute flex flex-col opacity-0 group-hover:opacity-100"
                 >
                     <button
                         class="uk-btn uk-btn-default uk-btn-icon"
@@ -30,6 +30,17 @@
                     >
                         <uk-icon icon="trash"></uk-icon>
                     </button>
+
+                    {% if media.type == 'file' %}
+                        <button
+                            class="uk-btn uk-btn-default uk-btn-icon"
+                            @click="navigator.clipboard.writeText('{{
+                            media.variants.default
+                            }}');"
+                        >
+                            <uk-icon icon="link"></uk-icon>
+                        </button>
+                    {% endif %}
                 </div>
 
                 <div class="h-56 overflow-hidden">

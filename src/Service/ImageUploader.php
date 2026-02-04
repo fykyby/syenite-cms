@@ -118,8 +118,20 @@ class ImageUploader
                         imagesx($image),
                         imagesy($image),
                     );
+
                     imagealphablending($trueColor, false);
                     imagesavealpha($trueColor, true);
+
+                    $transparent = imagecolorallocatealpha(
+                        $trueColor,
+                        0,
+                        0,
+                        0,
+                        127,
+                    );
+
+                    imagefill($trueColor, 0, 0, $transparent);
+
                     imagecopy(
                         $trueColor,
                         $image,
@@ -130,6 +142,7 @@ class ImageUploader
                         imagesx($image),
                         imagesy($image),
                     );
+
                     imagedestroy($image);
                     $image = $trueColor;
                 }

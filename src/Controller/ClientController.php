@@ -15,14 +15,12 @@ use App\Service\SitemapManager;
 use App\Service\Validation;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolverInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Contracts\Cache\CacheInterface;
 
 final class ClientController extends AbstractController
 {
@@ -121,22 +119,45 @@ final class ClientController extends AbstractController
             requirements: ['path' => '.+'],
         ),
     ]
-    public function static(
-        string $path,
-        Cms $cms,
-        Request $request,
-    ): BinaryFileResponse {
+    public function static(string $path, Cms $cms, Request $request): Response
+    {
         $staticRoot = $cms->getStaticDir();
-
         $filePath = "{$staticRoot}/{$path}";
+
         if (!file_exists($filePath)) {
             throw $this->createNotFoundException();
         }
 
-        $response = new BinaryFileResponse($filePath);
-        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE);
-        $response->setAutoEtag();
-        $response->isNotModified($request);
+        $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+        $mime = match ($ext) {
+            'css' => 'text/css',
+            'js' => 'application/javascript',
+            'svg' => 'image/svg+xml',
+            'woff2' => 'font/woff2',
+            'woff' => 'font/woff',
+            'ttf' => 'font/ttf',
+            'png' => 'image/png',
+            'jpg', 'jpeg' => 'image/jpeg',
+            default => 'application/octet-stream',
+        };
+
+        $content = file_get_contents($filePath);
+        $response = new Response($content);
+
+        $response->headers->set('Content-Type', $mime);
+        $response->headers->set(
+            'Content-Disposition',
+            ResponseHeaderBag::DISPOSITION_INLINE,
+        );
+        $response->setPublic();
+        $response->setMaxAge(3600);
+        $response->setSharedMaxAge(3600);
+
+        $etag = md5($content);
+        $response->setEtag($etag);
+        if ($response->isNotModified($request)) {
+            return $response;
+        }
 
         return $response;
     }

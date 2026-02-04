@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Entity\DataLocale;
 use App\Entity\LayoutData;
+use App\Entity\Media;
 use App\Service\Cms;
 use App\Service\DataTransformer;
 use App\Service\Validation;
@@ -14,6 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
 final class LayoutController extends AbstractController
 {
@@ -41,6 +43,7 @@ final class LayoutController extends AbstractController
         DataTransformer $dataTransformer,
         EntityManagerInterface $entityManager,
         Validation $validation,
+        SerializerInterface $serializer,
     ): Response {
         $localeId = $request
             ->getSession()
@@ -114,9 +117,13 @@ final class LayoutController extends AbstractController
             );
         }
 
+        $media = $entityManager->getRepository(Media::class)->findAll();
+        $mediaJson = $serializer->serialize($media, 'json');
+
         return $this->render('layout/edit.twig', [
             'name' => $name,
             'data' => $data,
+            'media' => $mediaJson,
         ]);
     }
 }

@@ -1,5 +1,9 @@
 <div :class="field.error ? 'form-destructive' : ''">
-    <label class="uk-form-label capitalize" :for="key" x-text="field.key">
+    <label
+        class="uk-form-label capitalize"
+        :for="key"
+        x-text="field.rules.includes('required') ? field.key + '*' : field.key"
+    >
 
     </label>
     <div class="uk-form-controls">
