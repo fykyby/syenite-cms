@@ -345,10 +345,10 @@ final class PageController extends AbstractController
         Request $request,
         SitemapManager $sitemapManager,
     ): Response {
-        $locale = $request->getSession()->get('__locale');
-        $sitemapManager->generate($locale);
+        $localeId = $request->getSession()->get(DataLocaleController::SESSION_LOCALE_ID_KEY);
+        $sitemapManager->generate($localeId);
 
-        $this->addFlash('success', "Sitemap generated for locale: {$locale}");
+        $this->addFlash('success', "Sitemap generated for locale: {$localeId}");
 
         return $this->redirectToRoute('app_pages');
     }
@@ -364,10 +364,10 @@ final class PageController extends AbstractController
         Request $request,
         SitemapManager $sitemapManager,
     ): Response {
-        $locale = $request->getSession()->get('__locale');
-        $sitemapManager->delete($locale);
+        $localeId = $request->getSession()->get(DataLocaleController::SESSION_LOCALE_ID_KEY);
+        $sitemapManager->delete($localeId);
 
-        $this->addFlash('success', "Sitemap deleted for locale: {$locale}");
+        $this->addFlash('success', "Sitemap deleted for locale: {$localeId}");
 
         return $this->redirectToRoute('app_pages');
     }
