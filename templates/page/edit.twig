@@ -76,6 +76,41 @@
             {% include 'page/_block_fieldset.twig' %}
         </template>
     </form>
+
+    <div style="display: none;">
+        <template id="tpl-input">
+            {% include 'page/_fields/_input.twig' %}
+        </template>
+        <template id="tpl-textarea">
+            {% include 'page/_fields/_textarea.twig' %}
+        </template>
+        <template id="tpl-media">
+            {% include 'page/_fields/_media.twig' %}
+        </template>
+        <template id="tpl-date">
+            {% include 'page/_fields/_date.twig' %}
+        </template>
+        <template id="tpl-time">
+            {% include 'page/_fields/_time.twig' %}
+        </template>
+        <template id="tpl-select">
+            {% include 'page/_fields/_select.twig' %}
+        </template>
+        <template id="tpl-checkbox">
+            {% include 'page/_fields/_checkbox.twig' %}
+        </template>
+
+        <template id="tpl-fieldset">
+            {% include 'page/_fields/_fieldset.twig' %}
+        </template>
+        <template id="tpl-array">
+            {% include 'page/_fields/_array.twig' %}
+        </template>
+
+        <template id="tpl-dispatcher">
+            {% include 'page/_block_fieldset_field.twig' %}
+        </template>
+    </div>
 {% endblock %}
 
 {% block modals %}

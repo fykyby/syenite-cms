@@ -1,39 +1,30 @@
-{% set depth = depth|default(0) %}
-
 <div x-data="{ key: `${key}[${field.key}]`}">
     <template x-if="field.type === 'input'">
-        {% include 'page/_fields/_input.twig' %}
+        <div x-html="document.getElementById('tpl-input').innerHTML"></div>
     </template>
     <template x-if="field.type === 'textarea'">
-        {% include 'page/_fields/_textarea.twig' %}
+        <div x-html="document.getElementById('tpl-textarea').innerHTML"></div>
     </template>
     <template x-if="field.type === 'media'">
-        {% include 'page/_fields/_media.twig' %}
+        <div x-html="document.getElementById('tpl-media').innerHTML"></div>
     </template>
     <template x-if="field.type === 'date'">
-        {% include 'page/_fields/_date.twig' %}
+        <div x-html="document.getElementById('tpl-date').innerHTML"></div>
     </template>
     <template x-if="field.type === 'time'">
-        {% include 'page/_fields/_time.twig' %}
+        <div x-html="document.getElementById('tpl-time').innerHTML"></div>
     </template>
     <template x-if="field.type === 'select'">
-        {% include 'page/_fields/_select.twig' %}
+        <div x-html="document.getElementById('tpl-select').innerHTML"></div>
     </template>
     <template x-if="field.type === 'checkbox'">
-        {% include 'page/_fields/_checkbox.twig' %}
+        <div x-html="document.getElementById('tpl-checkbox').innerHTML"></div>
     </template>
+
     <template x-if="field.type === 'fieldset'">
-        {% if depth < 6 %}
-            {% include 'page/_fields/_fieldset.twig' with {
-                depth: depth + 1
-            } %}
-        {% endif %}
+        <div x-html="document.getElementById('tpl-fieldset').innerHTML"></div>
     </template>
     <template x-if="field.type === 'array'">
-        {% if depth < 4 %}
-            {% include 'page/_fields/_array.twig' with {
-                depth: depth + 1
-            } %}
-        {% endif %}
+        <div x-html="document.getElementById('tpl-array').innerHTML"></div>
     </template>
 </div>

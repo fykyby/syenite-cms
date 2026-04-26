@@ -7,9 +7,13 @@
         <span class="capitalize" x-text="field.key"></span>
     </legend>
 
-    <template x-for="(field, l) in field.fields">
-        {% include 'page/_block_fieldset_field.twig' with {
-            depth: depth|default(0)
-        } %}
+    <template
+        x-for="(childField, l) in field.fields"
+        :key="childField.key || l"
+    >
+        <div
+            x-data="{ field: childField }"
+            x-html="document.getElementById('tpl-dispatcher').innerHTML"
+        ></div>
     </template>
 </fieldset>
